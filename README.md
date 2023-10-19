@@ -9,7 +9,7 @@ También se puede sustituir la unit, prefiero remodelarla, me gusta su filosofí
 
 Estado del proyecto:
 .Arreglar la solidificación (ceros a la izquierda de los archivos al convertirlos a números).
-.Arreglar el factorizador y el quequeo de primalidad de BigInt.
+.Arreglar el factorizador y el chequeo de primalidad de BigInt.
 .Incluir las funciones pi de Euler (contadora de primos) y progresión (o serie) de primos; ancladas a tablas de valores típicos
  por ejemplo algunas potencias de dos, potencias enteras de 10.
 .Estabilidar una versión que funcione para archivos pequeños (comprimir y descomprimir).
