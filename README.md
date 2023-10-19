@@ -24,10 +24,10 @@ Estado del proyecto:
 My english is so bad as your surely, but try to get the main idea:
 
 CALS, compression system:
-Prefix 0 -> Codes zero, although it is also used in the factor prefix to determine the product series.
-Prefix 10 -> Factor, what follows is a zero-based prime number index and then its exponent.
+#Prefix 0 -> Codes zero, although it is also used in the factor prefix to determine the product series.
+#Prefix 10 -> Factor, what follows is a zero-based prime number index and then its exponent.
 If the base of the number is 2, it represents or encodes 2^ exponent, otherwise it encodes 2^ (exponent + 1)
-Prefix 11 -> Product, what follows is a series of factors, with the particularity that the prefix 10 is not used
+#Prefix 11 -> Product, what follows is a series of factors, with the particularity that the prefix 10 is not used
 in each of them, but a series of pairs (of numbers) to describe bases and exponents; and a zero bit
 (0) to finish. In this series, the first base is the index of a zero-base prime
 (such that P(0) = 2, P(1) = 3 ... etc.), followed by an exponent that is encoded independently,
@@ -39,7 +39,8 @@ the series, but from the third factor, if it has one, the displacements to the n
 in base one (1) since 0 ends the series, so that 1 means the next prime or immediate, 2, two to
 the right, and so on.
 This is the binary expression of the Fundamental Theorem of Arithmetic, although it is recursive, each number has a unique expression.
-                  Observations
+                  
+                  #Observations
        To avoid redundancies, other prime numbers than two cannot be used to obtain the value 1, in those cases,
        It is assumed that its power is increased by one, that is, when the base is different than two, the predecessor of the power is encoded.
        In the list of factors, only the absolute index of the first prime number is taken, and thus it is not necessary to encode
