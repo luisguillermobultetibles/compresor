@@ -23,7 +23,7 @@ Estado del proyecto:
 
 My english is so bad as your surely, but try to get the main idea:
 
-CALS, compression system:
+BCALS, compression system:
 #Prefix 0 -> Codes zero, although it is also used in the factor prefix to determine the product series.
 #Prefix 10 -> Factor, what follows is a zero-based prime number index and then its exponent.
 If the base of the number is 2, it represents or encodes 2^ exponent, otherwise it encodes 2^ (exponent + 1)
