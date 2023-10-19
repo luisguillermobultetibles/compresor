@@ -25,7 +25,9 @@ the series, but from the third factor, if it has one, the displacements to the n
 in base one (1) since 0 ends the series, so that 1 means the next prime or immediate, 2, two to
 the right, and so on.
 This is the binary expression of the Fundamental Theorem of Arithmetic, although it is recursive, each number has a unique expression.
+
                   Observations
+                  
        To avoid redundancies, other prime numbers than two cannot be used to obtain the value 1, in those cases,
        It is assumed that its power is increased by one, that is, when the base is different than two, the predecessor of the power is encoded.
        In the list of factors, only the absolute index of the first prime number is taken, and thus it is not necessary to encode
