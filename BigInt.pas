@@ -53,7 +53,7 @@ type
     // (de)initialization stuff...
     constructor Create; overload;
     constructor Create(Value: Integer); overload;
-    constructor Create(Value: Longword); overload; // Added by Bultet
+    constructor Create(Value: LongWord); overload; // Added by Bultet
     constructor Create(Value: String); overload;
     constructor Create(const Value: TBigInt); overload;
     destructor Destroy; override;
@@ -72,23 +72,30 @@ type
     function IsZero: Boolean;
     function IsOdd: Boolean;
     function IsEven: Boolean;
-    function IsGreater(const Value: TBigInt): Boolean;
-    function IsEqual(const Value: TBigInt): Boolean;
-    function IsLess(const Value: TBigInt): Boolean;
-    function IsGreaterOrEqual(const Value: TBigInt): Boolean;
+    function IsGreather(const Value: TBigInt): Boolean; overload;
+    function IsGreather(const Value: LongWord): Boolean; overload;
+    function IsEqual(const Value: TBigInt): Boolean; overload;
+    function IsEqual(const Value: LongWord): Boolean; overload;
+    function IsLess(const Value: TBigInt): Boolean; overload;
+    function IsLess(const Value: LongWord): Boolean; overload;
+    function IsGreaterOrEqual(const Value: TBigInt): Boolean; overload;
+    function IsGreaterOrEqual(const Value: LongWord): Boolean; overload;
     function IsLessOrEqual(const Value: TBigInt): Boolean;
     function IsProbablePrime(steps: Integer): Boolean;
 
     // Artihmetics
     procedure abs;
     procedure neg;
-    procedure add(const Value: TBigInt);
-    procedure sub(const Value: TBigInt);
-    procedure mul(const Value: TBigInt);
-    procedure div_(const Value: TBigInt);
+    procedure add(const Value: TBigInt); overload;
+    procedure add(const Value: LongWord); overload;
+    procedure sub(const Value: TBigInt); overload;
+    procedure sub(const Value: LongWord); overload;
+    procedure mul(const Value: TBigInt); overload;
+    procedure mul(const Value: LongWord); overload;
+    procedure div_(const Value: TBigInt); overload;
+    procedure div_(const Value: LongWord); overload;
     procedure mod_(const Value: TBigInt); overload;
-    procedure mod_(const Value: Longword); overload; // Added by Bultet
-
+    procedure mod_(const Value: LongWord); overload;
 
     procedure div_mod(const Value: TBigInt; var modulos: TBigInt);
     procedure gcd(const Value: TBigInt);
@@ -96,6 +103,9 @@ type
     procedure xeuclid(const Value, d, x, y: TBigInt);
     procedure BarrettReduction(const m, constant: TBigInt; k: Integer);
     procedure Square;
+
+    function passChinesseHypothesis: Boolean; // Added by Bultet
+    function passFermatTheorem(base: LongWord = 2): Boolean;
 
     // Logical functions
     procedure shr_(index: Integer);
@@ -112,17 +122,27 @@ type
     procedure setDigitCount(Value: Integer);
   public
     property Digit[index: Integer]: Cardinal read GetDigit write SetDigit;
-    property Count: Integer read getDigitCount write setDigitCount;
+    property DigitCount: Integer read getDigitCount write setDigitCount;
 
     // Binary digits
   private
-    procedure SetBit(index: Integer; const Value: Cardinal);
-    function GetBit(index: Integer): LongWord;
+    procedure SetBit(index: Integer; const Value: Boolean);
+    function GetBit(index: Integer): Boolean;
     function getBitCount: Integer;
     procedure setBitCount(Value: Integer);
   public
-    property Bit[index: Integer]: Cardinal read GetBit write SetBit;
+    property Bit[index: Integer]: Boolean read GetBit write SetBit;
     property BitCount: Integer read getBitCount write setBitCount;
+
+    // Bytes
+  private
+    procedure SetByte(index: Integer; const Value: Byte);
+    function GetByte(index: Integer): Byte;
+    function getByteCount: Integer;
+    procedure setByteCount(Value: Integer);
+  public
+    property Byte_[index: Integer]: Byte read GetByte write SetByte;
+    property ByteCount: Integer read getByteCount write setByteCount;
 
     // File
     procedure save(filename: String);
@@ -141,7 +161,7 @@ type
     function longWordByte(lobo: LongWord; bye: Integer): Byte;
     class function longWordModPow(a, b, n: LongWord): LongWord; // a^b mod n
     class function longWordMillerRabinTest(n, d: Integer): Boolean;
-    class function longWordIsPrime(n: Integer): Boolean;
+    class function longWordIsPrime(n: Cardinal): Boolean;
 
   end;
 
@@ -210,7 +230,7 @@ begin
 end;
 
 // -------- Create (public) -----------------------------------------------
-constructor TBigInt.Create(Value: Longword);
+constructor TBigInt.Create(Value: LongWord);
 begin
   inherited Create;
   SetLength(FDigits, 1);
@@ -271,6 +291,11 @@ begin
 end;
 
 // -------- Assign (public) ---------------------------------------------
+procedure TBigInt.add(const Value: LongWord);
+begin
+  add(TBigInt.Create(Value))
+end;
+
 procedure TBigInt.Assign(const Value: TBigInt);
 begin
   SetLength(FDigits, Value.getDigitCount);
@@ -300,6 +325,11 @@ begin
 end;
 
 // -------- SetDigit (public) -----------------------------------------------
+procedure TBigInt.SetByte(index: Integer; const Value: Byte);
+begin
+
+end;
+
 procedure TBigInt.SetDigit(index: Integer; Value: LongWord);
 var
   i: Integer;
@@ -314,17 +344,32 @@ begin
 end;
 
 // -------- GetDigit (public) -----------------------------------------------
-function TBigInt.GetBit(index: Integer): LongWord;
+function TBigInt.GetBit(index: Integer): Boolean;
 begin
 
 end;
 
 function TBigInt.getBitCount: Integer;
 begin
-  Result := 32 * Count - leadingZeroBits(Digit[Count]);
+  Result := 32 * DigitCount - leadingZeroBits(Digit[DigitCount]);
+end;
+
+function TBigInt.getByteCount: Integer;
+begin
+
 end;
 
 procedure TBigInt.setBitCount(Value: Integer);
+begin
+
+end;
+
+function TBigInt.GetByte(index: Integer): Byte;
+begin
+
+end;
+
+procedure TBigInt.setByteCount(Value: Integer);
 begin
 
 end;
@@ -432,14 +477,14 @@ var
 begin
   AssignFile(fdata, filename);
   Reset(fdata);
-  Count := FileSize(fdata) + 1;
-  for i := Count - 2 DownTo 0 do
+  DigitCount := FileSize(fdata) + 1;
+  for i := DigitCount - 2 DownTo 0 do
   Begin
     Seek(fdata, i);
     Read(fdata, dat);
     Digit[i] := dat;
   End;
-  Digit[Count - 1] := 1; // Solidify
+  Digit[DigitCount - 1] := 1; // Solidify
   CloseFile(fdata);
 end;
 
@@ -453,13 +498,18 @@ begin
 end;
 
 // -------- IsEven (public) -----------------------------------------------
+function TBigInt.IsEqual(const Value: LongWord): Boolean;
+begin
+  Result := IsEqual(TBigInt.Create(Value));
+end;
+
 function TBigInt.IsEven: Boolean;
 begin
   Result := not(IsOdd);
 end;
 
 // -------- IsGreater (public) -----------------------------------------------
-function TBigInt.IsGreater(const Value: TBigInt): Boolean;
+function TBigInt.IsGreather(const Value: TBigInt): Boolean;
 var
   i: Integer;
   maxDigit: Integer;
@@ -537,15 +587,30 @@ begin
 end;
 
 // -------- IsGreaterOrEqual (public) -----------------------------------------------
+function TBigInt.IsGreaterOrEqual(const Value: LongWord): Boolean;
+begin
+  Result := IsGreaterOrEqual(TBigInt.Create(Value));
+end;
+
+function TBigInt.IsGreather(const Value: LongWord): Boolean;
+begin
+  Result := IsGreather(TBigInt.Create(Value));
+end;
+
 function TBigInt.IsGreaterOrEqual(const Value: TBigInt): Boolean;
 begin
-  if (IsGreater(Value)) or (IsEqual(Value)) then
+  if (IsGreather(Value)) or (IsEqual(Value)) then
     Result := True
   else
     Result := False;
 end;
 
 // -------- IsLessOrEqual (public) -----------------------------------------------
+function TBigInt.IsLess(const Value: LongWord): Boolean;
+begin
+  Result := IsLess(TBigInt.Create(Value));
+end;
+
 function TBigInt.IsLessOrEqual(const Value: TBigInt): Boolean;
 begin
   if (IsLess(Value)) or (IsEqual(Value)) then
@@ -659,13 +724,33 @@ begin
   FNegative := not(FNegative);
 end;
 
+function TBigInt.passChinesseHypothesis: Boolean;
+var
+  chu_lin_pon: TBigInt;
+begin
+  chu_lin_pon := TBigInt.Create(2);
+  chu_lin_pon.modPow(Self, Self);
+  Result := chu_lin_pon.IsEqual(2);
+end;
+
+function TBigInt.passFermatTheorem(base: LongWord = 2): Boolean;
+var
+  chu_lin_pon, previous: TBigInt;
+begin
+  chu_lin_pon := TBigInt.Create(base);
+  previous := TBigInt.Create(Self);
+  previous.sub(1);
+  chu_lin_pon.modPow(previous, Self);
+  Result := chu_lin_pon.isEqual(1);
+end;
+
 procedure TBigInt.save(filename: String);
 var
   fdata: File of LongWord;
   i: Integer;
   tmplong1: LongWord;
 begin
-  if Digit[Count - 1] <> 1 then
+  if Digit[DigitCount - 1] <> 1 then
   Begin
     WriteLn('No parece estar en formato sólido.');
     halt;
@@ -674,7 +759,7 @@ begin
   Rewrite(fdata);
   tmplong1 := 1;
   write(fdata, tmplong1); // unsolidify
-  for i := Count - 2 DownTo 0 do
+  for i := DigitCount - 2 DownTo 0 do
   Begin
     tmplong1 := Digit[i];
     write(fdata, tmplong1);
@@ -700,7 +785,7 @@ begin
     Result := Value and not(mask);
 end;
 
-procedure TBigInt.SetBit(index: Integer; const Value: Cardinal);
+procedure TBigInt.SetBit(index: Integer; const Value: Boolean);
 begin
 
 end;
@@ -978,23 +1063,36 @@ begin
   Value.FNegative := sgn2;
 end;
 
-procedure TBigInt.mod_(const Value: Longword); // Added by Bultet
-var i : Integer;
-    sum : LongWord;
+procedure TBigInt.mod_(const Value: LongWord); // Added by Bultet
+var
+  i: Integer;
+  sum: LongWord;
 Begin
- sum := 0;
- for i := 0 to getDigitCount do
-   Begin
-      sum := sum + Digit[i]*longWordModPow(2, 32*i, Value);
-      sum := sum mod Value; // May be out cycle but here avoid overflow posibility.
-   End;
- Count := 1;
- Digit[0] := sum;
- If FNegative Then Digit[0] := Value - sum;
+  sum := 0;
+  for i := 0 to DigitCount - 1 do
+  Begin
+    sum := sum + Digit[i] * longWordModPow(2, 32 * i, Value);
+    sum := sum mod Value;
+    // May be out cycle but here avoid overflow posibility.
+  End;
+  DigitCount := 1;
+  Digit[0] := sum;
+  If FNegative Then
+    Digit[0] := Value - sum;
 End;
+
+procedure TBigInt.mul(const Value: LongWord);
+begin
+  mul(TBigInt.Create(Value))
+end;
 
 // -------- div_mod (public) -----------------------------------------------
 // Credits to Roland Mechling, see www.gkinf.de for details.
+procedure TBigInt.div_(const Value: LongWord);
+begin
+  div_(TBigInt.Create(Value))
+end;
+
 procedure TBigInt.div_mod(const Value: TBigInt; var modulos: TBigInt);
 var
   r, q: TBigInt;
@@ -1390,37 +1488,39 @@ begin
   Result := False;
 end;
 
-class function TBigInt.longWordIsPrime(n: Integer): Boolean;
+class function TBigInt.longWordIsPrime(n: LongWord): Boolean; assembler;
 var
-  d, s: Integer;
-begin
+  raiz, up: LongWord;
+Begin
   if n <= 1 then
-  begin
+  Begin
     Result := False;
-    exit;
-  end;
+  End;
 
-  if n <= 3 then
-  begin
-    Result := True;
-    exit;
-  end;
-
-  d := n - 1;
-  while d mod 2 = 0 do
-    d := d div 2;
-
-  for s := 1 to 5 do // Realiza el test de Miller-Rabin 5 veces
-  begin
-    if not longWordMillerRabinTest(n, d) then
-    begin
+  for up := Low(primes) to High(primes) do
+  Begin
+    if n = primes[up] then
+    Begin
+      Result := True;
+      exit;
+    End
+    else if (n mod primes[up]) = 0 then
+    Begin
       Result := False;
       exit;
-    end;
-  end;
+    End
+  End;
 
+  raiz := Trunc(sqrt(n));
   Result := True;
-end;
+  for up := 2 to raiz do
+    if (n mod up) = 0 then
+    Begin
+      Result := False;
+      Break;
+    End;
+
+End;
 
 // -------- Square (public) -----------------------------------------------
 // Based on the binary gcd algorithm as described in
@@ -1452,6 +1552,12 @@ procedure TBigInt.Square;
 begin
   Self.mul(Self);
 end;
+
+procedure TBigInt.sub(const Value: LongWord);
+begin
+  sub(TBigInt.Create(Value));
+end;
+
 { procedure TBigInt.Square;
   var
   result    : TBigInt;
@@ -1588,7 +1694,7 @@ begin
 
   // Crea un nuevo objeto TBigInt con el tamaño adecuado
   newBigInt := TBigInt.Create;
-  newBigInt.Count := newSize;
+  newBigInt.DigitCount := newSize;
 
   // Copia los dígitos del primer TBigInt en el nuevo objeto
   for i := 0 to getDigitCount - 1 do

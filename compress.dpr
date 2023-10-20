@@ -163,13 +163,13 @@ var
   jj: Integer;
 
 begin
-  for jj := 0 to 100 do
-  begin
-    Write(trunc(Math.power(10, jj)));
-    Write(' - ');
-    WriteLn(Pi(trunc(Math.power(10, jj))));
-    ReadLn;
-  end;
+//  for jj := 0 to 100 do
+//  begin
+//    Write(trunc(Math.power(10, jj)));
+//    Write(' - ');
+//    WriteLn(Pi(trunc(Math.power(10, jj))));
+//    ReadLn;
+//  end;
 
   try
     { TODO -oUser -cConsole Main : Insert code here }
@@ -183,15 +183,25 @@ begin
     Begin
       inputFileName := ParamStr(2);
       outputFileName := ParamStr(3);
-      WriteLn('Inflating: ', inputFileName, ' into: ', outputFileName);
+      WriteLn('Inflating out:', outputFileName, ' from: ', inputFileName);
 
     End
     else if (ParamCount = 3) or (ParamStr(1) = '-d') then
     Begin
       inputFileName := ParamStr(2);
       outputFileName := ParamStr(3);
-      WriteLn('Deflating: ', inputFileName, ' outto: ', outputFileName);
+      WriteLn('Deflating: ', inputFileName, ' into: ', outputFileName);
 
+    End
+    Else if (ParamCount = 1) or (ParamStr(1) = '-t') then
+    Begin
+      WriteLn('Test and benchmarks:');
+      for jj := 0 To MaxInt do
+         Begin
+          WriteLn(jj, '-->', TBigInt.longWordIsPrime(jj));
+          ReadLn;
+         End;
+      ReadLn;
     End
     Else if (ParamCount = 1) or (ParamStr(1) = '-h') then
     Begin
@@ -207,6 +217,9 @@ begin
       WriteLn('multiple words as one parameter (such as long file');
       WriteLn('names containing spaces).');
       WriteLn;
+      WriteLn('To test and benchmarks:');
+      WriteLn(ParamStr(0), ' -t');
+      WriteLn;
       WriteLn('To show this help:');
       WriteLn(ParamStr(0), ' -h');
     End
@@ -218,10 +231,7 @@ begin
       halt;
     End;
 
-    For jj := 3 To 100 Do
-    Begin
-      WriteLn(jj, ' -->', pn(jj));
-    End;
+    halt(0);
 
     degugTime := True;
     if degugTime then
