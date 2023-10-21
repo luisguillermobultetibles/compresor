@@ -23,7 +23,7 @@ end.
 
 // Codificar n�mero
 Function xPrimeEncode(a: BigInt): BigInt;
-// agregar un parÄ† metro base relativa, para agregarlo o restarlo al Ä†Ā­ndice.
+// agregar un par�metro base relativa, para agregarlo o restarlo al Ä†Ā­ndice.
 var
   p, pws, I, laPiltrafa, pdi, dummyRest: TBigInt;
 Begin

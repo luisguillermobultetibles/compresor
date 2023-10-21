@@ -82,6 +82,7 @@ type
     function IsGreaterOrEqual(const Value: LongWord): Boolean; overload;
     function IsLessOrEqual(const Value: TBigInt): Boolean;
     function IsProbablePrime(steps: Integer): Boolean;
+    function IsPrime(): Boolean; // Implementar, pruebas, y factorizaciones.
 
     // Artihmetics
     procedure abs;
@@ -162,6 +163,9 @@ type
     class function longWordModPow(a, b, n: LongWord): LongWord; // a^b mod n
     class function longWordMillerRabinTest(n, d: Integer): Boolean;
     class function longWordIsPrime(n: Cardinal): Boolean;
+
+    Function EulerPi(): TBigInt; // The prime counting function
+    Function PrimeProgression(): TBigInt; // The prime serie function
 
   end;
 
@@ -712,6 +716,11 @@ begin
   end;
 end;
 
+function TBigInt.IsPrime(): Boolean;
+Begin
+
+End;
+
 // -------- abs (public) -----------------------------------------------
 procedure TBigInt.abs;
 begin
@@ -741,7 +750,7 @@ begin
   previous := TBigInt.Create(Self);
   previous.sub(1);
   chu_lin_pon.modPow(previous, Self);
-  Result := chu_lin_pon.isEqual(1);
+  Result := chu_lin_pon.IsEqual(1);
 end;
 
 procedure TBigInt.save(filename: String);
@@ -1403,385 +1412,662 @@ begin
   Result := contador;
 end;
 
-function TBigInt.ExtraerSubcadenaBits(LongWord: LongWord; inicio: Integer;
-  longitud: Integer): LongWord;
-begin
-  // Luego, creamos una máscara para extraer la subcadena de bits
-  // La máscara es una secuencia de unos de longitud 'longitud' desplazada 'inicio' bits hacia la izquierda
-  Result := (LongWord shr inicio) and ((1 shl longitud) - 1);
-end;
-
-function TBigInt.longWordByte(lobo: LongWord; bye: Integer): Byte;
+// Debe devolver el ?ndice del n?mero primo a comenzando por el dos.
+// Slow
+Function TBigInt.EulerPi(): TBigInt;
 var
-  byte0, byte1, byte2, byte3: Byte;
-begin
-  case bye of
-    // Obtener el byte más bajo, también puedes usar LoByte(longwordValue)
-    0:
-      Result := Byte(lobo);
-    // Obtener el segundo byte
-    1:
-      Result := Byte(lobo shr 8);
-    // Obtener el tercer byte
-    2:
-      Result := Byte(lobo shr 16);
-    // Obtener el byte más alto, también puedes usar HiByte(longwordValue)
-    3:
-      Result := Byte(lobo shr 24);
-  end;
-end;
-
-class function TBigInt.longWordModPow(a, b, n: LongWord): LongWord;
-var
-  res, base: LongWord;
-begin
-  res := 1;
-  base := a mod n;
-
-  while b > 0 do
-  begin
-    if b mod 2 = 1 then
-      res := (res * base) mod n;
-
-    if res = 0 then
-      Break; // added by Bultet
-
-    base := (base * base) mod n;
-    b := b div 2;
-  end;
-
-  Result := res;
-end;
-
-class function TBigInt.longWordMillerRabinTest(n, d: Integer): Boolean;
-var
-  a, x: Integer;
-begin
-  a := 2 + random(n - 4); // Genera un número aleatorio entre 2 y n-2
-
-  x := longWordModPow(a, d, n);
-
-  if (x = 1) or (x = n - 1) then
-  begin
-    Result := True;
-    exit;
-  end;
-
-  while d <> n - 1 do
-  begin
-    x := (x * x) mod n;
-    d := d * 2;
-
-    if x = 1 then
-    begin
-      Result := False;
-      exit;
-    end;
-
-    if x = n - 1 then
-    begin
-      Result := True;
-      exit;
-    end;
-  end;
-
-  Result := False;
-end;
-
-class function TBigInt.longWordIsPrime(n: LongWord): Boolean; assembler;
-var
-  raiz, up: LongWord;
+  i: TBigInt;
 Begin
-  if n <= 1 then
+
+  // Esencialmente, comenzar a buscar en una de esas posiciones conocidas, si te enteras
+  // de algunos mayores puedes incluirlos aquí arriba, son los índices las potencias de dos,
+  // a greatherOrEqual puedes pasarle un Longword o una instancia de TBigint.
+  If IsGreaterOrEqual(34136059) Then
   Begin
-    Result := False;
-  End;
-
-  for up := Low(primes) to High(primes) do
+    i := TBigInt.Create(34136059);
+    Result := TBigInt.Create(2097152)
+  End
+  Else If IsGreaterOrEqual(16290073) Then
   Begin
-    if n = primes[up] then
-    Begin
-      Result := True;
-      exit;
-    End
-    else if (n mod primes[up]) = 0 then
-    Begin
-      Result := False;
-      exit;
-    End
+    i := TBigInt.Create(16290073);
+    Result := TBigInt.Create(1048576)
+  End
+  Else If IsGreaterOrEqual(7754081) Then
+  Begin
+    i := TBigInt.Create(7754081);
+    Result := TBigInt.Create(524288)
+  End
+  Else If IsGreaterOrEqual(3681149) Then
+  Begin
+    i := TBigInt.Create(3681149);
+    Result := TBigInt.Create(262144)
+  End
+  Else If IsGreaterOrEqual(1742539) Then
+  Begin
+    i := TBigInt.Create(1742539);
+    Result := TBigInt.Create(131072)
+  End
+  Else If IsGreaterOrEqual(821647) Then
+  Begin
+    i := TBigInt.Create(821647);
+    Result := TBigInt.Create(65536)
+  End
+  Else If IsGreaterOrEqual(386117) Then
+  Begin
+    i := TBigInt.Create(386117);
+    Result := TBigInt.Create(32768)
+  End
+  Else If IsGreaterOrEqual(180511) Then
+  Begin
+    i := TBigInt.Create(180511);
+    Result := TBigInt.Create(16384)
+  End
+  Else If IsGreaterOrEqual(84047) Then
+  Begin
+    i := TBigInt.Create(84047);
+    Result := TBigInt.Create(8192)
+  End
+  Else If IsGreaterOrEqual(38891) Then
+  Begin
+    i := TBigInt.Create(38891);
+    Result := TBigInt.Create(4096)
+  End
+  Else If IsGreaterOrEqual(17881) Then
+  Begin
+    i := TBigInt.Create(17881);
+    Result := TBigInt.Create(2048)
+  End
+  Else If IsGreaterOrEqual(8167) Then
+  Begin
+    i := TBigInt.Create(8167);
+    Result := TBigInt.Create(1024)
+  End
+  Else If IsGreaterOrEqual(3673) Then
+  Begin
+    i := TBigInt.Create(3673);
+    Result := TBigInt.Create(512)
+  End
+  Else If IsGreaterOrEqual(1621) Then
+  Begin
+    i := TBigInt.Create(1621);
+    Result := TBigInt.Create(256)
+  End
+  Else If IsGreaterOrEqual(727) Then
+  Begin
+    i := TBigInt.Create(727);
+    Result := TBigInt.Create(128)
+  End
+  Else If IsGreaterOrEqual(313) Then
+  Begin
+    i := TBigInt.Create(313);
+    Result := TBigInt.Create(64)
+  End
+  Else If IsGreaterOrEqual(137) Then
+  Begin
+    i := TBigInt.Create(137);
+    Result := TBigInt.Create(32)
+  End
+  Else If IsGreaterOrEqual(59) Then
+  Begin
+    i := TBigInt.Create(59);
+    Result := TBigInt.Create(16)
+  End
+  Else If IsGreaterOrEqual(23) Then
+  Begin
+    i := TBigInt.Create(23);
+    Result := TBigInt.Create(8)
+  End
+  Else If IsGreaterOrEqual(11) Then
+  Begin
+    i := TBigInt.Create(11);
+    Result := TBigInt.Create(4)
+  End
+  Else If IsGreaterOrEqual(5) Then
+  Begin
+    i := TBigInt.Create(5);
+    Result := TBigInt.Create(2)
+  End
+  Else If IsGreaterOrEqual(3) Then
+  Begin
+    i := TBigInt.Create(3);
+    Result := TBigInt.Create(1)
+  End
+  Else
+  Begin
+    i := TBigInt.Create(2);
+    Result := TBigInt.Create(0)
   End;
-
-  raiz := Trunc(sqrt(n));
-  Result := True;
-  for up := 2 to raiz do
-    if (n mod up) = 0 then
-    Begin
-      Result := False;
-      Break;
-    End;
-
+  While IsGreather(i) Do
+  Begin
+    If i.IsPrime() Then
+      Result.add(1);
+    i.add(1);
+  End;
 End;
 
-// -------- Square (public) -----------------------------------------------
-// Based on the binary gcd algorithm as described in
-// "Guide to Elliptic Curve Cryptography", Springer 2002
-//
-// Input : a
-// Output: a*a
-//
-// a = t-bit number
-// UV = 2t-bit number => U high order and V low order of a 2t-bit word.
-// (c, X) = X is a number using x-bits, c carry flag
-//
-//
-// 1.   R0 = 0, R1 = 0, R2 = 0
-// 2.   for k from 0 to 2t-2 do
-// 2.1    for each element of {(i,j)|i+j=k, 0<=i<=j<=t-1} do
-// (UV) = A[i] * A[j]
-// if (i < j) do
-// (c, UV) = UV * 2
-// R2 = R2 + c
-// (c, R0) = R0 + V
-// (c, R1) = R1 + U + c
-// R2 = R2 + c
-// 2.2     result[k] = R0, R0 = R1, R1 = R2, R2 = 0
-// 3.    result[2t-1] = R0
-// 4.    return result
-//
-procedure TBigInt.Square;
-begin
-  Self.mul(Self);
-end;
-
-procedure TBigInt.sub(const Value: LongWord);
-begin
-  sub(TBigInt.Create(Value));
-end;
-
-{ procedure TBigInt.Square;
-  var
-  result    : TBigInt;
-  UV        : Int64;
-  carry     : Int64;
-  R0, R1, R2: Int64;
-  i, j, k   : Integer;
-  begin
-  result := TBigInt.Create(0);
-  result.digit[DigitCount*2] := 0;
-
-  R0 := 0; R1 := 0; R2 := 0;
-  for k := 0 to (2*DigitCount)-2 do
-  begin
-  for i := 0 to DigitCount-1 do
-  begin
-  for j := i to DigitCount-1 do
-  if (i+j = k) then
-  begin
-  UV := Int64(FDigits[i]) * Int64(FDigits[j]);
-  if (i < j) then
-  begin
-  if ((UV and $8000000000000000) <> 0) then //if (UV < 0) then
-  R2 := R2 + 1;
-  UV := UV shl 1;
-  end;
-  R0 := R0 + (UV and $FFFFFFFF);
-  carry := R0 shr 32;
-  if (carry <> 0) then R0 := R0 and $FFFFFFFF;
-  R1 := R1 + (UV shr 32) + carry;
-  carry := R1 shr 32;
-  if (carry <> 0) then R1 := R1 and $FFFFFFFF;
-  R2 := R2 + carry;
-  break;
-  end;
-  if (i+1 > k) then break;
-  end;
-  result.FDigits[k] := R0 and $FFFFFFFF; R0 := R1; R1 := R2; R2 := 0;
-  end;
-  result.FDigits[(DigitCount*2)-1] := R0 and $FFFFFFFF;
-
-  result.FNegative := FNegative xor FNegative;
-  result.Trim;
-  Assign(result);
-  result.Free;
-  end; }
-
-// -------- shr (public) -----------------------------------------------
-procedure TBigInt.shr_(index: Integer);
+// Las mejores técnicas, si tienes paciencia para hacer una tabla, entonces hazla.
+Function TBigInt.PrimeProgression(): TBigInt;
 var
-  shift: Int64;
-  carry: Int64;
-  i, j: Integer;
-  tmpDigitCount: Integer;
-begin
-  if (index > 0) then
-    if (index >= getDigitCount * 32) then
-      Clear
-    else
+  contador, i: TBigInt;
+Begin
+  Result := TBigInt.Create(2); // El candidato
+  i := TBigInt.Create(0); // La variable de control de ciclo
+  contador := TBigInt.Create(0); // La cantidad de primos que se han encontrado
+
+  // Esencialmente, comenzar a buscar en una de esas posiciones conocidas, si te enteras
+  // de algunos mayores puedes incluirlos aquÃƒÆ’Ã‚Â­ arriba.
+  If IsGreaterOrEqual(2097152) Then
+  Begin
+    i := TBigInt.Create(34136059);
+    contador := TBigInt.Create(2097152)
+  End
+  Else If IsGreaterOrEqual(1048576) Then
+  Begin
+    i := TBigInt.Create(16290073);
+    contador := TBigInt.Create(1048576)
+  End
+  Else If IsGreaterOrEqual(524288) Then
+  Begin
+    i := TBigInt.Create(7754081);
+    contador := TBigInt.Create(524288)
+  End
+  Else If IsGreaterOrEqual(262144) Then
+  Begin
+    i := TBigInt.Create(3681149);
+    contador := TBigInt.Create(262144)
+  End
+  Else If IsGreaterOrEqual(131072) Then
+  Begin
+    i := TBigInt.Create(1742539);
+    contador := TBigInt.Create(131072)
+  End
+  Else If IsGreaterOrEqual(65536) Then
+  Begin
+    i := TBigInt.Create(821647);
+    contador := TBigInt.Create(65536)
+  End
+  Else If IsGreaterOrEqual(32768) Then
+  Begin
+    i := TBigInt.Create(386117);
+    contador := TBigInt.Create(32768)
+  End
+  Else If IsGreaterOrEqual(16384) Then
+  Begin
+    i := TBigInt.Create(180511);
+    contador := TBigInt.Create(16384)
+  End
+  Else If IsGreaterOrEqual(8192) Then
+  Begin
+    i := TBigInt.Create(84047);
+    contador := TBigInt.Create(8192)
+  End
+  Else If IsGreaterOrEqual(4096) Then
+  Begin
+    i := TBigInt.Create(38891);
+    contador := TBigInt.Create(4096)
+  End
+  Else If IsGreaterOrEqual(2048) Then
+  Begin
+    i := TBigInt.Create(17881);
+    contador := TBigInt.Create(2048)
+  End
+  Else If IsGreaterOrEqual(1024) Then
+  Begin
+    i := TBigInt.Create(8167);
+    contador := TBigInt.Create(1024)
+  End
+  Else If IsGreaterOrEqual(512) Then
+  Begin
+    i := TBigInt.Create(3673);
+    contador := TBigInt.Create(512)
+  End
+  Else If IsGreaterOrEqual(256) Then
+  Begin
+    i := TBigInt.Create(1621);
+    contador := TBigInt.Create(256)
+  End
+  Else If IsGreaterOrEqual(128) Then
+  Begin
+    i := TBigInt.Create(727);
+    contador := TBigInt.Create(128)
+  End
+  Else If IsGreaterOrEqual(64) Then
+  Begin
+    i := TBigInt.Create(313);
+    contador := TBigInt.Create(64)
+  End
+  Else If IsGreaterOrEqual(32) Then
+  Begin
+    i := TBigInt.Create(137);
+    contador := TBigInt.Create(32)
+  End
+  Else If IsGreaterOrEqual(16) Then
+  Begin
+    i := TBigInt.Create(59);
+    contador := TBigInt.Create(16)
+  End
+  Else If IsGreaterOrEqual(8) Then
+  Begin
+    i := TBigInt.Create(23);
+    contador := TBigInt.Create(8)
+  End
+  Else If IsGreaterOrEqual(4) Then
+  Begin
+    i := TBigInt.Create(11);
+    contador := TBigInt.Create(4)
+  End
+  Else If IsGreaterOrEqual(2) Then
+  Begin
+    i := TBigInt.Create(5);
+    contador := TBigInt.Create(2)
+  End
+  Else If IsGreaterOrEqual(1) Then
+  Begin
+    i := TBigInt.Create(3);
+    contador := TBigInt.Create(1)
+  End
+  Else If IsGreaterOrEqual(0) Then
+  Begin
+    i := TBigInt.Create(2);
+    contador := TBigInt.Create(0)
+  End;
+
+  // Sino empieza a buscar a partir de allí... hasta el infinito.
+  Repeat
+    If IsEqual(contador) Then
+      Exit;
+    i.add(1);
+    If i.IsPrime() Then
+    Begin
+      Result := i;
+      contador.add(1);
+    End
+    Until False
+  End;
+
+  function TBigInt.ExtraerSubcadenaBits(LongWord: LongWord; inicio: Integer;
+    longitud: Integer): LongWord;
+  begin
+    // Luego, creamos una máscara para extraer la subcadena de bits
+    // La máscara es una secuencia de unos de longitud 'longitud' desplazada 'inicio' bits hacia la izquierda
+    Result := (LongWord shr inicio) and ((1 shl longitud) - 1);
+  end;
+
+  function TBigInt.longWordByte(lobo: LongWord; bye: Integer): Byte;
+  var
+    byte0, byte1, byte2, byte3: Byte;
+  begin
+    case bye of
+      // Obtener el byte más bajo, también puedes usar LoByte(longwordValue)
+      0:
+        Result := Byte(lobo);
+      // Obtener el segundo byte
+      1:
+        Result := Byte(lobo shr 8);
+      // Obtener el tercer byte
+      2:
+        Result := Byte(lobo shr 16);
+      // Obtener el byte más alto, también puedes usar HiByte(longwordValue)
+      3:
+        Result := Byte(lobo shr 24);
+    end;
+  end;
+
+  class function TBigInt.longWordModPow(a, b, n: LongWord): LongWord;
+  var
+    res, base: LongWord;
+  begin
+    res := 1;
+    base := a mod n;
+
+    while b > 0 do
     begin
-      j := 0;
-      tmpDigitCount := getDigitCount;
-      if ((index div 32) > 0) then
-        for i := (index div 32) to tmpDigitCount - 1 do
+      if b mod 2 = 1 then
+        res := (res * base) mod n;
+
+      if res = 0 then
+        Break; // added by Bultet
+
+      base := (base * base) mod n;
+      b := b div 2;
+    end;
+
+    Result := res;
+  end;
+
+  class function TBigInt.longWordMillerRabinTest(n, d: Integer): Boolean;
+  var
+    a, x: Integer;
+  begin
+    a := 2 + random(n - 4); // Genera un número aleatorio entre 2 y n-2
+
+    x := longWordModPow(a, d, n);
+
+    if (x = 1) or (x = n - 1) then
+    begin
+      Result := True;
+      Exit;
+    end;
+
+    while d <> n - 1 do
+    begin
+      x := (x * x) mod n;
+      d := d * 2;
+
+      if x = 1 then
+      begin
+        Result := False;
+        Exit;
+      end;
+
+      if x = n - 1 then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
+
+    Result := False;
+  end;
+
+  class function TBigInt.longWordIsPrime(n: LongWord): Boolean;
+  var
+    raiz, up: LongWord;
+  Begin
+    if (n = 0) or (n = 1) then
+    Begin
+      Result := False;
+      Exit;
+    End;
+
+    for up := Low(primes) to High(primes) do
+    Begin
+      if n = primes[up] then
+      Begin
+        Result := True;
+        Exit;
+      End
+      else if (n mod primes[up]) = 0 then
+      Begin
+        Result := False;
+        Exit;
+      End
+    End;
+
+    raiz := Round(sqrt(n) + 0.5);
+    Result := True;
+    up := primes[up];
+    Repeat
+      up := up + 2;
+      if (n mod up) = 0 then
+      Begin
+        Result := False;
+        Exit;
+      End;
+    Until up > raiz;
+  End;
+
+  // -------- Square (public) -----------------------------------------------
+  // Based on the binary gcd algorithm as described in
+  // "Guide to Elliptic Curve Cryptography", Springer 2002
+  //
+  // Input : a
+  // Output: a*a
+  //
+  // a = t-bit number
+  // UV = 2t-bit number => U high order and V low order of a 2t-bit word.
+  // (c, X) = X is a number using x-bits, c carry flag
+  //
+  //
+  // 1.   R0 = 0, R1 = 0, R2 = 0
+  // 2.   for k from 0 to 2t-2 do
+  // 2.1    for each element of {(i,j)|i+j=k, 0<=i<=j<=t-1} do
+  // (UV) = A[i] * A[j]
+  // if (i < j) do
+  // (c, UV) = UV * 2
+  // R2 = R2 + c
+  // (c, R0) = R0 + V
+  // (c, R1) = R1 + U + c
+  // R2 = R2 + c
+  // 2.2     result[k] = R0, R0 = R1, R1 = R2, R2 = 0
+  // 3.    result[2t-1] = R0
+  // 4.    return result
+  //
+  procedure TBigInt.Square;
+  begin
+    Self.mul(Self);
+  end;
+
+  procedure TBigInt.sub(const Value: LongWord);
+  begin
+    sub(TBigInt.Create(Value));
+  end;
+
+  { procedure TBigInt.Square;
+    var
+    result    : TBigInt;
+    UV        : Int64;
+    carry     : Int64;
+    R0, R1, R2: Int64;
+    i, j, k   : Integer;
+    begin
+    result := TBigInt.Create(0);
+    result.digit[DigitCount*2] := 0;
+
+    R0 := 0; R1 := 0; R2 := 0;
+    for k := 0 to (2*DigitCount)-2 do
+    begin
+    for i := 0 to DigitCount-1 do
+    begin
+    for j := i to DigitCount-1 do
+    if (i+j = k) then
+    begin
+    UV := Int64(FDigits[i]) * Int64(FDigits[j]);
+    if (i < j) then
+    begin
+    if ((UV and $8000000000000000) <> 0) then //if (UV < 0) then
+    R2 := R2 + 1;
+    UV := UV shl 1;
+    end;
+    R0 := R0 + (UV and $FFFFFFFF);
+    carry := R0 shr 32;
+    if (carry <> 0) then R0 := R0 and $FFFFFFFF;
+    R1 := R1 + (UV shr 32) + carry;
+    carry := R1 shr 32;
+    if (carry <> 0) then R1 := R1 and $FFFFFFFF;
+    R2 := R2 + carry;
+    break;
+    end;
+    if (i+1 > k) then break;
+    end;
+    result.FDigits[k] := R0 and $FFFFFFFF; R0 := R1; R1 := R2; R2 := 0;
+    end;
+    result.FDigits[(DigitCount*2)-1] := R0 and $FFFFFFFF;
+
+    result.FNegative := FNegative xor FNegative;
+    result.Trim;
+    Assign(result);
+    result.Free;
+    end; }
+
+  // -------- shr (public) -----------------------------------------------
+  procedure TBigInt.shr_(index: Integer);
+  var
+    shift: Int64;
+    carry: Int64;
+    i, j: Integer;
+    tmpDigitCount: Integer;
+  begin
+    if (index > 0) then
+      if (index >= getDigitCount * 32) then
+        Clear
+      else
+      begin
+        j := 0;
+        tmpDigitCount := getDigitCount;
+        if ((index div 32) > 0) then
+          for i := (index div 32) to tmpDigitCount - 1 do
+          begin
+            Digit[j] := FDigits[i];
+            FDigits[i] := 0;
+            inc(j)
+          end;
+        if ((index mod 32) > 0) then
         begin
-          Digit[j] := FDigits[i];
-          FDigits[i] := 0;
-          inc(j)
+          carry := 0;
+          i := getDigitCount - 1;
+          repeat
+            shift := (Int64(Digit[i]) shr (Int64(index) mod Int64(32)))
+              or carry;
+            carry := (((Int64(Digit[i]) shl Int64(32)) shr (Int64(index)
+              mod Int64(32)))) and Int64($FFFFFFFF);
+            FDigits[i] := shift and $FFFFFFFF;
+            dec(i);
+          until (i < 0);
         end;
+        Trim;
+      end;
+  end;
+
+  // -------- shl (public) -----------------------------------------------
+  procedure TBigInt.shl_(index: Integer);
+  var
+    shift: Int64;
+    carry: Int64;
+    i: Integer;
+    tmpDigitCount: Integer;
+  begin
+    if (index > 0) then
+    begin
+      if ((index div 32) > 0) then
+      begin
+        tmpDigitCount := getDigitCount;
+        Digit[getDigitCount + (index div 32)] := 0;
+        for i := tmpDigitCount - 1 downto 0 do
+        begin
+          FDigits[(index div 32) + i] := FDigits[i];
+          FDigits[i] := 0;
+        end;
+      end;
       if ((index mod 32) > 0) then
       begin
         carry := 0;
-        i := getDigitCount - 1;
+        i := (index div 32);
+        tmpDigitCount := getDigitCount;
+        Digit[getDigitCount + (index div 32)] := 0;
         repeat
-          shift := (Int64(Digit[i]) shr (Int64(index) mod Int64(32))) or carry;
-          carry := (((Int64(Digit[i]) shl Int64(32)) shr (Int64(index)
-            mod Int64(32)))) and Int64($FFFFFFFF);
+          shift := (Int64(FDigits[i]) shl (Int64(index) mod 32)) or carry;
+          carry := ((Int64(FDigits[i]) shl (Int64(index) mod 32) shr 32)) and
+            Int64($FFFFFFFF);
           FDigits[i] := shift and $FFFFFFFF;
-          dec(i);
-        until (i < 0);
+          inc(i);
+        until (i = tmpDigitCount);
+        if (carry <> 0) then
+          Digit[i] := carry and $FFFFFFFF;
       end;
       Trim;
     end;
-end;
+  end;
 
-// -------- shl (public) -----------------------------------------------
-procedure TBigInt.shl_(index: Integer);
-var
-  shift: Int64;
-  carry: Int64;
-  i: Integer;
-  tmpDigitCount: Integer;
-begin
-  if (index > 0) then
+  function TBigInt.Concat(const Value: TBigInt): TBigInt;
+  var
+    i: Integer;
+    newSize: Integer;
+    newBigInt: TBigInt;
   begin
-    if ((index div 32) > 0) then
+    // Calcula el tamaño del nuevo objeto TBigInt
+    newSize := getDigitCount + Value.getDigitCount;
+
+    // Crea un nuevo objeto TBigInt con el tamaño adecuado
+    newBigInt := TBigInt.Create;
+    newBigInt.DigitCount := newSize;
+
+    // Copia los dígitos del primer TBigInt en el nuevo objeto
+    for i := 0 to getDigitCount - 1 do
     begin
-      tmpDigitCount := getDigitCount;
-      Digit[getDigitCount + (index div 32)] := 0;
-      for i := tmpDigitCount - 1 downto 0 do
-      begin
-        FDigits[(index div 32) + i] := FDigits[i];
-        FDigits[i] := 0;
-      end;
+      newBigInt.Digit[i] := Digit[i];
     end;
-    if ((index mod 32) > 0) then
+
+    // Calcula la posición inicial para copiar los dígitos del segundo TBigInt
+    i := getDigitCount;
+
+    // Copia los dígitos del segundo TBigInt en el nuevo objeto
+    for i := 0 to Value.getDigitCount - 1 do
     begin
-      carry := 0;
-      i := (index div 32);
-      tmpDigitCount := getDigitCount;
-      Digit[getDigitCount + (index div 32)] := 0;
-      repeat
-        shift := (Int64(FDigits[i]) shl (Int64(index) mod 32)) or carry;
-        carry := ((Int64(FDigits[i]) shl (Int64(index) mod 32) shr 32)) and
-          Int64($FFFFFFFF);
-        FDigits[i] := shift and $FFFFFFFF;
-        inc(i);
-      until (i = tmpDigitCount);
-      if (carry <> 0) then
-        Digit[i] := carry and $FFFFFFFF;
+      newBigInt.Digit[i + getDigitCount] := Value.Digit[i];
     end;
-    Trim;
+
+    Result := newBigInt;
   end;
-end;
 
-function TBigInt.Concat(const Value: TBigInt): TBigInt;
-var
-  i: Integer;
-  newSize: Integer;
-  newBigInt: TBigInt;
-begin
-  // Calcula el tamaño del nuevo objeto TBigInt
-  newSize := getDigitCount + Value.getDigitCount;
+  // -------------- Funciones auxiliares para Longword ---------------------------
 
-  // Crea un nuevo objeto TBigInt con el tamaño adecuado
-  newBigInt := TBigInt.Create;
-  newBigInt.DigitCount := newSize;
-
-  // Copia los dígitos del primer TBigInt en el nuevo objeto
-  for i := 0 to getDigitCount - 1 do
+  function TBigInt.ConcatenarBinario(a, b: LongWord): LongWord;
+  var
+    bitsCeroIzqB: Integer;
   begin
-    newBigInt.Digit[i] := Digit[i];
+    bitsCeroIzqB := leadingZeroBits(b);
+
+    // Desplazar a y b hacia la izquierda para eliminar los ceros y concatenar
+    Result := (a shl (32 - bitsCeroIzqB)) or b;
   end;
 
-  // Calcula la posición inicial para copiar los dígitos del segundo TBigInt
-  i := getDigitCount;
-
-  // Copia los dígitos del segundo TBigInt en el nuevo objeto
-  for i := 0 to Value.getDigitCount - 1 do
+  function TBigInt.BinarioPuroALongword(binarioPuro: string): LongWord;
+  var
+    i: Integer;
+    resultado: LongWord;
   begin
-    newBigInt.Digit[i + getDigitCount] := Value.Digit[i];
+    resultado := 0;
+    for i := Length(binarioPuro) downto 1 do
+    begin
+      if binarioPuro[i] = '1' then
+        resultado := resultado or (1 shl (Length(binarioPuro) - i));
+    end;
+    Result := resultado;
   end;
 
-  Result := newBigInt;
-end;
-
-// -------------- Funciones auxiliares para Longword ---------------------------
-
-function TBigInt.ConcatenarBinario(a, b: LongWord): LongWord;
-var
-  bitsCeroIzqB: Integer;
-begin
-  bitsCeroIzqB := leadingZeroBits(b);
-
-  // Desplazar a y b hacia la izquierda para eliminar los ceros y concatenar
-  Result := (a shl (32 - bitsCeroIzqB)) or b;
-end;
-
-function TBigInt.BinarioPuroALongword(binarioPuro: string): LongWord;
-var
-  i: Integer;
-  resultado: LongWord;
-begin
-  resultado := 0;
-  for i := Length(binarioPuro) downto 1 do
+  function TBigInt.LongwordABinarioPuro(numero: LongWord): string;
+  var
+    i: Integer;
+    resultado: string;
   begin
-    if binarioPuro[i] = '1' then
-      resultado := resultado or (1 shl (Length(binarioPuro) - i));
+    resultado := '';
+    for i := 31 downto 0 do
+    begin
+      if (numero and (1 shl i)) <> 0 then
+        resultado := resultado + '1'
+      else
+        resultado := resultado + '0';
+    end;
+    Result := resultado;
   end;
-  Result := resultado;
-end;
 
-function TBigInt.LongwordABinarioPuro(numero: LongWord): string;
-var
-  i: Integer;
-  resultado: string;
-begin
-  resultado := '';
-  for i := 31 downto 0 do
+  function ExtraerSubcadenaBits(LongWord: LongWord; inicio, longitud: Integer)
+    : LongWord;
   begin
-    if (numero and (1 shl i)) <> 0 then
-      resultado := resultado + '1'
-    else
-      resultado := resultado + '0';
+    // Luego, creamos una máscara para extraer la subcadena de bits
+    // La máscara es una secuencia de unos de longitud 'longitud' desplazada 'inicio' bits hacia la izquierda
+    Result := (LongWord shr inicio) and ((1 shl longitud) - 1);
   end;
-  Result := resultado;
-end;
-
-function ExtraerSubcadenaBits(LongWord: LongWord; inicio, longitud: Integer)
-  : LongWord;
-begin
-  // Luego, creamos una máscara para extraer la subcadena de bits
-  // La máscara es una secuencia de unos de longitud 'longitud' desplazada 'inicio' bits hacia la izquierda
-  Result := (LongWord shr inicio) and ((1 shl longitud) - 1);
-end;
 
 
-// -------------- Unit-(de)initialization --------------------------------------
+  // -------------- Unit-(de)initialization --------------------------------------
 
-procedure InitDivArray;
-var
-  i: Integer;
-begin
-  for i := 0 to Length(bufdvsr) - 1 do
-    bufdvsr[i] := TBigInt.Create(0);
-end;
+  procedure InitDivArray;
+  var
+    i: Integer;
+  begin
+    for i := 0 to Length(bufdvsr) - 1 do
+      bufdvsr[i] := TBigInt.Create(0);
+  end;
 
-procedure FreeDivArray;
-var
-  i: Integer;
-begin
-  for i := 0 to Length(bufdvsr) - 1 do
-    bufdvsr[i].Free;
-end;
+  procedure FreeDivArray;
+  var
+    i: Integer;
+  begin
+    for i := 0 to Length(bufdvsr) - 1 do
+      bufdvsr[i].Free;
+  end;
 
 initialization
 
