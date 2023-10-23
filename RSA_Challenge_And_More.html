@@ -70,7 +70,6 @@
 
     // Agregar dos posibles terminaciones para los factores a la lista de candidatos
     function agregarCandidatosDeFactores(factor1, factor2) {
-      console.log('Agregando posibles factores ', factor1, ' y ', factor2);
       // en orden
       let par = factor1 < factor2 ? [factor1, factor2] : [factor2, factor1];
       // si no existe el par en la lista agrégalo
@@ -143,20 +142,27 @@
     // Longitud estimada de la raíz cuadrada
     let longitudRaiz = Math.round(decimal.length / 2);
 
+    // Después de 200 iteraciones se eliminan todos los candidatos de dos dígitos,
+    // de 300 las de tres, así sucesivamente;
+    let iteraciones = 0;
+
 
     if (candidatos.length > 0) {
       do {
 
-        console.log('Los candidatos antes ', JSON.stringify(candidatos));
+        iteraciones++;
+
+        candidatos = candidatos.filter((element) => element[0].length > Math.trunc(iteraciones / 100) && element[1].length > Math.trunc(iteraciones / 100));
+
+        if (candidatos.length === 0 ) {
+          break;
+        }
+
         // Se toma en primer par
         let parEnAnalisis = [String(candidatos[0][0]), String(candidatos[0][1])];
 
-        console.log('Los elementos a analizar ', JSON.stringify(parEnAnalisis));
-
         // Se elimina de la lista
-        candidatos = candidatos.shift();
-
-        console.log('Los candidatos después ', JSON.stringify(candidatos));
+        candidatos.shift();
 
         // Se toma el índice del candidato más corto del par (como cadenas para incluir los ceros)
         let via = parEnAnalisis[0] < parEnAnalisis[1] ? 0 : 1;
@@ -178,13 +184,12 @@
           return propuesta2.toString();
         }
 
-
         // agregar todos los candidatos formados por los 10 dígitos a la izquierda incluido el cero
         for (let digito = 0; digito < 10; digito++) {
           // Se agregan ceros a la izquierda
           // Siempre que los últimos dígitos del producto coincidan
           let producto = BigInt(propuesta1 * propuesta2);
-          if (producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 2)) {
+          if (producto.length < 2 || producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 2)) {
             // Con al menos dos dígitos de error para el acarreo
             agregarCandidatosDeFactores(String(digito) + propuesta1.toString(), propuesta2.toString());
           } else if (producto === valorEnteroGrande) {
