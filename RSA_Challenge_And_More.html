@@ -65,7 +65,10 @@
     function existsCandidates(factor1, factor2) {
       // en orden
       let par = factor1 < factor2 ? [factor1, factor2] : [factor2, factor1];
-      return candidatos.some((element) => element[0] === par[0] && element[1] === par[1]);
+      return candidatos.some((element) => {
+          return element[0] === par[0] && element[1] === par[1];
+        },
+      );
     }
 
     // Agregar dos posibles terminaciones para los factores a la lista de candidatos
@@ -144,24 +147,21 @@
 
     // Después de 200 iteraciones se eliminan los candidatos de menos dos dígitos,
     // de 300 las de menos de tres, así sucesivamente;
-    let position = 0;
+    let iteraciones = 0;
 
-
-    if (position < candidatos.length) {
+    if (candidatos.length > 0) {
       do {
 
         console.log(JSON.stringify(candidatos));
 
-        if (candidatos.length === 0) {
-          break;
-        }
-
         // Se toma en primer par
-        let parEnAnalisis = [String(candidatos[position][0]), String(candidatos[position][1])];
-        position++;
-
-        // Se elimina de la lista
+        let parEnAnalisis = [String(candidatos[0][0]), String(candidatos[0][1])];
         candidatos.shift();
+
+        iteraciones++;
+        candidatos = candidatos.filter(elementos => {
+          return elementos[0].length > Math.trunc(iteraciones / 100) && elementos[1].length < Math.trunc(iteraciones / 100);
+        });
 
         // Se toma el índice del candidato más corto del par (como cadenas para incluir los ceros)
         let via = parEnAnalisis[0] < parEnAnalisis[1] ? 0 : 1;
@@ -189,14 +189,14 @@
           // Siempre que los últimos dígitos del producto coincidan
           let producto = BigInt(propuesta1 * propuesta2);
           if (producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 2)) {
-            // Con al menos dos dígitos de error para el acarreo,
-            // y se concatenan con su formato actual
+            // Con al menos dos dígitos de error para el acarreo y se concatenan con su formato actual
             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
+            agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
           } else if (producto === valorEnteroGrande) {
             return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
           }
         }
-      } while (position < candidatos.length);
+      } while (candidatos.length > 0);
     }
 
     // devolver la entrada, no se encontraron factores.
