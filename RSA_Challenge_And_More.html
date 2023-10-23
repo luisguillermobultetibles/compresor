@@ -72,6 +72,9 @@
     }
 
     let raizCuadrada = sqrt(valorEnteroGrande);
+    if (raizCuadrada >= 2 && valorEnteroGrande % raizCuadrada === 0n) {
+      return encontrarMenorFactorPrimo(raizCuadrada);
+    }
 
     // Agregar dos posibles terminaciones para los factores a la lista de candidatos
     function agregarCandidatosDeFactores(factor1, factor2) {
