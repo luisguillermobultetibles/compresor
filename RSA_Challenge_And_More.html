@@ -160,7 +160,7 @@
 
         iteraciones++;
         candidatos = candidatos.filter(elementos => {
-          return elementos[0].length > Math.trunc(iteraciones / 100) && elementos[1].length < Math.trunc(iteraciones / 100);
+          return elementos[0].length > Math.trunc(iteraciones / 100) && elementos[1].length > Math.trunc(iteraciones / 100);
         });
 
         // Se toma el índice del candidato más corto del par (como cadenas para incluir los ceros)
