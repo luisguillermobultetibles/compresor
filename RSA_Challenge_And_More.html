@@ -25,18 +25,6 @@
   // Must return RSA-250 factor: '64135289477071580278790190170577389084825014742943447208116859632024532344630238623598752668347708737661925585694639798853367',
   //                         and '3337202759497815655622601060535511422794076034476755466678452098702384172921'.
   //
-  // this values was factored in February 2020 by Fabrice Boudot, Pierrick Gaudry,
-  // Aurore Guillevic, Nadia Heninger, Emmanuel Thomé, and Paul Zimmermann. The announcement of the factorization occurred on February 28.
-  // The factorisation of RSA-250 utilised approximately 2700 CPU core-years, using a 2.1 GHz Intel Xeon Gold 6130 CPU as a reference.
-  // The computation was performed with the Number Field Sieve algorithm, using the open source CADO-NFS software.
-  // The team dedicated the computation to Peter Montgomery, an American mathematician known for his contributions to computational
-  // number theory and cryptography who died on February 18, 2020 and had contributed to factoring RSA-768.
-  // https://web.archive.org/web/20200228234716/https://lists.gforge.inria.fr/pipermail/cado-nfs-discuss/2020-February/001166.html
-  // "[Cado-NFS-discuss] Factorization of RSA-250". Archived from the original on 2020-02-28. Retrieved 2020-02-28.
-  //
-  // Según:
-  // fhttps://es.wikipedia.org/wiki/N%C3%BAmeros_RSA
-  //
   // then try to solve ($200 000.00 premium) RSA-2048 = '25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784406918290641249515082189298559149176184502808489120072844992687392807287776735971418347270261896375014971824691165077613379859095700097330459748808428401797429100642458691817195118746121515172654632282216869987549182422433637259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133844143603833904414952634432190114657544454178424020924616515723350778707749817125772467962926386356373289912154831438167899885040445364023527381951378636564391212010397122822120720357'
 
   function leerAreaDeTexto() {
@@ -162,9 +150,10 @@
     // Longitud estimada de la raíz cuadrada
     let longitudRaiz = Math.round(decimal.length / 2);
 
+    // Disabled by author
     // Después de 200 iteraciones se eliminan los candidatos de menos dos dígitos,
     // de 300 las de menos de tres, así sucesivamente;
-    let iteraciones = 0;
+    // let iteraciones = 0;
 
     if (candidatos.length > 0) {
       do {
@@ -175,10 +164,11 @@
         let parEnAnalisis = [String(candidatos[0][0]), String(candidatos[0][1])];
         candidatos.shift();
 
-        iteraciones++;
-        candidatos = candidatos.filter(elementos => {
-          return elementos[0].length > Math.trunc(iteraciones / 100) && elementos[1].length > Math.trunc(iteraciones / 100);
-        });
+        // Disabled by author
+        // iteraciones++;
+        // candidatos = candidatos.filter(elementos => {
+        //   return elementos[0].length > Math.trunc(iteraciones / 100) && elementos[1].length > Math.trunc(iteraciones / 100);
+        // });
 
         // Se toma el índice del candidato más corto del par (como cadenas para incluir los ceros)
         let via = parEnAnalisis[0] < parEnAnalisis[1] ? 0 : 1;
@@ -208,7 +198,8 @@
           if (producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 3)) {
             // Con al menos dos dígitos de error para el acarreo y se concatenan con su formato actual
             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
-            //agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
+            // Disabled by author
+            // agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
           } else if (producto === valorEnteroGrande) {
             return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
           }
