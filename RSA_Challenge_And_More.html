@@ -71,12 +71,14 @@
       );
     }
 
+    let raizCuadrada = sqrt(valorEnteroGrande);
+
     // Agregar dos posibles terminaciones para los factores a la lista de candidatos
     function agregarCandidatosDeFactores(factor1, factor2) {
       // en orden
       let par = factor1 < factor2 ? [factor1, factor2] : [factor2, factor1];
       // si no existe el par en la lista agrégalo
-      if (!existsCandidates(par)) {
+      if (!existsCandidates(par) && BigInt(factor1) <= raizCuadrada && BigInt(factor1) <= raizCuadrada) {
         candidatos.push(par);
       }
     }
@@ -142,8 +144,27 @@
     // del margen de acarreo, hasta que se encuentre uno que divida o se exceda el
     // límite de la búsqueda del primer factor primo.
 
-    // Longitud estimada de la raíz cuadrada
-    let longitudRaiz = Math.round(decimal.length / 2);
+    // Raiz cuadrada
+    // from https://stackoverflow.com/questions/53683995/javascript-big-integer-square-root
+    function sqrt(value) {
+      if (value < 0n) {
+        throw 'square root of negative numbers is not supported';
+      }
+
+      if (value < 2n) {
+        return value;
+      }
+
+      function newtonIteration(n, x0) {
+        const x1 = ((n / x0) + x0) >> 1n;
+        if (x0 === x1 || x0 === (x1 - 1n)) {
+          return x0;
+        }
+        return newtonIteration(n, x1);
+      }
+
+      return newtonIteration(value, 1n);
+    }
 
     // Después de 200 iteraciones se eliminan los candidatos de menos dos dígitos,
     // de 300 las de menos de tres, así sucesivamente;
@@ -171,7 +192,7 @@
         let propuesta2 = BigInt(parEnAnalisis[1 - via]);
 
         // Se desecha la propuesta si el tamaño excede la longitud de la raíz cuadrada
-        if (parEnAnalisis[via].length > longitudRaiz || parEnAnalisis[1 - via].length > longitudRaiz) {
+        if (propuesta1 > raizCuadrada || propuesta2 > raizCuadrada) {
           continue;
         }
 
