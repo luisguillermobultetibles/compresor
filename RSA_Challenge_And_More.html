@@ -78,7 +78,7 @@
       // en orden
       let par = factor1 < factor2 ? [factor1, factor2] : [factor2, factor1];
       // si no existe el par en la lista agrégalo
-      if (!existsCandidates(par) && BigInt(factor1) <= raizCuadrada && BigInt(factor1) <= raizCuadrada) {
+      if (!existsCandidates(par) && factor1.length <= raizCuadrada.toString().length && factor1.length <= raizCuadrada.toString().length) {
         candidatos.push(par);
       }
     }
