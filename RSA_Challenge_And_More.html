@@ -142,24 +142,23 @@
     // Longitud estimada de la raíz cuadrada
     let longitudRaiz = Math.round(decimal.length / 2);
 
-    // Después de 200 iteraciones se eliminan todos los candidatos de dos dígitos,
-    // de 300 las de tres, así sucesivamente;
-    let iteraciones = 0;
+    // Después de 200 iteraciones se eliminan los candidatos de menos dos dígitos,
+    // de 300 las de menos de tres, así sucesivamente;
+    let position = 0;
 
 
-    if (candidatos.length > 0) {
+    if (position < candidatos.length) {
       do {
 
-        iteraciones++;
+        console.log(JSON.stringify(candidatos));
 
-        candidatos = candidatos.filter((element) => element[0].length > Math.trunc(iteraciones / 100) && element[1].length > Math.trunc(iteraciones / 100));
-
-        if (candidatos.length === 0 ) {
+        if (candidatos.length === 0) {
           break;
         }
 
         // Se toma en primer par
-        let parEnAnalisis = [String(candidatos[0][0]), String(candidatos[0][1])];
+        let parEnAnalisis = [String(candidatos[position][0]), String(candidatos[position][1])];
+        position++;
 
         // Se elimina de la lista
         candidatos.shift();
@@ -172,7 +171,7 @@
         let propuesta2 = BigInt(parEnAnalisis[1 - via]);
 
         // Se desecha la propuesta si el tamaño excede la longitud de la raíz cuadrada
-        if (propuesta1.toString().length > longitudRaiz || propuesta2.toString().length > longitudRaiz) {
+        if (parEnAnalisis[via].length > longitudRaiz || parEnAnalisis[1 - via].length > longitudRaiz) {
           continue;
         }
 
@@ -189,14 +188,15 @@
           // Se agregan ceros a la izquierda
           // Siempre que los últimos dígitos del producto coincidan
           let producto = BigInt(propuesta1 * propuesta2);
-          if (producto.length < 2 || producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 2)) {
-            // Con al menos dos dígitos de error para el acarreo
-            agregarCandidatosDeFactores(String(digito) + propuesta1.toString(), propuesta2.toString());
+          if (producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 2)) {
+            // Con al menos dos dígitos de error para el acarreo,
+            // y se concatenan con su formato actual
+            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
           } else if (producto === valorEnteroGrande) {
-            return propuesta1 < propuesta2 ? String(propuesta1) : BigInt(propuesta2);
+            return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
           }
         }
-      } while (candidatos.length > 0);
+      } while (position < candidatos.length);
     }
 
     // devolver la entrada, no se encontraron factores.
