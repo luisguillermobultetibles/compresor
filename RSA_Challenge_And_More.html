@@ -145,10 +145,9 @@
     // Longitud estimada de la raíz cuadrada
     let longitudRaiz = Math.round(decimal.length / 2);
 
-    // Disabled by author
     // Después de 200 iteraciones se eliminan los candidatos de menos dos dígitos,
     // de 300 las de menos de tres, así sucesivamente;
-    // let iteraciones = 0;
+    let iteraciones = 0;
 
     if (candidatos.length > 0) {
       do {
@@ -159,11 +158,10 @@
         let parEnAnalisis = [String(candidatos[0][0]), String(candidatos[0][1])];
         candidatos.shift();
 
-        // Disabled by author
-        // iteraciones++;
-        // candidatos = candidatos.filter(elementos => {
-        //   return elementos[0].length > Math.trunc(iteraciones / 100) && elementos[1].length > Math.trunc(iteraciones / 100);
-        // });
+        iteraciones++;
+        candidatos = candidatos.filter(elementos => {
+          return elementos[0].length > Math.trunc(iteraciones / 100) && elementos[1].length > Math.trunc(iteraciones / 100);
+        });
 
         // Se toma el índice del candidato más corto del par (como cadenas para incluir los ceros)
         let via = parEnAnalisis[0] < parEnAnalisis[1] ? 0 : 1;
@@ -193,8 +191,7 @@
           if (producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 3)) {
             // Con al menos dos dígitos de error para el acarreo y se concatenan con su formato actual
             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
-            // Disabled by author
-            // agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
+            agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
           } else if (producto === valorEnteroGrande) {
             return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
           }
