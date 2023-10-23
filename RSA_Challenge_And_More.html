@@ -5,14 +5,14 @@
     <title>Factorización de números naturales muy grandes.</title>
 </head>
 <body>
-<textarea id="textarea1">123456789</textarea>
+<textarea id="textarea1">3937</textarea>
 <script>
 
   // Factorización "hacker" de númeroe naturales grandes por algoritmo de Branch and Exchange.
   // Copyright ®Luis Guillermo Bultet Ibles, el Domingo 22 de octubre de 2023; 11:20 AM
   // (pendiente de depuración y corrección de errores sintácticos, "por favor la vida, que no vale sin decoro")
-  // Todos los derechos reservados, por favor contácmeme personalmente para cualquier uso comercial.
-  // Uso educativo autorizado.  
+  // Todos los derechos reservados, por favor contáctenos personalmente para cualquier uso comercial.
+  // Uso académico autorizado.
   // Cuba.
 
   // Entrada y salida
@@ -20,18 +20,18 @@
   let textArea1 = document.getElementById('textarea1');
 
   function leerAreaDeTexto() {
-    return textArea1.textContent;
+    return textArea1.value;
   }
 
   function imprimirAreaDeTexto(s) {
-    textArea1.textContent = String(s);
+    textArea1.value = String(s);
   }
 
   // Lógica para factorización de un número tan grande como se quiera o aguante la memoria.
 
   function encontrarMenorFactorPrimo(decimal) {
     decimal = String(decimal);
-    let longVersion = BigInt(decimal);
+    let valorEnteroGrande = BigInt(decimal);
 
     // Extraer los n últimos dígitos de X
     function nUtimosDigitosDeX(n, X) {
@@ -43,8 +43,9 @@
       let resultado = 0;
       for (let i = 1; i < Math.min(X.length, Y.length); i++) {
         if (X[X.length - i] === Y[Y.length - i]) {
-          let par = [nUtimosDigitosDeX(i, X), nUtimosDigitosDeX(i, Y)];
-          resultado = par[0] === par[1] ? i : resultado;
+          resultado++;
+        } else {
+          break;
         }
       }
       return resultado;
@@ -54,7 +55,7 @@
 
     let candidatos = [];
 
-    if (longVersion < 1n) {
+    if (valorEnteroGrande < 1n) {
       return resultado; // devolver la entrada, pasa menor que dos y hasta tres, pero déjalo así para legibilidad
     }
 
@@ -68,14 +69,14 @@
     function agregarCandidatosDeFactores(factor1, factor2) {
       // en orden
       let par = BigInt(factor1) < BigInt(factor2) ? [factor1, factor2] : [factor2, factor1];
-      // si no existe el par en la lísta agrégalo
+      // si no existe el par en la lista agrégalo
       if (!existsCandidates(par)) {
-        candidatos.push();
+        candidatos.push(par);
       }
     }
 
     // De acuerdo a la terminación del número primo a factorizar solo tenemos algunas posibilidades
-    let ultimoDigito = nUtimosDigitosDeX(decimal, 1);
+    let ultimoDigito = nUtimosDigitosDeX(1, decimal);
 
     switch (ultimoDigito) {
       case '0': {
@@ -84,9 +85,9 @@
       }
       case '1': {
         // Una terminación 1, solamente es posible por el producto de las terminaciones 1 x 1, 3 x 7 y 9 x 9
-        agregarCandidatosDeFactores(1n, 1n);
-        agregarCandidatosDeFactores(3n, 7n);
-        agregarCandidatosDeFactores(9n, 9n);
+        agregarCandidatosDeFactores('1', '1');
+        agregarCandidatosDeFactores('3', '7');
+        agregarCandidatosDeFactores('9', '9');
         break;
       }
       case '2': {
@@ -95,8 +96,8 @@
       }
       case '3': {
         // Una terminación 3, solamente es posible por el producto de las terminaciones 1 x 3 y 7 x 9
-        agregarCandidatosDeFactores(1n, 3n);
-        agregarCandidatosDeFactores(7n, 9n);
+        agregarCandidatosDeFactores('1', '3');
+        agregarCandidatosDeFactores('7', '9');
         break;
       }
       case '4': {
@@ -113,8 +114,8 @@
       }
       case '7': {
         // Una terminación 7, solamente es posible por el producto de las terminaciones 1 x 7 y 3 x 9
-        agregarCandidatosDeFactores(1n, 7n);
-        agregarCandidatosDeFactores(3n, 9n);
+        agregarCandidatosDeFactores('1', '7');
+        agregarCandidatosDeFactores('3', '9');
         break;
       }
       case '8': {
@@ -123,8 +124,9 @@
       }
       case '9': {
         // Una terminación 9, solamente es posible por el producto de las terminaciones 1 x 9 y 3 x 3
-        agregarCandidatosDeFactores(1n, 9n);
-        agregarCandidatosDeFactores(3n, 3n);
+        agregarCandidatosDeFactores('1', '9');
+        agregarCandidatosDeFactores('3', '3');
+        agregarCandidatosDeFactores('7', '7');
         break;
       }
     }
@@ -134,46 +136,51 @@
     // del margen de acarreo, hasta que se encuentre uno que divida o se exceda el
     // límite de la búsqueda del primer factor primo.
 
-    // Se toma la mitad del número decimal mas 1 como el límite de búsqueda,
-    // Se asume cercano por la izquierda a la raíz.
-    let mitadLongitud = Math.trunc(decimal.length / 2) + 1;
-    mitadLongitud = mitadLongitud > decimal.length ? decimal.length : mitadLongitud;
+    // Longitud estimada de la raíz cuadrada
+    let longitudRaiz = Math.round(decimal.length / 2);
 
     if (candidatos.length > 0) {
       do {
 
         // Se toma en primer par
-        let parEnAnalisis = [Stcandidatos[0][0], candidatos[0][1]];
+        let parEnAnalisis = [String(candidatos[0][0]), String(candidatos[0][1])];
 
         // Se elimina de la lista
         candidatos = candidatos.shift();
 
-        // Si los candidatos exceden el tamaño estimado para la raiz, simplemente se elimina la rama
-        if (parEnAnalisis[0].length > mitadLongitud && parEnAnalisis[1].length > mitadLongitud) {
+        // Se toma el índice del candidato más corto del par (como cadenas para incluir los ceros)
+        let via = parEnAnalisis[0] < parEnAnalisis[1] ? 0 : 1;
+
+        // Se convierten las propuestas a enteros grandes, para eliminar ceros a la izquierda
+        let propuesta1 = BigInt(parEnAnalisis[via]);
+        let propuesta2 = BigInt(parEnAnalisis[1 - via]);
+
+        // Se desecha la propuesta si el tamaño excede la longitud de la raíz cuadrada
+        if (propuesta1.toString().length > longitudRaiz || propuesta2.toString().length > longitudRaiz) {
           continue;
         }
 
-        // Se toma el índice del menor candidato del par
-        let via = BigInt(parEnAnalisis[0]) < BigInt(parEnAnalisis[1]) ? 0 : 1;
-
         // Se prueba si es una semilla ha crecido correctamente y ya es un divisor
         // Si se agregó un cero a la izquierda, no se vuele a chequear.
-        if (parEnAnalisis[via][0] !== '0' && BigInt(parEnAnalisis[via]) !== 1n && longVersion % BigInt(parEnAnalisis[via]) === 0n) {
-          return BigInt(parEnAnalisis[via]).toString();
-        } else if (parEnAnalisis[1 - via][0] !== '0' && BigInt(parEnAnalisis[1 - via]) !== 1n && longVersion % BigInt(parEnAnalisis[1 - via]) === 0n) {
-          return BigInt(parEnAnalisis[1 - via]).toString();
+        if (propuesta1 >= 2n && valorEnteroGrande % propuesta1 === 0n) {
+          return propuesta1.toString();
+        } else if (propuesta2 >= 2n && valorEnteroGrande % propuesta2 === 0n) {
+          return propuesta2.toString();
         }
+
+        console.log('Propuesta 1', propuesta1);
+        console.log('Propuesta 2', propuesta2);
 
         // agregar todos los candidatos formados por los 10 dígitos a la izquierda incluido el cero
         for (let digito = 0; digito < 10; digito++) {
           // Se agregan ceros a la izquierda
-          let propuesta1 = parEnAnalisis[via];
-          let propuesta2 = parEnAnalisis[1 - via];
           // Siempre que los últimos dígitos del producto coincidan
-          let producto = BigInt(BigInt(propuesta1) * BigInt(propuesta2)).toString();
-          if (coincidenciasAlFinal(decimal, producto) <= (producto.length - 2)) {
+          let producto = BigInt(propuesta1 * propuesta2);
+          if (producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.length - 2)) {
             // Con al menos dos dígitos de error para el acarreo
-            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
+            agregarCandidatosDeFactores(String(digito) + propuesta1.toString(), propuesta2.toString());
+          } else if (producto === valorEnteroGrande) {
+            return propuesta1 < propuesta2 ? propuesta1 : propuesta2;
           }
         }
       } while (candidatos.length > 0);
@@ -184,10 +191,9 @@
   }
 
   // Armar una salida elegante (por el momento pasajera), para la factorización del número.
-  // Armar una salida elegante (por el momento pasajera), para la factorización del número.
   function factorizacion(x) {
     let resultado;
-    let cocienteResidual = BigInt(x);
+    let cocienteResidual = BigInt(String(x).trim());
     if (cocienteResidual === 0n || cocienteResidual === 1n) {
       resultado = cocienteResidual.toString();
     } else {
@@ -195,17 +201,17 @@
       let menorFactorPrimo = 2n; // to enter
       do {
         menorFactorPrimo = encontrarMenorFactorPrimo(cocienteResidual);
-        if (menorFactorPrimo >= 2n) {
-          resultado += ' * ' + menorFactorPrimo.toString();
+        if (BigInt(menorFactorPrimo) >= 2n) {
+          resultado += ' x ' + menorFactorPrimo.toString();
           cocienteResidual /= BigInt(menorFactorPrimo);
         }
-      } while (menorFactorPrimo >= 2n);
+      } while (BigInt(menorFactorPrimo) >= 2n);
     }
     return resultado;
   }
 
 
 </script>
-<button onclick="imprimirAreaDeTexto(factorizacion(leerAreaDeTexto()));">Factorizar</button>
+<button onclick="imprimirAreaDeTexto(leerAreaDeTexto() + ' = ' + factorizacion(leerAreaDeTexto()));">Factorizar</button>
 </body>
 </html>
