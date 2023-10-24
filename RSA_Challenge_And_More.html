@@ -110,10 +110,10 @@
       if (!existsCandidates(par) &&
         factor1.length <= raizCuadrada.toString().length &&
         factor2.length <= raizCuadrada.toString().length &&
-        BigInt(factor1) ** 2n < raizCuadrada &&
-        BigInt(factor2) ** 2n < raizCuadrada) {
+        BigInt(factor1) ** 2n <= raizCuadrada &&
+        BigInt(factor2) ** 2n <= raizCuadrada) {
         // además
-        if (coincidenciasAlFinal(decimal, (BigInt(factor1)*BigInt(factor2)).toString()) >= (factor1.length + factor2.length - 3)) {
+        if (coincidenciasAlFinal(decimal, (BigInt(factor1) * BigInt(factor2)).toString()) >= (factor1.length + factor2.length - 3)) {
           // Con al menos dos o tres (4?) dígitos de error para el acarreo y se concatenan con su formato actual
           candidatos.push([factor1, factor2]);
         }
