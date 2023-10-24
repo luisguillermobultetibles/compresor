@@ -11,6 +11,7 @@
   // Factorización "hacker" de números naturales grandes por algoritmo de Branch and Exchange.
   // Copyright ®Luis Guillermo Bultet Ibles, el lunes 23 de octubre de 2023; 11:20 AM
   // En fase de depuración y puesta a punto.
+  //
   // Todos los derechos reservados, por favor contáctenos personalmente para cualquier uso comercial.
   // Uso académico autorizado.
   // Cuba.
@@ -111,7 +112,11 @@
         factor1.length <= raizCuadrada.toString().length &&
         BigInt(factor1) ** 2n < raizCuadrada &&
         BigInt(factor2) ** 2n < raizCuadrada) {
-        candidatos.push(par);
+        // además
+        if (coincidenciasAlFinal(decimal, (BigInt(factor1)*BigInt(factor2)).toString()) >= (factor1.length + factor2.length - 3)) {
+          // Con al menos dos o tres (4?) dígitos de error para el acarreo y se concatenan con su formato actual
+          candidatos.push([factor1, factor2]);
+        }
       }
     }
 
@@ -218,11 +223,11 @@
           // Se agregan ceros a la izquierda
           // Siempre que los últimos dígitos del producto coincidan
           let producto = BigInt(propuesta1 * propuesta2);
-          if (coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 2)) {
-            // Con al menos dos dígitos de error para el acarreo y se concatenan con su formato actual
-            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
-          } else if (producto === valorEnteroGrande) {
+          if (producto === valorEnteroGrande) {
             return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
+          } else {
+            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
+            agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
           }
         }
       } while (candidatos.length > 0);
