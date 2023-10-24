@@ -105,6 +105,7 @@
     // Agregar dos posibles terminaciones para los factores a la lista de candidatos
 
     let producto = 1;
+
     function agregarCandidatosDeFactores(factor1, factor2) {
       // en orden
       let par = factor1 < factor2 ? [factor1, factor2] : [factor2, factor1];
@@ -230,7 +231,11 @@
           } else if (producto < valorEnteroGrande) {
             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
             agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
-             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
+            // el último intento, hasta mañana. martes 24 de octubre de 2023. Cuba.
+            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
+            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(9 - digito) + parEnAnalisis[1 - via]);
+            agregarCandidatosDeFactores(String(9 - digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
+            agregarCandidatosDeFactores(String(9 - digito) + parEnAnalisis[via], String(9 - digito) + parEnAnalisis[1 - via]);
           }
         }
       } while (candidatos.length > 0);
