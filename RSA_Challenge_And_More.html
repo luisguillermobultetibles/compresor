@@ -21,6 +21,7 @@
 
   // Try to solve ($200 000.00 premium) RSA-2048
   // textArea1.value = '25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784406918290641249515082189298559149176184502808489120072844992687392807287776735971418347270261896375014971824691165077613379859095700097330459748808428401797429100642458691817195118746121515172654632282216869987549182422433637259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133844143603833904414952634432190114657544454178424020924616515723350778707749817125772467962926386356373289912154831438167899885040445364023527381951378636564391212010397122822120720357';
+
   // By the way, begin with this (should return: 465675465116607065549 x 4892055594575155744537):
   textArea1.value = '2278110264380085376170666039415109857655813';
 
@@ -217,10 +218,9 @@
           // Se agregan ceros a la izquierda
           // Siempre que los últimos dígitos del producto coincidan
           let producto = BigInt(propuesta1 * propuesta2);
-          if (producto < valorEnteroGrande && coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 2)) {
+          if (coincidenciasAlFinal(decimal, producto.toString()) >= (producto.toString().length - 2)) {
             // Con al menos dos dígitos de error para el acarreo y se concatenan con su formato actual
             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
-            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
           } else if (producto === valorEnteroGrande) {
             return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
           }
@@ -251,7 +251,6 @@
     }
     return resultado;
   }
-
 
 </script>
 <button onclick="imprimirAreaDeTexto(leerAreaDeTexto() + ' = ' + factorizacion(leerAreaDeTexto()));">
