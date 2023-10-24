@@ -103,6 +103,8 @@
     }
 
     // Agregar dos posibles terminaciones para los factores a la lista de candidatos
+
+    let producto = 1;
     function agregarCandidatosDeFactores(factor1, factor2) {
       // en orden
       let par = factor1 < factor2 ? [factor1, factor2] : [factor2, factor1];
@@ -113,7 +115,7 @@
         BigInt(factor1) ** 2n <= raizCuadrada &&
         BigInt(factor2) ** 2n <= raizCuadrada) {
         // además
-        if (coincidenciasAlFinal(decimal, (BigInt(factor1) * BigInt(factor2)).toString()) >= (factor1.length + factor2.length - 3)) {
+        if (coincidenciasAlFinal(decimal, producto.toString()) >= (factor1.length + factor2.length - 3)) {
           // Con al menos dos o tres (4?) dígitos de error para el acarreo y se concatenan con su formato actual
           candidatos.push([factor1, factor2]);
         }
@@ -222,12 +224,13 @@
         for (let digito = 0; digito < 10; digito++) {
           // Se agregan ceros a la izquierda
           // Siempre que los últimos dígitos del producto coincidan
-          let producto = BigInt(propuesta1 * propuesta2);
+          producto = BigInt(propuesta1 * propuesta2);
           if (producto === valorEnteroGrande) {
             return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
-          } else {
+          } else if (producto < valorEnteroGrande) {
             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
             agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
+            // agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
           }
         }
       } while (candidatos.length > 0);
