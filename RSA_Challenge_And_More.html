@@ -230,7 +230,7 @@
           } else if (producto < valorEnteroGrande) {
             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
             agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
-            // agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
+             agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
           }
         }
       } while (candidatos.length > 0);
