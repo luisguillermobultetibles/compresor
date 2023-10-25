@@ -37,7 +37,8 @@
   // Lógica para factorización de un número tan grande como se quiera o aguante la memoria.
 
   function encontrarMenorFactorPrimo(decimal) {
-    decimal = String(decimal);
+    decimal = String(decimal).trim();
+
     let valorEnteroGrande = BigInt(decimal);
 
     // Extraer los n últimos dígitos de X
@@ -110,13 +111,9 @@
       // en orden
       let par = factor1 < factor2 ? [factor1, factor2] : [factor2, factor1];
       // si no existe el par en la lista agrégalo (si no exceden la raíz cuadrada)
-      if (!existsCandidates(par) &&
-        factor1.length <= raizCuadrada.toString().length &&
-        factor2.length <= raizCuadrada.toString().length &&
-        BigInt(factor1) ** 2n <= raizCuadrada &&
-        BigInt(factor2) ** 2n <= raizCuadrada) {
+      if (!existsCandidates(par) && factor1.length + factor2.length <= raizCuadrada.toString().length) {
         // además
-        if (coincidenciasAlFinal(decimal, producto.toString()) >= (factor1.length + factor2.length - 3)) {
+        if (coincidenciasAlFinal(decimal, producto.toString()) >= Math.max(factor1.length, factor2.length) - 2) {
           // Con al menos dos o tres (4?) dígitos de error para el acarreo y se concatenan con su formato actual
           candidatos.push([factor1, factor2]);
         }
@@ -193,12 +190,12 @@
 
         // Se toma en primer par
         let parEnAnalisis = [String(candidatos[0][0]), String(candidatos[0][1])];
-        console.log(`Analizando ${JSON.stringify(parEnAnalisis)}, de ${candidatos.length}.`);
+        console.log(`Analizando ${JSON.stringify(parEnAnalisis)}, de ${candidatos.length} (multiplican ${BigInt(candidatos[0][0]) * BigInt(candidatos[0][1])}).`);
         candidatos.shift();
 
         // iteraciones++;
         // candidatos = candidatos.filter(elementos => {
-        //   return elementos[0].length > Math.trunc(iteraciones / 100) && elementos[1].length > Math.trunc(iteraciones / 100);
+        //   return elementos[0].length > 1 + Math.trunc(iteraciones / 1000);
         // });
 
         // Se toma el índice del candidato más corto del par (como cadenas para incluir los ceros)
@@ -221,24 +218,21 @@
           return propuesta2.toString();
         }
 
-        // agregar todos los candidatos formados por los 10 dígitos a la izquierda incluido el cero
-        for (let digito = 0; digito < 10; digito++) {
-          // Se agregan ceros a la izquierda
-          // Siempre que los últimos dígitos del producto coincidan
-          producto = BigInt(propuesta1 * propuesta2);
-          if (producto === valorEnteroGrande) {
-            return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
-          } else if (producto < valorEnteroGrande) {
-            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], parEnAnalisis[1 - via]);
-            agregarCandidatosDeFactores(parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
-            // el último intento, hasta mañana. martes 24 de octubre de 2023. Cuba.
-            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
-            agregarCandidatosDeFactores(String(digito) + parEnAnalisis[via], String(9 - digito) + parEnAnalisis[1 - via]);
-            agregarCandidatosDeFactores(String(9 - digito) + parEnAnalisis[via], String(digito) + parEnAnalisis[1 - via]);
-            agregarCandidatosDeFactores(String(9 - digito) + parEnAnalisis[via], String(9 - digito) + parEnAnalisis[1 - via]);
+        // Se agregan ceros a la izquierda
+        // Siempre que los últimos dígitos del producto coincidan
+        producto = BigInt(propuesta1 * propuesta2);
+        if (producto === valorEnteroGrande) {
+          return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
+        } else if (producto < valorEnteroGrande) {
+          // agregar todos los candidatos formados por los 10 dígitos a la izquierda incluido el cero
+          for (let digito1 = 0; digito1 < 10; digito1++) {
+            for (let digito2 = 0; digito2 < 10; digito2++) {
+              agregarCandidatosDeFactores(String(digito1) + parEnAnalisis[via], String(digito2) + parEnAnalisis[1 - via]);
+            }
           }
         }
-      } while (candidatos.length > 0);
+      }
+      while (candidatos.length > 0) ;
     }
 
     // devolver la entrada, no se encontraron factores.
