@@ -193,10 +193,10 @@
         console.log(`Analizando ${JSON.stringify(parEnAnalisis)}, de ${candidatos.length} (multiplican ${BigInt(candidatos[0][0]) * BigInt(candidatos[0][1])}).`);
         candidatos.shift();
 
-        // iteraciones++;
-        // candidatos = candidatos.filter(elementos => {
-        //   return elementos[0].length > 1 + Math.trunc(iteraciones / 1000);
-        // });
+        iteraciones++;
+        candidatos = candidatos.filter(elementos => {
+          return Math.min(elementos[0].length, elementos[1].length) > Math.round(candidatos.length / 10000) + 1;
+        });
 
         // Se toma el índice del candidato más corto del par (como cadenas para incluir los ceros)
         let via = parEnAnalisis[0].length < parEnAnalisis[1].length ? 0 : 1;
@@ -229,6 +229,7 @@
             for (let digito2 = 0; digito2 < 10; digito2++) {
               agregarCandidatosDeFactores(String(digito1) + parEnAnalisis[via], String(digito2) + parEnAnalisis[1 - via]);
             }
+            agregarCandidatosDeFactores(String(digito1) + parEnAnalisis[via], parEnAnalisis[1 - via]);
           }
         }
       }
