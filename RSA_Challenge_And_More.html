@@ -79,8 +79,22 @@
     return result;
   }
 
+  // Raíz enésima
+  // from https://stackoverflow.com/questions/64190185/how-do-i-extract-the-nth-root-of-a-bigint-in-javascript
+  function root(n, base) {
+    // if (n % 2n === 0) return sqrt(root(n / 2, base)); // se degrada la precision en enteros
+    let result = base + 1n;
+    const k1 = n - 1n;
+    let u = base;
+    while (u < result) {
+      result = u;
+      u = ((u * k1) + base / pow(u, k1)) / n;
+    }
+    return result;
+  }
+
   // Resto de la division base^exp mod m
-  function modpow(base, exp, m) {
+  function slowModpow(base, exp, m) {
     let result = 1n;
     while (exp > 0n) {
       if (exp % 2n !== 0n) {
@@ -92,6 +106,35 @@
     return result;
   }
 
+  function fastModpow(base, exp, m) {
+    if (m === 1n) return 0n;
+    if (exp === 0n) return 1n % m;
+    if (base === 0n) return 0n;
+    if ((exp === 1n) && (m !== 0n)) return base % m;
+    if (base * exp < 100n) { // fast
+      return pow(base, exp) % m;
+    } else if (primes.some((them) => exp % them)) {
+      let wichOne = primes.find((one) => exp % one === 0n);
+      exp = exp / wichOne;
+      base = pow(base, wichOne);
+      return modpow(base, exp, m);
+    } else {
+      exp = exp - 1n;
+      return base * modpow(base, exp, m) % m;
+    }
+  }
+
+  // Use this global variable as a proxy
+  let viaRapida = false;
+
+  function modpow(base, exp, m) {
+    if (viaRapida) {
+      return fastModpow(base, exp, m);
+    } else {
+      return slowModpow(base, exp, m);
+    }
+  }
+
   function menor(x, y) {
     if (x < y) return x; else return y;
   }
@@ -101,8 +144,6 @@
   }
 
   function mcd(a, b) {
-
-
     let result;
     let [minFactor, maxFactor] = [menor(a, b), mayor(a, b)];
     // this trivial checks avoids div. by zero.
@@ -115,8 +156,145 @@
     return result;
   }
 
-  // Pequeño teorema de Fermat
-  function factorTentativo(x, deep = 1000n) {
+  // x Luis Bultet Ibles. Cuba, logaritmo. (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
+  function logaritmo(x, base = null) {
+    if (x < 0) return NaN;
+    if (!base) { // natural
+      return Math.log(16) * (x.toString(16).length - x.toString(16).substring(0, 15).length) + Math.log('0x' + x.substring(0, 15).substring(0, 15));
+    }
+    switch (base) {
+      case 2:
+        return logaritmo(x, 10) / Math.log10(2);
+      case 10:
+        return x.toString(10).length + Math.log10('0.' + x.toString(10).substring(0, 15));
+      default:
+        return logaritmo(x, 10) / logaritmo(x, base);
+    }
+  }
+
+  // Elevar el número neperiano e a la potencia de x
+  function exponent(x) {
+    let e = '27182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664238';
+    e.length = Number(menor(BigInt(e.length), Math.round(logaritmo(x, 10))));
+    let result = pow(BigInt(e), x);
+    result.length = 1 + Math.trunc(Number(x) / x.length);
+    return result;
+  }
+
+  // Resolver el problema cuadrático, y devolver las raíces.
+  function solveQuadraticProblem(XMasY, XPorY) {
+    var result;
+    var D1 = pow(XMasY, 2n);
+    var D2 = 4n * XPorY;
+    var Discriminante = D1 - D2;
+    if (Discriminante < 0n) {
+      result = []; // NTS en el dominio real
+    } else {
+      var semiRoot = sqrt(Discriminante) / 2n;
+      result = [XMasY - semiRoot, XMasY + semiRoot];
+    }
+    return result;
+  }
+
+  // Resolver una ecuación cuadrática de la forma y = ax² + bx + c, y devolver las raíces.
+  function solveQuadraticEquation(a, b, c) {
+    let result, root1, root2;
+    // calculate discriminant
+    let discriminant = b * b - 4n * a * c;
+    // condition for real and different roots
+    if (discriminant >= 0n) {
+      let discRoot = sqrt(discriminant);
+      root1 = (-b + discRoot) / (2n * a);
+      root2 = (-b - discRoot) / (2n * a);
+      result = [root1, root2];
+    } else { // if roots are not real
+      result = [];
+    }
+    return result;
+  }
+
+  // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+  function extendedEuclides(a, b) {
+    var q = [];
+    var r = [];
+    var s = [];
+    var t = [];
+    var i;
+    r[0] = a;
+    s[0] = 1n;
+    t[0] = 0n;
+    r[1] = b;
+    s[1] = 0n;
+    t[1] = 1n;
+    i = 1;
+    while (r[i] !== 0n) {
+      q[i] = r[i - 1] / r[i];
+      r[i + 1] = r[i - 1] % r[i];
+      s[i + 1] = s[i - 1] - q[i] * s[i];
+      t[i + 1] = t[i - 1] - q[i] * t[i];
+      i++;
+    }
+    return [s[i - 1], t[i - 1], r[i - 1]];
+  }
+
+  // resuelve una ecuación diofántica lineal., encontrar [a, b] tal que ax + by = z
+  function diofantic(x, y, z) {
+    // Primero se chequea si la ecuación diofántica lineal tiene solución : mcd(x, y) / z ?
+    let m_c_d = mcd(x, y);
+    if (z % m_c_d !== 0n) {
+      return []; // NTS (Bezout condition)
+    }
+    let q = extendedEuclides(x, y);
+    let a = q[0] * z / m_c_d;
+    let b = q[1] * z / m_c_d;
+    return [a, b];
+  }
+
+  // primes between 0 and 2.000 - this (0..302 elements) list will be helpful 
+  // to perform a primitive primality check.
+  primes = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n,
+    23n, 29n, 31n, 37n, 41n, 43n, 47n, 53n, 59n, 61n, 67n, 71n, 73n, 79n, 83n, 89n, 97n, 101n,
+    103n, 107n, 109n, 113n, 127n, 131n, 137n, 139n, 149n, 151n, 157n, 163n, 167n, 173n, 179n,
+    181n, 191n, 193n, 197n, 199n, 211n, 223n, 227n, 229n, 233n, 239n, 241n, 251n, 257n, 263n,
+    269n, 271n, 277n, 281n, 283n, 293n, 307n, 311n, 313n, 317n, 331n, 337n, 347n, 349n, 353n,
+    359n, 367n, 373n, 379n, 383n, 389n, 397n, 401n, 409n, 419n, 421n, 431n, 433n, 439n, 443n,
+    449n, 457n, 461n, 463n, 467n, 479n, 487n, 491n, 499n, 503n, 509n, 521n, 523n, 541n, 547n,
+    557n, 563n, 569n, 571n, 577n, 587n, 593n, 599n, 601n, 607n, 613n, 617n, 619n, 631n, 641n,
+    643n, 647n, 653n, 659n, 661n, 673n, 677n, 683n, 691n, 701n, 709n, 719n, 727n, 733n, 739n,
+    743n, 751n, 757n, 761n, 769n, 773n, 787n, 797n, 809n, 811n, 821n, 823n, 827n, 829n, 839n,
+    853n, 857n, 859n, 863n, 877n, 881n, 883n, 887n, 907n, 911n, 919n, 929n, 937n, 941n, 947n,
+    953n, 967n, 971n, 977n, 983n, 991n, 997n, 1009n, 1013n, 1019n, 1021n, 1031n, 1033n, 1039n,
+    1049n, 1051n, 1061n, 1063n, 1069n, 1087n, 1091n, 1093n, 1097n, 1103n, 1109n, 1117n,
+    1123n, 1129n, 1151n, 1153n, 1163n, 1171n, 1181n, 1187n, 1193n, 1201n, 1213n, 1217n,
+    1223n, 1229n, 1231n, 1237n, 1249n, 1259n, 1277n, 1279n, 1283n, 1289n, 1291n, 1297n,
+    1301n, 1303n, 1307n, 1319n, 1321n, 1327n, 1361n, 1367n, 1373n, 1381n, 1399n, 1409n,
+    1423n, 1427n, 1429n, 1433n, 1439n, 1447n, 1451n, 1453n, 1459n, 1471n, 1481n, 1483n,
+    1487n, 1489n, 1493n, 1499n, 1511n, 1523n, 1531n, 1543n, 1549n, 1553n, 1559n, 1567n,
+    1571n, 1579n, 1583n, 1597n, 1601n, 1607n, 1609n, 1613n, 1619n, 1621n, 1627n, 1637n,
+    1657n, 1663n, 1667n, 1669n, 1693n, 1697n, 1699n, 1709n, 1721n, 1723n, 1733n, 1741n,
+    1747n, 1753n, 1759n, 1777n, 1783n, 1787n, 1789n, 1801n, 1811n, 1823n, 1831n, 1847n,
+    1861n, 1867n, 1871n, 1873n, 1877n, 1879n, 1889n, 1901n, 1907n, 1913n, 1931n, 1933n,
+    1949n, 1951n, 1973n, 1979n, 1987n, 1993n, 1997n, 1999n];
+
+  // Known Mersenne number exponents until october 2023
+  let knownMersenne = [2n, 3n, 5n, 7n, 13n, 17n, 19n, 31n, 61n, 89n, 107n, 127n, 521n, 607n, 1279n, 2203n,
+    2281n, 3217n, 4253n, 4423n, 9689n, 9941n, 11213n, 19937n, 21701n, 23209n, 44497n,
+    86243n, 110503n, 132049n, 216091n, 756839n, 859433n, 1257787n, 1398269n, 2976221n,
+    3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
+    37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n];
+
+  // La hipótesis china plantea que si x es primo y distinto de dos, entonces (2 ^ p) mod p === 2
+  function ChinesseHypothesis(x) {
+    return {primalidad: (x % 2 === 0 && x !== 2n) && modpow(a, x, x) === 2n};
+  }
+
+  // El pequeño teorema de Fermat plantea que si x es primo, entonces (a ^ (p-1) ) mod p === 1, si mcd(a, p) === 1
+  function FermatLitleTheorem(x, base = 2) {
+    return {primalidad: (x % 2n === 0n && x !== 2n) && (mcd(base, x) === 1n && modpow(base, x, x) === 2n)};
+  }
+
+  // Pequeño teorema de Fermat, no está completo funciona a veces
+  function fermat(x, deep = 100n) {
     let result = x;
     if (x % 2n === 0n) {
       result = 2;
@@ -130,13 +308,145 @@
     }
     // Ya que p es impar, por diferencia de cuadrados: [2^[(p-1)/2] + 1] * [2^[(p-1)/2] - 1] es divisible por p
     let divisor;
-    for (let i = 0n; i < deep; i++) {
-      divisor = mcd(x, modpow(2n, x + i, x) - 1n);
+    for (let i = 1n; i < deep; i++) {
+      divisor = mcd(x, modpow(2n, x + i, x) - i);
       if (divisor !== 1n && divisor !== x && x % divisor === 0n) return menor(divisor, x / divisor);
-      divisor = mcd(x, modpow(2n, x - i, x) - 1n);
+      divisor = mcd(x, modpow(2n, x - i, x) - i);
       if (divisor !== 1n && divisor !== x && x % divisor === 0n) return menor(divisor, x / divisor);
     }
     return result;
+  }
+
+  // Bultet 2023
+  function randomBetween(rightPredecessorLimit, leftLimit = 0n) {
+    let result = '0';
+    for (let i = 0; i < Math.round(BigInt(rightPredecessorLimit - leftLimit).toString().length); i++) {
+      result = result + String(Math.trunc(10 * Math.random()));
+    }
+    let newLength = Math.round(0.5 + Math.random() * BigInt(rightPredecessorLimit - leftLimit).toString().length);
+    result = result.substring(newLength);
+    return leftLimit + BigInt(result) % (rightPredecessorLimit - leftLimit);
+  }
+
+
+  // return {primalidad: (x % 2 === 0 && x !== 2n) && modpow(a, x, x) === 2n};
+  function rabinMiller(n, k = 16) {
+    if (n <= 1n) return { primalidad: false };
+    if (n <= 3n) return { primalidad: true };
+    if (n % 2n === 0n) return { primalidad: false, divisor: 2 };
+
+    let d = n - 1n;
+    let s = 0n;
+
+    while (d % 2n === 1n) {
+      d /= 2n;
+      s += 1;
+    }
+
+    for (let i = 0n; i < k; i++) {
+      let a = 2n + randomBetween(n - 4n);
+      let x = modpow(a, d, n);
+
+      if (x === 1n || x === n - 1n) {
+        continue;
+      } else {
+        let foundDivisor = false;
+        let divisor = 1n;
+
+        for (let j = 0n; j < s - 1n; j++) {
+          x = modpow(x, 2n, n);
+
+          if (x === 1n) {
+            foundDivisor = true;
+            divisor = mcd(x - 1n, n);
+            break;
+          }
+
+          if (x === n - 1n) {
+            break;
+          }
+        }
+
+        if (foundDivisor) {
+          return { primalidad: false, divisor };
+        }
+
+        if (x !== n - 1n) {
+          return { primalidad: false, hint: 'Se descarta primalidad por variante II.' };
+        }
+      }
+    }
+
+    return { primalidad: true, hint: 'Probablemente sea primo' };
+  }
+
+  // Terema de Sofía Germain
+  function sofie(x) {
+    /*
+    Teorema de Sophie Germain:
+    “To-do número de la forma x^4 + 4, para x distinto de 1; es compuesto.”
+    Demostración (para caso particular y = 1 de la identidad).
+      x^4 + 4  = x^4 + 4x^2 + 4 - 4x^2
+               = (x^2 + 2) (x^2 + 2) - 4x^2 pues lo anterior es un cuadrado perfecto
+               = (x^2 + 2) ^2 - 4x^2
+               = (x^2 + 2 + 2x) (x^2 + 2 - 2x) y lo anterior es una diferencia de cuadrados.
+      Su generalización es la siguiente identidad:
+    “Todos los números de la forma: .x^4 + 4y^4 son compuestos, y se descomponen en (x^2 + 2y^2 + 2xy) (x^2 + 2y^2 - 2xy).”
+    Veamos nuestra aplicación del teorema, para la factorización de cualquier número:
+    Deseas factorizar P, supones que es compuesto, entonces existen X e Y naturales enteros distintos de 1 tales que P = X Y, luego:
+    P = X · Y
+    P ^ 4 = (X ^ 4) · (Y ^ 4)
+    P ^ 4 = (X ^ 4 + 4 - 4) · (Y ^ 4 + 4 - 4)
+    P ^ 4 = [(X^2 + 2 + 2X) (X^2 + 2 – 2X) - 4] · [(Y^2 + 2 + YX) (Y^2 + 2 – 2Y) - 4]
+    Que debe ser insoluble para P primo, pues en tal caso alguno de X e Y, debería ser igual a 1 que es, precisamente, la excepción del teorema.
+    Por tanto, la cuarta potencia de P debería tomar alguna de las formas,
+    P^4 = 1 · P^4 ó P^4 = 1 · P^4, (descartada)
+    P^4 = P^2 · P^2, (puede descartarse verificando que P no sea un cuadrado perfecto), luego quedaría la última posibilidad:
+    P^4 = P^3 · P^1 ó P^4 = P^1 · P^3, para probar esta, basta con asumir:
+    P = [(X^2 + 2 + 2X) (X^2 + 2 – 2X) - 4]
+    P ^ 3 = (X^2 + 2X + 2) (X^2 – 2X + 2)
+    P ^ 3 debería ser más fácilmente factorizable por alguna otra vía, esta incluso; e igualando sus factores a alguna de las dos ecuaciones, pudiera o no, obtenerse uno de los factores de P (X), lo que demostraría o refutaría su primalidad si fuese posible encontrarlo.
+    L.Q.Q.D. (Bye)
+        * */
+    let factor;
+    let divisores = [];
+
+    function xplus4facilmente() {
+      return primes.some((one) => {
+        if (x + 4n % one === 0n) {
+          factor = one;
+          return true;
+        } else {
+          return false;
+        }
+      });
+    }
+
+    // factor = (X^2 + 2 – 2X)
+
+  }
+
+  // (primalidad de números prqueños por fuerza bruta, lenta y exhaustiva)
+  function primalidadPorTentativa(x) {
+    if (!x || x < 2n) {
+      return {primalidad: false, factor: x};
+    } else if (x === 2n || x === 3n || x === 5n) {
+      return {primalidad: true, factor: x};
+    } else if (x % 2n === 0n) {
+      return {primalidad: false, factor: 2n};
+    } else if (x % 3n === 0n) {
+      return {primalidad: false, factor: 3n};
+    } else if (x % 5n === 0n) {
+      return {primalidad: false, factor: 5n};
+    } // Pueden agregarse los criterios de divisibilidad...
+    // Ningún número tiene divisores primos por encima de su raiz cuadrada
+    let up = Math.trunc(Math.sqrt(x));
+    for (var testNo = 7n; testNo <= up; testNo += 2n) {
+      if (x % testNo === 0) {
+        return {primalidad: false, factor: testNo};
+      }
+    }
+    return {primalidad: true, factor: x};
   }
 
   // Lógica para factorización de un número tan grande como se quiera o aguante la memoria.
@@ -177,9 +487,9 @@
       return encontrarMenorFactorPrimo(raizCuadrada);
     }
 
-    let factorFermat = factorTentativo(valorEnteroGrande);
-    if (factorFermat >= 2 && factorFermat !==valorEnteroGrande && valorEnteroGrande % factorFermat === 0n) {
-      return encontrarMenorFactorPrimo(factorFermat);
+    let factorFermat = fermat(valorEnteroGrande);
+    if (factorFermat >= 2 && factorFermat !== valorEnteroGrande && valorEnteroGrande % factorFermat === 0n) {
+      return menor(factorFermat, valorEnteroGrande / factorFermat);
     }
     console.log('Pasa');
 
@@ -208,7 +518,7 @@
       } else if (subProd < valorEnteroGrande && !existsCandidates(par)) {
         // además, con al menos dos dígitos de error para el acarreo y se concatenan con su formato actual
         // el error permitido es 2 para productos de 1 carácter y 0 para productos que tengan la misma longitud que el parámetro
-        // o sea
+        // o sea.
         let errorPermitido = Math.round(2 * (decimal.toString().length - subProd.toString().length) / decimal.toString().length);
         if (coincidenciasAlFinal(decimal, producto.toString()) >= Math.max(factor1.length, factor2.length) - errorPermitido) {
           candidatos.push([factor1, factor2]);
