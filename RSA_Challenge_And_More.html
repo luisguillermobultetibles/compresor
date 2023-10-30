@@ -160,7 +160,7 @@
 
   // x Luis Bultet Ibles. Cuba, logaritmo. (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
   function logaritmo(x, base = null) {
-    if (x < 0) return NaN;
+    if (x < 0n) return NaN;
     if (!base) { // natural
       return Math.log(16) * (x.toString(16).length - x.toString(16).substring(0, 15).length) + Math.log('0x' + x.substring(0, 15).substring(0, 15));
     }
@@ -175,7 +175,7 @@
   }
 
   // Elevar el número neperiano e a la potencia de x
-  function exponent(x) {
+  function exponent(x) { // fixit
     let e = '27182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664238';
     e.length = Number(menor(BigInt(e.length), Math.round(logaritmo(x, 10))));
     let result = pow(BigInt(e), x);
@@ -524,11 +524,7 @@
       // si no existe el par en la lista agrégalo (si no exceden la raíz cuadrada)
       [factor1, factor2] = [menor(factor1, factor2), mayor(factor1, factor2)];
       let subProd = BigInt(factor1) * BigInt(factor2);
-      if (BigInt(factor1) !== 1n && valorEnteroGrande % BigInt(factor1) === 1n) {
-        result = BigInt(factor1);
-      } else if (BigInt(factor2) !== 1n && valorEnteroGrande % BigInt(factor2) === 1n) {
-        result = BigInt(factor2);
-      } else if (subProd === valorEnteroGrande && BigInt(factor1) !== 1n && BigInt(factor2) !== 1n) {
+      if (subProd === valorEnteroGrande && BigInt(factor1) !== 1n && BigInt(factor2) !== 1n && BigInt(factor1) !== valorEnteroGrande && BigInt(factor2) !== valorEnteroGrande) {
         result = menor(BigInt(factor1), BigInt(factor2));
       } else if ((factor1.length + factor2.length <= decimal.length) && (subProd < valorEnteroGrande && !existsCandidates([factor1, factor2]))) {
         if (coincidenciasAlFinal(decimal, subProd.toString()) >= subProd.toString().length - 3) {
@@ -615,8 +611,6 @@
     // de 300 las de menos de tres, así sucesivamente;
     let iteraciones = 0;
 
-    console.log('Llega ', candidatos);
-
     // Una simple búsqueda heurística de tipo branch and exchange; pero no es una búsqueda en anchura,
     // ni en profundidad, sino una búsqueda balanceada o en difusión; parecida a las búsquedas de las
     // redes neuronales, la expansión del fuego en el material combustible, la difusión de los gases ó
@@ -633,12 +627,10 @@
         if (searchFlipFlop) {
           // Se un par desde el fin
           parEnAnalisis = [candidatos[candidatos.length - 1][0], candidatos[candidatos.length - 1][1]];
-          console.log(`Analizando ${JSON.stringify(parEnAnalisis)}, de ${candidatos.length} (multiplican ${BigInt(candidatos[candidatos.length - 1][0]) * BigInt(candidatos[candidatos.length - 1][1])}).`);
           candidatos.length = candidatos.length - 1;
         } else {
           // y otro desde el comienzo
           parEnAnalisis = [candidatos[0][0], candidatos[0][1]];
-          console.log(`Analizando ${JSON.stringify(parEnAnalisis)}, de ${candidatos.length} (multiplican ${BigInt(candidatos[0][0]) * BigInt(candidatos[0][1])}).`);
           candidatos.shift();
         }
 
@@ -659,11 +651,14 @@
         let propuesta1 = BigInt(parEnAnalisis[via]);
         let propuesta2 = BigInt(parEnAnalisis[1 - via]);
 
+        //
+        // console.log(`Analizando ${[propuesta1, propuesta2]}, de ${candidatos.length} (multiplican ${BigInt(propuesta1) * BigInt(propuesta2)}).`);
+
         // Se prueba si es una semilla ha crecido correctamente y ya es un divisor
         // Si se agregó un cero a la izquierda, no se vuele a chequear.
-        if (propuesta1 !== 1n && valorEnteroGrande % propuesta1 === 0n) {
+        if (propuesta1 !== 1n && propuesta1 !== valorEnteroGrande && valorEnteroGrande % propuesta1 === 0n) {
           return propuesta1.toString();
-        } else if (propuesta2 !== 1n && valorEnteroGrande % propuesta2 === 0n) {
+        } else if (propuesta2 !== 1n && propuesta2 !== valorEnteroGrande && valorEnteroGrande % propuesta2 === 0n) {
           return propuesta2.toString();
         }
 
@@ -672,7 +667,7 @@
 
         for (let digito1 = 0; digito1 < 10; digito1++) {
           let div = agregarCandidatosDeFactores(String(digito1) + parEnAnalisis[via], parEnAnalisis[1 - via]);
-          if (div !== 0n) {
+          if (div !== 0n && div !== 1n && div !== valorEnteroGrande) {
             // La función hace lo que tiene que hacerSi es resultado es true, es porque casualmente multiplican eso
             return parEnAnalisis[1 - via];
           }
@@ -775,7 +770,7 @@
     alert('Enter para comenzar el testd e depuración.');
     for (let i = 0; i < 20; i++) {
       let no = BigInt(repetir('1', i));
-      alert(`El primer factor primo de ${no} (con ${i} dígitos 1), -->${encontrarMenorFactorPrimo(no)}<-- (realmente ${primalidadPorTentativa(no).factor}).`);
+      console.warn(`El primer factor primo de ${no} (con ${i} dígitos 1), -->${encontrarMenorFactorPrimo(no)}<-- (realmente ${primalidadPorTentativa(no).factor}).`);
     }
   }
 
