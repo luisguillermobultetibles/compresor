@@ -9,8 +9,10 @@
 <script language="JavaScript">
 
   // Factorización "hacker" de números naturales grandes por algoritmo de Branch and Exchange.
-  // Copyright ®Luis Guillermo Bultet Ibles, el lunes 23 de octubre de 2023; 11:20 AM
-  // En fase de depuración y puesta a punto.
+  // Copyright ®Luis Guillermo Bultet Ibles, el lunes 30 de octubre de 2023; 01:56 PM
+  // No critique, sabemos que podemos optimizar y que puede hacerlo mejor, nosotros también
+  // no tenemos tiempo para demostrárselo, estamos en fase de pruebas, todavía no llegamos
+  // a la fase optimización, depuración y puesta a punto.
   //
   // Todos los derechos reservados, por favor contáctenos personalmente para cualquier uso comercial.
   // Uso académico autorizado.
@@ -283,36 +285,48 @@
     3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
     37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n];
 
-  // La hipótesis china plantea que si x es primo y distinto de dos, entonces (2 ^ p) mod p === 2
-  function ChinesseHypothesis(x) {
-    return {primalidad: (x % 2 === 0 && x !== 2n) && modpow(a, x, x) === 2n};
+  // El próximo pudiera ser 2^82589933-1
+
+  // La hipótesis china plantea que si p es primo y distinto de dos, entonces (2 ^ p) mod p === 2
+  function ChinesseHypothesis(p) {
+    let result;
+    if (p === 2n) {
+      result = {primalidad: true, divisor: 2n};
+    } else if (p % 2n === 0n) {
+      result = {primalidad: false, divisor: 2n};
+    } else {
+      result = {primalidad: (p === 2n) || (p % 2n === 0n && p !== 2n) && modpow(2n, p, p) === 2n};
+    }
+    return result;
   }
 
-  // El pequeño teorema de Fermat plantea que si x es primo, entonces (a ^ (p-1) ) mod p === 1, si mcd(a, p) === 1
-  function FermatLitleTheorem(x, base = 2) {
-    return {primalidad: (x % 2n === 0n && x !== 2n) && (mcd(base, x) === 1n && modpow(base, x, x) === 2n)};
+  // El pequeño teorema de Fermat plantea que si p es primo, entonces (a ^ (p-1) ) mod p === 1, si mcd(a, p) === 1
+  function FermatLitleTheorem(p, base = 2n) {
+    let result;
+    let m_c_d = mcd(base, p);
+    if (m_c_d !== 1n && m_c_d !== p) {
+      result = {primalidad: false, divisor: m_c_d};
+    } else {
+      result = {primalidad: m_c_d === 1n && modpow(base, p, p) === 1n};
+    }
+    return result;
   }
 
   // Pequeño teorema de Fermat, no está completo funciona a veces
-  function fermat(x, deep = 100n) {
-    let result = x;
-    if (x % 2n === 0n) {
-      result = 2;
-    } else {
-      let pruebaFermat = modpow(2n, x - 1n, x);
-      if (pruebaFermat !== 1n) {
-        // No es primo, pues no pasa la prueba de Fermat, deja un resto de ', pruebaFermat);
-      } else {
-        result = x;
-      }
+  function fermat(p, base = 2n, deep = 100n) {
+    let result;
+    let prueba = FermatLitleTheorem(p, base);
+    if (!prueba.primalidad) {
+      return prueba.divisor ? prueba.divisor : p;
     }
+
     // Ya que p es impar, por diferencia de cuadrados: [2^[(p-1)/2] + 1] * [2^[(p-1)/2] - 1] es divisible por p
     let divisor;
     for (let i = 1n; i < deep; i++) {
-      divisor = mcd(x, modpow(2n, x + i, x) - i);
-      if (divisor !== 1n && divisor !== x && x % divisor === 0n) return menor(divisor, x / divisor);
-      divisor = mcd(x, modpow(2n, x - i, x) - i);
-      if (divisor !== 1n && divisor !== x && x % divisor === 0n) return menor(divisor, x / divisor);
+      divisor = mcd(p, modpow(2n, p + i, p) - i);
+      if (divisor !== 1n && divisor !== p && p % divisor === 0n) return menor(divisor, p / divisor);
+      divisor = mcd(p, modpow(2n, p - i, p) - i);
+      if (divisor !== 1n && divisor !== p && p % divisor === 0n) return menor(divisor, p / divisor);
     }
     return result;
   }
@@ -331,9 +345,9 @@
 
   // return {primalidad: (x % 2 === 0 && x !== 2n) && modpow(a, x, x) === 2n};
   function rabinMiller(n, k = 16) {
-    if (n <= 1n) return { primalidad: false };
-    if (n <= 3n) return { primalidad: true };
-    if (n % 2n === 0n) return { primalidad: false, divisor: 2 };
+    if (n <= 1n) return {primalidad: false};
+    if (n <= 3n) return {primalidad: true};
+    if (n % 2n === 0n) return {primalidad: false, divisor: 2};
 
     let d = n - 1n;
     let s = 0n;
@@ -368,16 +382,16 @@
         }
 
         if (foundDivisor) {
-          return { primalidad: false, divisor };
+          return {primalidad: false, divisor};
         }
 
         if (x !== n - 1n) {
-          return { primalidad: false, hint: 'Se descarta primalidad por variante II.' };
+          return {primalidad: false, hint: 'Se descarta primalidad por variante II.'};
         }
       }
     }
 
-    return { primalidad: true, hint: 'Probablemente sea primo' };
+    return {primalidad: true, hint: 'Probablemente sea primo'};
   }
 
   // Terema de Sofía Germain
@@ -440,9 +454,9 @@
       return {primalidad: false, factor: 5n};
     } // Pueden agregarse los criterios de divisibilidad...
     // Ningún número tiene divisores primos por encima de su raiz cuadrada
-    let up = Math.trunc(Math.sqrt(x));
+    let up = sqrt(x);
     for (var testNo = 7n; testNo <= up; testNo += 2n) {
-      if (x % testNo === 0) {
+      if (x % testNo === 0n) {
         return {primalidad: false, factor: testNo};
       }
     }
@@ -483,15 +497,14 @@
     }
 
     let raizCuadrada = sqrt(valorEnteroGrande);
-    if (raizCuadrada >= 2 && valorEnteroGrande % raizCuadrada === 0n) {
+    if (raizCuadrada >= 2n && valorEnteroGrande % raizCuadrada === 0n) {
       return encontrarMenorFactorPrimo(raizCuadrada);
     }
 
     let factorFermat = fermat(valorEnteroGrande);
-    if (factorFermat >= 2 && factorFermat !== valorEnteroGrande && valorEnteroGrande % factorFermat === 0n) {
+    if (factorFermat >= 2n && factorFermat !== valorEnteroGrande && valorEnteroGrande % factorFermat === 0n) {
       return menor(factorFermat, valorEnteroGrande / factorFermat);
     }
-    console.log('Pasa');
 
     function existsCandidates(factor1, factor2) {
       // en orden
@@ -507,20 +520,18 @@
     let producto = 1;
 
     function agregarCandidatosDeFactores(factor1, factor2) {
-      // si acaso un resultado positivo.
-      let result = false;
-      // en orden
-      let par = factor1 < factor2 ? [factor1, factor2] : [factor2, factor1];
+      let result = 0n;
       // si no existe el par en la lista agrégalo (si no exceden la raíz cuadrada)
+      [factor1, factor2] = [menor(factor1, factor2), mayor(factor1, factor2)];
       let subProd = BigInt(factor1) * BigInt(factor2);
-      if (subProd === valorEnteroGrande) {
-        result = true;
-      } else if (subProd < valorEnteroGrande && !existsCandidates(par)) {
-        // además, con al menos dos dígitos de error para el acarreo y se concatenan con su formato actual
-        // el error permitido es 2 para productos de 1 carácter y 0 para productos que tengan la misma longitud que el parámetro
-        // o sea.
-        let errorPermitido = Math.round(2 * (decimal.toString().length - subProd.toString().length) / decimal.toString().length);
-        if (coincidenciasAlFinal(decimal, producto.toString()) >= Math.max(factor1.length, factor2.length) - errorPermitido) {
+      if (BigInt(factor1) !== 1n && valorEnteroGrande % BigInt(factor1) === 1n) {
+        result = BigInt(factor1);
+      } else if (BigInt(factor2) !== 1n && valorEnteroGrande % BigInt(factor2) === 1n) {
+        result = BigInt(factor2);
+      } else if (subProd === valorEnteroGrande && BigInt(factor1) !== 1n && BigInt(factor2) !== 1n) {
+        result = menor(BigInt(factor1), BigInt(factor2));
+      } else if ((factor1.length + factor2.length <= decimal.length) && (subProd < valorEnteroGrande && !existsCandidates([factor1, factor2]))) {
+        if (coincidenciasAlFinal(decimal, subProd.toString()) >= subProd.toString().length - 3) {
           candidatos.push([factor1, factor2]);
         }
       }
@@ -591,10 +602,8 @@
 
       x = encontrarMenorFactorPrimo(a);
       y = encontrarMenorFactorPrimo(b);
-      if (x < y) {
-        return x;
-      }
-      return y;
+
+      return menor(x, y);
     }
 
     // Agregamos una semilla a la derecha por fuerza bruta, a lo sumo 100 casos
@@ -606,14 +615,33 @@
     // de 300 las de menos de tres, así sucesivamente;
     let iteraciones = 0;
 
+    console.log('Llega ', candidatos);
+
+    // Una simple búsqueda heurística de tipo branch and exchange; pero no es una búsqueda en anchura,
+    // ni en profundidad, sino una búsqueda balanceada o en difusión; parecida a las búsquedas de las
+    // redes neuronales, la expansión del fuego en el material combustible, la difusión de los gases ó
+    // los sistemas en espacios naturales, tales como las descargas eléctricas, para eso declaramos
+    // la siguiente variable de alternación, para hacer un paso en profundidad y otro en anchura.
+    let searchFlipFlop = false;
+
     if (candidatos.length > 0) {
       do {
 
-        // Se toma en primer par desde el fin, pudiera usarse mejor candidatos.pop(), pero me da error.
-        let parEnAnalisis = [String(candidatos[candidatos.length - 1][0]), String(candidatos[candidatos.length - 1][1])];
+        let parEnAnalisis = [0, 0];
 
-        console.log(`Analizando ${JSON.stringify(parEnAnalisis)}, de ${candidatos.length} (multiplican ${BigInt(candidatos[candidatos.length - 1][0]) * BigInt(candidatos[candidatos.length - 1][1])}).`);
-        candidatos.length = candidatos.length - 1;
+        searchFlipFlop = !searchFlipFlop;
+        if (searchFlipFlop) {
+          // Se un par desde el fin
+          parEnAnalisis = [candidatos[candidatos.length - 1][0], candidatos[candidatos.length - 1][1]];
+          console.log(`Analizando ${JSON.stringify(parEnAnalisis)}, de ${candidatos.length} (multiplican ${BigInt(candidatos[candidatos.length - 1][0]) * BigInt(candidatos[candidatos.length - 1][1])}).`);
+          candidatos.length = candidatos.length - 1;
+        } else {
+          // y otro desde el comienzo
+          parEnAnalisis = [candidatos[0][0], candidatos[0][1]];
+          console.log(`Analizando ${JSON.stringify(parEnAnalisis)}, de ${candidatos.length} (multiplican ${BigInt(candidatos[0][0]) * BigInt(candidatos[0][1])}).`);
+          candidatos.shift();
+        }
+
 
         iteraciones++;
         // candidatos = candidatos.filter(elementos => {
@@ -631,11 +659,6 @@
         let propuesta1 = BigInt(parEnAnalisis[via]);
         let propuesta2 = BigInt(parEnAnalisis[1 - via]);
 
-        // Se desecha la propuesta si el tamaño excede la longitud de la raíz cuadrada
-        if (propuesta1 > raizCuadrada || propuesta2 > raizCuadrada) {
-          continue;
-        }
-
         // Se prueba si es una semilla ha crecido correctamente y ya es un divisor
         // Si se agregó un cero a la izquierda, no se vuele a chequear.
         if (propuesta1 !== 1n && valorEnteroGrande % propuesta1 === 0n) {
@@ -646,20 +669,16 @@
 
         // Se agregan ceros a la izquierda
         // Siempre que los últimos dígitos del producto coincidan
-        producto = BigInt(propuesta1 * propuesta2);
-        if (producto === valorEnteroGrande) {
-          return propuesta1 < propuesta2 ? String(propuesta1) : String(propuesta2);
-        } else if (producto < valorEnteroGrande) {
-          // agregar todos los candidatos formados por los 10 dígitos a la izquierda incluido el cero
-          for (let digito1 = 0; digito1 < 10; digito1++) {
-            if (agregarCandidatosDeFactores(String(digito1) + parEnAnalisis[via], parEnAnalisis[1 - via])) {
-              // La función hace lo que tiene que hacerSi es resultado es true, es porque casualmente multiplican eso
-              return parEnAnalisis[1 - via];
-            }
+
+        for (let digito1 = 0; digito1 < 10; digito1++) {
+          let div = agregarCandidatosDeFactores(String(digito1) + parEnAnalisis[via], parEnAnalisis[1 - via]);
+          if (div !== 0n) {
+            // La función hace lo que tiene que hacerSi es resultado es true, es porque casualmente multiplican eso
+            return parEnAnalisis[1 - via];
           }
         }
-      }
-      while (candidatos.length > 0) ;
+
+      } while (candidatos.length > 0) ;
     }
 
     // devolver la entrada, no se encontraron factores.
@@ -671,26 +690,97 @@
     return 1;
   }
 
-  // Armar una salida elegante (por el momento pasajera), para la factorización del número.
-  function factorizacion(x) {
-    let resultado;
-    let cocienteResidual = BigInt(String(x).trim());
-    if (cocienteResidual === 0n || cocienteResidual === 1n) {
-      resultado = cocienteResidual.toString();
-    } else {
-      resultado = '1';
-      let menorFactorPrimo;
-      do {
-        menorFactorPrimo = encontrarMenorFactorPrimo(cocienteResidual);
-        if (BigInt(menorFactorPrimo) >= 2n) {
-          resultado += ' x ' + menorFactorPrimo.toString();
-          cocienteResidual = cocienteResidual / BigInt(menorFactorPrimo);
+  // Presentar una factorización del número, en formato humano. (arreglar)
+  function factorizacion(s, compresion = false, espaciado = ' ') {
+
+    function formatearPrimerFactor(a) {
+      let divisor;
+      let esponente = '1';
+      let result;
+      let residuo;
+      if (a === '1') {
+        divisor = '2';
+        exponente = '0';
+      } else if (a === '0') {
+        divisor = '0';
+        exponente = '1';
+      } else {
+        exponente = '0';
+        divisor = encontrarMenorFactorPrimo(a);
+        if (a === divisor) {
+          divisor = a;
+          exponente = '1';
+        } else {
+          [a, residuo] = [(BigInt(a) / BigInt(divisor)).toString(), (BigInt(a) % BigInt(divisor)).toString()];
+          while (residuo === '0' && a !== '1') {
+            [a, residuo] = [(BigInt(a) / BigInt(divisor)).toString(), (BigInt(a) % BigInt(divisor)).toString()];
+            exponente = (BigInt(exponente) + 1n).toString();
+          }
         }
-      } while (BigInt(menorFactorPrimo) >= 2n);
+      }
+      return [divisor, exponente];
     }
-    return resultado;
+
+    let result;
+    let divisorPrimo, exponente;
+    let dummyrest;
+    let temporal;
+
+    result = s;
+    if (BigInt(s) < 3n) return result;
+
+    result = '1';
+    do {
+      do {
+        [divisorPrimo, exponente] = formatearPrimerFactor(s);
+        if (exponente !== '1') {
+          if (exponente !== '2') {
+            result = result + espaciado + 'x' + espaciado + divisorPrimo + '²';
+          } else if (exponente === '3') {
+            result = result + espaciado + 'x' + espaciado + divisorPrimo + '³';
+          } else if (compresion) {
+            function modoRecursivo(s) {
+              if (divisorPrimo === s) {
+                return s;
+              } else {
+                return '(' + factorizacion(s, compresion, espaciado) + ')';
+              }
+            }
+
+            result = result + espaciado + 'x' + espaciado + ('(' + modoRecursivo(divisorPrimo) + espaciado + '^' + espaciado + modoRecursivo(exponente) + ')');
+          } else {
+            result = result + espaciado + 'x' + espaciado + ('(' + divisorPrimo + espaciado + '^' + espaciado + exponente + ')');
+          }
+        } else {
+          result = result + espaciado + 'x' + espaciado + divisorPrimo;
+        }
+        [s, dummyRest] = [BigInt(s) / pow(BigInt(divisorPrimo), BigInt(exponente)), BigInt(s) % pow(BigInt(divisorPrimo), BigInt(exponente))];
+      } while ((s !== '1') && (s !== '1') && (dummyRest === '0'));
+      // pon esto
+      // s := Dividir(s, Potencia(pdi, pws), dummyRest);
+    } while (s !== '0' && s !== '1');
+    return result;
   }
 
+
+  function test() {
+    function repetir(digito, veces) {
+      result = '';
+      for (let i = 0; i < veces; i++) {
+        result = result + digito;
+      }
+      return result;
+    }
+
+    alert('Enter para comenzar el testd e depuración.');
+    for (let i = 0; i < 20; i++) {
+      let no = BigInt(repetir('1', i));
+      alert(`El primer factor primo de ${no} (con ${i} dígitos 1), -->${encontrarMenorFactorPrimo(no)}<-- (realmente ${primalidadPorTentativa(no).factor}).`);
+    }
+  }
+
+  // remove this line when fix encontrarMenorFactorPrimo and factorizacion
+  test();
 
 </script>
 <button onclick="imprimirAreaDeTexto(leerAreaDeTexto() + ' = ' + factorizacion(leerAreaDeTexto()));">
