@@ -4,7 +4,7 @@ Compresión de información por factorización aritmética total y una codificac
 
 Me: luisguillermobultetibles@gmail.com
 Id: 74092510328
-mobil: 59967848
+mobil: 53 59967848
 fijo: +53 32 690574 (Cuba)
 
 Solamente el framework con las funciones útiles del proyecto, todavía no está completo... 
