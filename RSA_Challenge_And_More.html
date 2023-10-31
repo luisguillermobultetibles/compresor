@@ -508,7 +508,7 @@
     // Pruebas extras
 
     // Es divisible por uno de los primeros 300 números primos
-    let there = primes.find((them) => valorEnteroGrande % them === 0);
+    let there = primes.find((them) => valorEnteroGrande % them === 0n);
     if (there) {
       return there.toString();
     }
@@ -517,7 +517,7 @@
     let log2 = Math.trunc(logaritmo(valorEnteroGrande, 2));
     for (const exponent of knownMersenne) {
       if (exponent > BigInt(log2)) break;
-      let rest = modpow(2n, exponent, valorEnteroGrande) + valorEnteroGrande - 1n;
+      let rest = modpow(2n, exponent, valorEnteroGrande) - 1n;
       let m_c_d = mcd(valorEnteroGrande, rest);
       if (m_c_d !== 1n && m_c_d !== valorEnteroGrande && valorEnteroGrande % m_c_d === 0n) {
         return m_c_d.toString();
@@ -691,6 +691,17 @@
     // devolver la entrada, no se encontraron factores.
     return resultado;
   }
+
+  function encontrarElMenorFactorPrimo(decimal) {
+    let primero = BigInt(encontrarUnFactorPrimo(decimal)); // inclusive un divisor cualquiera, no necesariamente primo
+    if (primero > 1n && primero !== BigInt(decimal)) {
+      let segundo = BigInt(encontrarUnFactorPrimo((BigInt(decimal) / primero).toString()));
+      return menor(primero, segundo);
+    } else {
+      return BigInt(primero);
+    }
+  }
+
 
   function otroMetodoFactorizacion(x) {
     // Raise the base at the power of exponent
