@@ -513,17 +513,29 @@
       return there.toString();
     }
 
-    // Es múltiplo o alguno de los primos de Mersenne conocidos hasta 2023.
-    let log2 = Math.trunc(logaritmo(valorEnteroGrande, 2));
+
+
+    // this return [(base^exp) - d] mod m
+    // I deduced it by applying the Chinese remainder theorem
+    function modpowplus(base, exp, d, m) {
+      return (m + modpow(base, exp, m) + d) % m; // m added to induce > 0 results.
+    }
+
+    /*
+
+    // Es múltiplo o alguno de los primos de Mersenne conocidos hasta 2023 (Just fix this section, to improve performance).
+
+    let log2 = Math.trunc(Number(logaritmo(valorEnteroGrande, 2))); alert(log2);
     for (const exponent of knownMersenne) {
       if (exponent > BigInt(log2)) break;
-      let rest = modpow(2n, exponent, valorEnteroGrande + 1n);
-      let m_c_d = mcd(valorEnteroGrande, rest);
-      if (m_c_d !== 1n && m_c_d !== valorEnteroGrande && valorEnteroGrande % m_c_d === 0n) {
+      let rest = modpow(2n, exponent, valorEnteroGrande - 1n);
+      if (rest === 0n) {
         alert('ok');
-        return m_c_d.toString();
+        return pow(2n, exponent) - 1n;
       }
     }
+    */
+
 
     let raizCuadrada = sqrt(valorEnteroGrande);
     if (raizCuadrada >= 2n && valorEnteroGrande % raizCuadrada === 0n) {
@@ -714,7 +726,7 @@
 
     function formatearPrimerFactor(a) {
       let divisor;
-      let esponente = '1';
+      let exponente = '1';
       let result;
       let residuo;
       if (a === '1') {
@@ -773,14 +785,13 @@
         } else {
           result = result + espaciado + 'x' + espaciado + divisorPrimo;
         }
-        [s, dummyRest] = [BigInt(s) / pow(BigInt(divisorPrimo), BigInt(exponente)), BigInt(s) % pow(BigInt(divisorPrimo), BigInt(exponente))];
+        [s, dummyRest] = [(BigInt(s) / (BigInt(divisorPrimo) ** BigInt(exponente))).toString(), (BigInt(s) % (BigInt(divisorPrimo) ** BigInt(exponente))).toString()];
       } while ((s !== '1') && (s !== '1') && (dummyRest === '0'));
       // pon esto
       // s := Dividir(s, Potencia(pdi, pws), dummyRest);
     } while (s !== '0' && s !== '1');
     return result;
   }
-
 
   function test() {
     function repetir(digito, veces) {
@@ -796,12 +807,12 @@
       let no = BigInt(repetir('1', i));
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<-- (realmente ${primalidadPorTentativa(no).factor}).`);
       console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
-      ;
+      console.warn(`Un factor primo de 2^${no} - 1 = ${pow(2n, no) - 1n}, es -->${encontrarUnFactorPrimo(pow(2n, no) - 1n)}<--.`);
     }
   }
 
   // remove this line when fix encontrarMenorFactorPrimo and factorización
-  test();
+  // test();
 
 </script>
 <button onclick="imprimirAreaDeTexto(leerAreaDeTexto() + ' = ' + factorizacion(leerAreaDeTexto()));">
