@@ -53,3 +53,90 @@ This is the binary expression of the Fundamental Theorem of Arithmetic, although
        The function pi exists because the set of primes, being a subset of the natural ones, is also a countable function.
 
 
+# This is not gzip, deflate competence, is just an INTERNET 3 LEVEL 2-DRIVER (RFC Proposal: october 31, 2023, by Lic. Luis Bultet Ibles, Cuba).
+
+  .To use with the previous described algorithm, and with no one else.
+
+  .Guarantees continuity in transmission, speed and maximum use of bandwidth. (Real time)
+  .It is proposed for updating the TCP-IPv6 packet format, and layer B (2 or data) of the OSI network model.
+  Or, failing that, its implementation in the national intranet, with its prior validation in some experimental sub-network.
+
+  Technical definitions
+
+   Requirements
+   -----------------------
+   It is assumed that the system can know the speed at which it is connected,
+   The estimated compression and decompression times will be adjusted with the tests and
+   They depend on the speed of the processor and the quality of the compression algorithms,
+   Another of the capabilities that the system should have for better functioning is
+   falls forward and backward, (fallforward and fallback) which is when
+   there is an increase or decrease in speed while being connected, in that case the system would need
+   reevaluate the optimal way of transmitting the remaining part of the packet that remains to be sent,
+   Ultimately, a finer adjustment would also include the estimated delivery times.
+   analysis so as not to waste time, not even analyzing, when the packages are very small,
+   the speed is very high and/or it takes very little time to finish sending the data;
+   and in exceptional cases in which it is not necessary to apply the algorithm, since the speeds of
+   transfer are much superior to processing.
+   An analysis of the minimum route for the transfer of such packets may optionally be included, but
+   This last capacity is optional, since it is just what routers and routers have done for some time.
+   internet servers.
+   Analyze whether to be a preliminary for RFC.
+
+
+   etc...
+
+
+   Let the functions be:
+   -----------------------
+   Vu - Transmission (upload) speed in bits per second (BPS).
+   Vd - Reception speed (download), assumed the same as Vu, but can be different.
+   Ss(x) - Size of data x, (in bits).
+   Sd(x) - Estimated compression size of data x.
+   Tc(x) - Estimated compression time of data x, (fractions of seconds).
+   Te(x) - Estimated decompression time of data x.
+   Tts(x) - Uncompressed data x transmission time, Tts(x) = Vu*Ss(x).
+   Ttd(x) - Estimated transmission time of compressed data x, Tt(x) = Vu*Sd(x).
+
+   Relating to the object P, with the following properties:
+   -----------------------
+   P - Packet to transmit (or to receive), description of the fields.
+
+   Properties Type Description
+   C Logic Compressed packet.
+   TE Uncompressed integer size (in bits).
+   x Array (The blob) Contains the data to be transmitted or received.
+
+   Transmission Algorithm (Construction of the packet).
+   -----------------------
+   Entry: A piece of information x.
+       If [Tc(x) + Ttd(x) + Te(x)] < Tts(x) Then
+            1.Transmit the first (Tc(x) + Te(x)) * Vu uncompressed bits.
+            2.Compress the rest, and Transmit it after step 1 is finished.
+            (These two steps can be performed in parallel, ie, 1 and 2 can be two independent tasks or steps.)
+       But
+            3.Send the package uncompressed
+
+   Reception Algorithm
+   -----------------------
+   Entry: A piece of information x.
+       1. If the package is compressed then
+            1.1 Unzip it (before...)
+       2. Give it a normal course.
+
+   Recommendations:
+   -----------------------
+  There are three typical situations that can be taken into account when optimizing:
+
+   1._Incomprehensible: keep in mind that if it is not understandable, the second part is transmitted (uncompressed), this does not
+         affects the transmission speed rate since it is carried out at optimal time, that is, this result is obtained
+         while the first part of the data is being sent (uncompressed); so that it is almost transparent.
+   2._Time out: If too much time is taken in the actual compression (more than the estimated or the one taken in
+         transmit the packet header), will be assumed incomprehensible for the purposes of the transmission algorithm.
+   3._Fallforwad: Increased connection speed.
+   4._Fallback: Decrease in connection speed.
+   5._Buffer: Includes an intermediate store of packets to be transmitted, so that with each new data entry,
+         reevaluate whether or not to send them compressed, analyzing all untransmitted data as a
+         All-in-all, this would be possible with a parallel process that analyzes the data stream before it reaches them.
+         the Porter; If the compression algorithm is convenient, a second improvement could be added, which
+         consists of, taking a fragment from the end of the packet before compressing, large enough to
+         ensure bit-level interleaving
