@@ -53,7 +53,8 @@ This is the binary expression of the Fundamental Theorem of Arithmetic, although
        The function pi exists because the set of primes, being a subset of the natural ones, is also a countable function.
 
 
-# This is not gzip, deflate competence, is just an INTERNET 3 LEVEL 2-DRIVER (RFC Proposal: october 31, 2023, by Lic. Luis Bultet Ibles, Cuba).
+# This is not gzip, deflate internet navigator's browser compressor's competence, is just an INTERNET 3 LEVEL 2-DRIVER 
+# (RFC Proposal: october 31, 2023, by Lic. Luis Bultet Ibles, Cuba).
 
   .To use with the previous described algorithm, and with no one else.
 
