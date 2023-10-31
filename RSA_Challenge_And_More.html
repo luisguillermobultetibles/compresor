@@ -477,7 +477,11 @@
   function encontrarUnFactorPrimo(decimal) {
     decimal = String(decimal).trim();
 
+    // hasta 18 dígitos...
     let valorEnteroGrande = BigInt(decimal);
+    if (decimal.length < 18) {
+      return primalidadPorTentativa(valorEnteroGrande).factor;
+    }
 
     // Extraer los n últimos dígitos de X
     function nUtimosDigitosDeX(n, X) {
@@ -513,29 +517,40 @@
       return there.toString();
     }
 
-
+    // Es un cuadrado perfecto? (solamente pueden serlo los de la forma 4s o 4s + 1.)
+    function isAPerfectSquare(s) {
+      let mod4 = s % 4n;
+      if (mod4 !== 0n || mod4 !== 1n) {
+        return false;
+      }
+      return s === pow(sqrt(s), 2n);
+    }
 
     // this return [(base^exp) - d] mod m
     // I deduced it by applying the Chinese remainder theorem
     function modpowplus(base, exp, d, m) {
-      return (m + modpow(base, exp, m) + d) % m; // m added to induce > 0 results.
+      return (m + d + modpow(base, exp, m)) % m; // m added to induce positive results.
     }
-
-    /*
 
     // Es múltiplo o alguno de los primos de Mersenne conocidos hasta 2023 (Just fix this section, to improve performance).
-
-    let log2 = Math.trunc(Number(logaritmo(valorEnteroGrande, 2))); alert(log2);
-    for (const exponent of knownMersenne) {
-      if (exponent > BigInt(log2)) break;
-      let rest = modpow(2n, exponent, valorEnteroGrande - 1n);
-      if (rest === 0n) {
-        alert('ok');
-        return pow(2n, exponent) - 1n;
-      }
-    }
-    */
-
+    // if (valorEnteroGrande % 2n === 0n) return 2n;
+    /*     let log2 = Math.trunc(Number(logaritmo(valorEnteroGrande, 2)));
+        for (const exponent of knownMersenne) {
+          let rest = modpow(2n, exponent, valorEnteroGrande);
+          rest--;
+          if (rest === 0n) {
+            alert('ok');
+            return pow(2n, exponent) - 1n;
+          } else {
+            if (rest > 1n) {
+              rest = mcd(valorEnteroGrande, rest);
+              if (rest > 1n && rest !== valorEnteroGrande && valorEnteroGrande % rest === 0n) {
+                alert('ok');
+                return rest;
+              }
+            }
+          }
+        } */
 
     let raizCuadrada = sqrt(valorEnteroGrande);
     if (raizCuadrada >= 2n && valorEnteroGrande % raizCuadrada === 0n) {
@@ -803,11 +818,12 @@
     }
 
     alert('Enter para comenzar el test de depuración.');
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 40; i++) {
       let no = BigInt(repetir('1', i));
-      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<-- (realmente ${primalidadPorTentativa(no).factor}).`);
-      console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
-      console.warn(`Un factor primo de 2^${no} - 1 = ${pow(2n, no) - 1n}, es -->${encontrarUnFactorPrimo(pow(2n, no) - 1n)}<--.`);
+      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
+      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
+      // console.warn(`Un factor primo de 2^${no} - 1 = ${pow(2n, no) - 1n}, es -->${encontrarUnFactorPrimo(pow(2n, no) - 1n)}<--.`);
+      console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorTentativa(no).factor}<-- (brute force).`);
     }
   }
 
