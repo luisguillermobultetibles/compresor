@@ -517,9 +517,10 @@
     let log2 = Math.trunc(logaritmo(valorEnteroGrande, 2));
     for (const exponent of knownMersenne) {
       if (exponent > BigInt(log2)) break;
-      let rest = modpow(2n, exponent, valorEnteroGrande) - 1n;
+      let rest = modpow(2n, exponent, valorEnteroGrande + 1n);
       let m_c_d = mcd(valorEnteroGrande, rest);
       if (m_c_d !== 1n && m_c_d !== valorEnteroGrande && valorEnteroGrande % m_c_d === 0n) {
+        alert('ok');
         return m_c_d.toString();
       }
     }
