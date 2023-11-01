@@ -6,7 +6,8 @@
 </head>
 <body>
 <textarea id="textarea1"></textarea>
-<script language="JavaScript">
+<p id="salida"></p>
+<script>
 
   document.title = 'Factorización de números grandes (Capítulo I: Ruptura de los retos de RSA en 1 hora).';
 
@@ -258,7 +259,7 @@
 
   // primes between 0 and 2.000 - this (0..302 elements) list will be helpful 
   // to perform a primitive primality check.
-  primes = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n,
+  let primes = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n,
     23n, 29n, 31n, 37n, 41n, 43n, 47n, 53n, 59n, 61n, 67n, 71n, 73n, 79n, 83n, 89n, 97n, 101n,
     103n, 107n, 109n, 113n, 127n, 131n, 137n, 139n, 149n, 151n, 157n, 163n, 167n, 173n, 179n,
     181n, 191n, 193n, 197n, 199n, 211n, 223n, 227n, 229n, 233n, 239n, 241n, 251n, 257n, 263n,
@@ -464,7 +465,17 @@
     } // Pueden agregarse los criterios de divisibilidad...
     // Ningún número tiene divisores primos por encima de su raiz cuadrada
     let up = sqrt(x);
-    for (var testNo = 7n; testNo <= up; testNo += 2n) {
+
+    let valorInicial = 7n;
+
+    let multiploDeTres = (valorInicial + 2n) % 3n === 0n;
+
+    function flipFlop() {
+      multiploDeTres = !multiploDeTres; // es más rápido que probar una divisibilidad
+      return multiploDeTres ? 4n : 2n;
+    }
+
+    for (var testNo = valorInicial; testNo <= up; testNo += flipFlop()) {
       if (x % testNo === 0n) {
         return {primalidad: false, factor: testNo};
       }
@@ -736,6 +747,43 @@
     return 1;
   }
 
+  // Una solución elegante de Mauricio Contreras, https://es.stackoverflow.com/users/112837/mauricio-contreras
+  // en https://es.stackoverflow.com/questions/236576/descomponer-n%C3%BAmero-entero-en-factores-primos-con-javascript
+  // que porteamos a BigInt y a la que llamamos:
+  function teoremaGeneralDeLaAritmetica(n, sintaxisExtendida = false) {
+    let resultado = []; // aqui almacenaremos los factores de forma más legible
+    if (n === 0n || n === 1n) {
+      resultado = sintaxisExtendida && n === 1n ? [{factor: 2n, exponente: 0n}] : [{factor: n, exponente: 1n}];
+    } else {
+      let arr = []; //aqui almacenamos los factores temporalmente
+      let division = n;// el primer valor que usaremos es N
+      while (division > 1n) { // 'resultado' irá variando hasta hacerse 1
+        divisor = encontrarUnFactorPrimo(division);
+        division = BigInt(division) / BigInt(divisor); //actualizamos el valor de resultado
+        arr.push(divisor);
+      }
+      let factor = arr[0]; // almacenamos el primer valor
+      let cont = 1n; // instanciamos la cantidad de veces que aparece el primer elemento
+      if (arr.length > 1) { // si hay más de 1 elemento en el array
+        for (let i = 1; i < arr.length; i++) {
+          if (factor !== arr[i]) { // si el factor cambia, ya no se repite más, podemos almacenarlo
+            resultado.push({factor: factor, exponente: cont});
+            factor = arr[i]; // establecemos el nuevo factor
+            cont = 0n; // inciamos el contador en cero, en la siguiente línea aumentará 1
+          }
+          cont++; // si el factor se repite, aumentamos el contador, si estaba en cero se aumenta a 1
+        }
+        resultado.push({factor: factor, exponente: cont}); // almacenamos el último factor encontrado
+      } else { // en caso que N sea primo, solo tiene un factor
+        resultado.push({factor: factor, exponente: cont});
+      }
+      if (!sintaxisExtendida) {
+        resultado = [{factor: 1n, exponente: 1n}].concat(resultado); // El 1 los divide a todos
+      }
+    }
+    return resultado;
+  }
+
   // Presentar una factorización del número, en formato humano. (arreglar)
   function factorizacion(s, compresion = false, espaciado = ' ') {
 
@@ -818,20 +866,63 @@
     }
 
     alert('Enter para comenzar el test de depuración.');
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0n; i < 40n; i++) {
       let no = BigInt(repetir('1', i));
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
       // console.warn(`Un factor primo de 2^${no} - 1 = ${pow(2n, no) - 1n}, es -->${encontrarUnFactorPrimo(pow(2n, no) - 1n)}<--.`);
-      console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorTentativa(no).factor}<-- (brute force).`);
+      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorTentativa(no).factor}<-- (brute force).`);
+      console.warn(`Un factor primo de ${i}, es -->${primalidadPorTentativa(i).factor}<-- (brute force).`);
     }
   }
+
+  ////////////////
+
+  // Fix this... 
+  function humanExposition(entero, compression = false) {
+    let resultado = '';
+    // llamamos a la función que calcula los factores primos
+    let factoresPrimos = teoremaGeneralDeLaAritmetica(entero);
+    // construimos el string del resultado
+    for (let i = 0; i < factoresPrimos.length; i++) {
+      if (html) { // si usamos el 'tag' <sup> de HTML
+        resultado += (factoresPrimos[i].factor).toString();
+        +'<sup>'
+        + compression && factoresPrimos.length > 1 ? humanExposition((BigInt(factoresPrimos[i].exponente)), html, compression) : (factoresPrimos[i].exponente).toString()
+          + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : '');
+      } else {
+        resultado += (factoresPrimos[i].factor).toString()
+        + compression && factoresPrimos.length > 1 ? humanExposition((BigInt(factoresPrimos[i].exponente)), html, compression) : (factoresPrimos[i].exponente).toString()
+          + (i < factoresPrimos.length - 1 ? ' x ' : '');
+      }
+    }
+    return resultado;
+  }
+
+  function calcular(entero) {
+    //instanciamos el elemento de salida
+    let salida = document.getElementById('salida');
+    //capturamos el entero
+    // llamamos a la funciona que calcula los factores primos
+    let factoresPrimos = teoremaGeneralDeLaAritmetica(entero);
+    // construimos el string del resultado
+    let resultado = entero.toString() + ' = ';
+    for (let i = 0; i < factoresPrimos.length; i++) {
+      //usaremos el 'tag' <sup> de HTML
+      resultado += (factoresPrimos[i].factor).toString() + '<sup>' + (factoresPrimos[i].exponente).toString() + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : ' x 1');
+    }
+    // escribimos la salida
+    salida.innerHTML = resultado;
+  }
+
+  ///////////////////////
+
 
   // remove this line when fix encontrarMenorFactorPrimo and factorización
   // test();
 
 </script>
-<button onclick="imprimirAreaDeTexto(leerAreaDeTexto() + ' = ' + factorizacion(leerAreaDeTexto()));">
+<button onclick="calcular(BigInt(leerAreaDeTexto()));">
     Factorizar
 </button>
 </body>
