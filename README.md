@@ -56,7 +56,7 @@ This is the binary expression of the Fundamental Theorem of Arithmetic, although
 # This is not gzip, deflate internet navigator's browser compressor's competence, is just an INTERNET 3 LEVEL 2-DRIVER 
 # (RFC Proposal: october 31, 2023, by Lic. Luis Bultet Ibles, Cuba).
 
-  .To use with the previous described algorithm, and with no one else.
+  .To use with the previous described FORMAT, and with no one else.
 
   .Guarantees continuity in transmission, speed and maximum use of bandwidth. (Real time)
   .It is proposed for updating the TCP-IPv6 packet format, and layer B (2 or data) of the OSI network model.
