@@ -640,9 +640,9 @@
 
     // hasta 18 dígitos...
     let valorEnteroGrande = BigInt(decimal);
-    // if (decimal.length < 18) {
-    //   return primalidadPorTentativa(valorEnteroGrande).factor;
-    // }
+    if (decimal.length < 18) {
+      return primalidadPorTentativa(valorEnteroGrande).factor;
+    }
 
     // Extraer los n últimos dígitos de X
     function nUtimosDigitosDeX(n, X) {
@@ -724,7 +724,7 @@
     }
 
     // elimina esto para activar el código de abajo, utilízalo en un mejor lugar.
-    return pollardRho(valorEnteroGrande);
+    return pollardRho(valorEnteroGrande).factor;
 
     function existsCandidates(factor1, factor2) {
       // en orden
@@ -1061,7 +1061,7 @@
     let resultado = entero.toString() + ' = ';
     for (let i = 0; i < factoresPrimos.length; i++) {
       //usaremos el 'tag' <sup> de HTML
-      resultado += (factoresPrimos[i].factor).toString() + '<sup>' + (factoresPrimos[i].exponente).toString() + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : ' x 1');
+      resultado += (factoresPrimos[i].factor).toString() + '<sup>' + (factoresPrimos[i].exponente).toString() + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : '');
     }
     // escribimos la salida
     salida.innerHTML = resultado;
