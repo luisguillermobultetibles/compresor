@@ -483,6 +483,156 @@
     return {primalidad: true, factor: x};
   }
 
+  // Implementación del algoritmo de Pollard Rho para factorización de números enteros
+  function pollardRho(n, verbose = false) {
+    if (n % 2n === 0n) {
+      return {primalidad: n === 2n, factor: 2n};
+    }
+
+    let a = 2n;
+    let b = 2n;
+    let divisor = 1n;
+
+    // Bultet cycle detection
+    let cycle = false;
+    let a0;
+    let b0;
+
+    while (divisor === 1n) {
+      a = (a * a + 1n) % n;
+      b = (b * b + 1n) % n;
+      b = (b * b + 1n) % n;
+
+      if (b > a) {
+        divisor = mcd(n + a - b, n); // to avoid negative result's
+      } else {
+        divisor = mcd(a - b, n);
+      }
+
+      // cycle detection
+      if (!cycle) {
+        a0 = a;
+        b0 = b;
+        cycle = true;
+      } else if (a === a0 && b === b0) {
+        break;
+      }
+
+      if (verbose) console.warn(`d = ${divisor}, x = ${a}, y = ${b}`);
+    }
+
+    return {primalidad: divisor === 1n, factor: divisor === 1n ? n : divisor};
+  }
+
+  // Mala implementación del algoritmo de la curva elíptica de Lenstra (ECM) by ShitGPT
+  function lenstraECM(n) {
+
+    function ecmFactor(n) {
+      // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
+      function gcd(a, b) {
+        if (b == 0) {
+          return a;
+        }
+        return gcd(b, a % b);
+      }
+
+      // Función auxiliar para calcular el inverso multiplicativo de un número módulo n
+      function modInverse(a, n) {
+        let t = 0,
+          newt = 1,
+          r = n,
+          newr = a;
+
+        while (newr !== 0) {
+          let quotient = Math.floor(r / newr);
+          [t, newt] = [newt, t - quotient * newt];
+          [r, newr] = [newr, r - quotient * newr];
+        }
+
+        if (t < 0) {
+          t = t + n;
+        }
+
+        return t;
+      }
+
+      // Verificar si n es un número primo
+      function isPrime(n) {
+        if (n <= 1) {
+          return false;
+        }
+        if (n <= 3) {
+          return true;
+        }
+        if (n % 2 === 0 || n % 3 === 0) {
+          return false;
+        }
+
+        let i = 5;
+        while (i * i <= n) {
+          if (n % i === 0 || n % (i + 2) === 0) {
+            return false;
+          }
+          i += 6;
+        }
+
+        return true;
+      }
+
+      // Calcular el punto P = a * P en la curva elíptica definida por y^2 ≡ x^3 + ax + b (mod n)
+      function multiplyPoint(a, b, n, P) {
+        if (P === null) {
+          return null;
+        }
+
+        const [x, y] = P;
+        let slope, newX, newY;
+
+        if (y === 0) {
+          return null;
+        }
+
+        slope = ((3 * x * x + a) * modInverse(2 * y, n)) % n;
+        newX = (slope * slope - 2 * x) % n;
+        newY = (slope * (x - newX) - y) % n;
+
+        return [newX, newY];
+      }
+
+      // Generar un punto inicial aleatorio en la curva elíptica definida por y^2 ≡^3 + ax + b (mod n)
+      function generateRandomPoint(a, b, n) {
+        const x = Math.floor(Math.random() * n);
+        const y2 = (x * x * x + a * x + b) % n;
+        const y = Math.sqrt(y2);
+        return [x, y];
+      }
+
+      if (isPrime(n)) {
+        return n; // Si n es primo, no se puede factorizar
+      }
+
+      // Intentar encontrar un factor utilizando el algoritmo de Lenstra (ECM)
+      let a = 1,
+        b = 1,
+        P = generateRandomPoint(a, b, n);
+
+      while (P !== null) {
+        if (gcd(2 * P[1], n) !== 1) {
+          return gcd(2 * P[1], n); // Encontró un factor
+        }
+        a++;
+        b = (P[0] * P[0] - n) / (a * a); // Calcular b = (x^2 - n) / a^2
+        P = multiplyPoint(a, b, n, P); // Calcular el siguiente punto
+      }
+
+      return null; // No se pudo encontrar un factor
+    }
+
+    // Llamar al algoritmo de la curva elíptica de Lenstra (ECM)
+    return lenstraECM(n);
+  }
+
+
   // Lógica para factorización de un número tan grande como se quiera o aguante la memoria.
 
   function encontrarUnFactorPrimo(decimal) {
@@ -490,9 +640,9 @@
 
     // hasta 18 dígitos...
     let valorEnteroGrande = BigInt(decimal);
-    if (decimal.length < 18) {
-      return primalidadPorTentativa(valorEnteroGrande).factor;
-    }
+    // if (decimal.length < 18) {
+    //   return primalidadPorTentativa(valorEnteroGrande).factor;
+    // }
 
     // Extraer los n últimos dígitos de X
     function nUtimosDigitosDeX(n, X) {
@@ -572,6 +722,9 @@
     if (factorFermat >= 2n && factorFermat !== valorEnteroGrande && valorEnteroGrande % factorFermat === 0n) {
       return menor(factorFermat, valorEnteroGrande / factorFermat);
     }
+
+    // elimina esto para activar el código de abajo, utilízalo en un mejor lugar.
+    return pollardRho(valorEnteroGrande);
 
     function existsCandidates(factor1, factor2) {
       // en orden
@@ -758,8 +911,12 @@
       let arr = []; //aqui almacenamos los factores temporalmente
       let division = n;// el primer valor que usaremos es N
       while (division > 1n) { // 'resultado' irá variando hasta hacerse 1
-        divisor = encontrarUnFactorPrimo(division);
-        division = BigInt(division) / BigInt(divisor); //actualizamos el valor de resultado
+        let divisor = encontrarUnFactorPrimo(division);
+        try {
+          division = BigInt(division) / BigInt(divisor); //actualizamos el valor de resultadodivision = BigInt(division) / BigInt(divisor); //actualizamos el valor de resultado
+        } catch (e) {
+          alert(`Error: ${JSON.stringify(e)} division === ${division} y divisor === ${divisor}.`);
+        }
         arr.push(divisor);
       }
       let factor = arr[0]; // almacenamos el primer valor
@@ -774,7 +931,7 @@
           cont++; // si el factor se repite, aumentamos el contador, si estaba en cero se aumenta a 1
         }
         resultado.push({factor: factor, exponente: cont}); // almacenamos el último factor encontrado
-      } else { // en caso que N sea primo, solo tiene un factor
+      } else { // en caso de que N sea primo, solo tiene un factor
         resultado.push({factor: factor, exponente: cont});
       }
       if (!sintaxisExtendida) {
@@ -866,7 +1023,7 @@
     }
 
     alert('Enter para comenzar el test de depuración.');
-    for (let i = 0n; i < 40n; i++) {
+    for (let i = 0n; i < 1111111n; i++) {
       let no = BigInt(repetir('1', i));
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
