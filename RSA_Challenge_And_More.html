@@ -521,7 +521,7 @@
       if (verbose) console.warn(`d = ${divisor}, x = ${a}, y = ${b}`);
     }
 
-    return {primalidad: divisor === 1n, factor: divisor === 1n ? n : divisor};
+    return {primalidad: divisor === 1n || divisor === n, factor: divisor === 1n ? n : divisor};
   }
 
   // Mala implementación del algoritmo de la curva elíptica de Lenstra (ECM) by ShitGPT
@@ -673,9 +673,9 @@
     // Pruebas extras
 
     // Es divisible por uno de los primeros 300 números primos
-    let there = primes.find((them) => valorEnteroGrande % them === 0n);
-    if (there) {
-      return there.toString();
+    let there = primes.findIndex((them) => valorEnteroGrande % them === 0n);
+    if (there !== -1) {
+      return primes[there];
     }
 
     // Es un cuadrado perfecto? (solamente pueden serlo los de la forma 4s o 4s + 1.)
@@ -912,11 +912,7 @@
       let division = n;// el primer valor que usaremos es N
       while (division > 1n) { // 'resultado' irá variando hasta hacerse 1
         let divisor = encontrarUnFactorPrimo(division);
-        try {
-          division = BigInt(division) / BigInt(divisor); //actualizamos el valor de resultadodivision = BigInt(division) / BigInt(divisor); //actualizamos el valor de resultado
-        } catch (e) {
-          alert(`Error: ${JSON.stringify(e)} division === ${division} y divisor === ${divisor}.`);
-        }
+        division = division / divisor; // actualizamos el valor de la división
         arr.push(divisor);
       }
       let factor = arr[0]; // almacenamos el primer valor
