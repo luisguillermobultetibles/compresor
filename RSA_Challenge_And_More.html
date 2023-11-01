@@ -695,23 +695,26 @@
 
     // Es múltiplo o alguno de los primos de Mersenne conocidos hasta 2023 (Just fix this section, to improve performance).
     // if (valorEnteroGrande % 2n === 0n) return 2n;
-    /*     let log2 = Math.trunc(Number(logaritmo(valorEnteroGrande, 2)));
-        for (const exponent of knownMersenne) {
-          let rest = modpow(2n, exponent, valorEnteroGrande);
-          rest--;
-          if (rest === 0n) {
-            alert('ok');
-            return pow(2n, exponent) - 1n;
-          } else {
-            if (rest > 1n) {
-              rest = mcd(valorEnteroGrande, rest);
-              if (rest > 1n && rest !== valorEnteroGrande && valorEnteroGrande % rest === 0n) {
-                alert('ok');
-                return rest;
-              }
-            }
+
+    for (let noMercy = 0; noMercy < knownMersenne.length; noMercy++) {
+      let exponent = knownMersenne[noMercy];
+      let rest = modpowplus(2n, exponent, -1n, valorEnteroGrande);
+      rest--;
+      if (rest === 0n) {
+        return pow(2n, exponent) - 1n;
+      } else {
+        while (rest !== 1n) {
+          // ¿Es un cuadrado perfecto?
+          if (exponent % 2n === 0n && isAPerfectSquare(rest)) {
+            return pow(2n, exponent / 2n) - sqrt(rest);
           }
-        } */
+          rest = mcd(valorEnteroGrande, rest);
+          if (rest !== 1n && rest !== valorEnteroGrande && valorEnteroGrande % rest === 0n) {
+            return rest;
+          }
+        }
+      }
+    }
 
     let raizCuadrada = sqrt(valorEnteroGrande);
     if (raizCuadrada >= 2n && valorEnteroGrande % raizCuadrada === 0n) {
@@ -724,7 +727,7 @@
     }
 
     // elimina esto para activar el código de abajo, utilízalo en un mejor lugar.
-    return pollardRho(valorEnteroGrande).factor;
+    return pollardRho(valorEnteroGrande, true).factor;
 
     function existsCandidates(factor1, factor2) {
       // en orden
