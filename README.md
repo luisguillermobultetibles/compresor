@@ -141,3 +141,7 @@ This is the binary expression of the Fundamental Theorem of Arithmetic, although
          the Porter; If the compression algorithm is convenient, a second improvement could be added, which
          consists of, taking a fragment from the end of the packet before compressing, large enough to
          ensure bit-level interleaving
+
+* además de compresión y transmisión, ... ,la tercera aplicación es la representación de números naturales muy grandes, es decir, con cifras astronómicas...
+* e implementar aritmética modular para operar con ellos.
+* algunos de los retos son los siguientes: la función contadora o pi de Euler y la serie de los primos
