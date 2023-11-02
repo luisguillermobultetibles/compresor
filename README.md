@@ -18,7 +18,7 @@ Estado del proyecto:
 .Arreglar el factorizador y el chequeo de primalidad de BigInt.
 .Incluir las funciones pi de Euler (contadora de primos) y progresión (o serie) de primos; ancladas a tablas de valores típicos
  por ejemplo algunas potencias de dos, potencias enteras de 10.
-.Estabilidar una versión que funcione para archivos pequeños (comprimir y descomprimir).
+.Estabilizar una versión que funcione para archivos pequeños (comprimir y descomprimir).
 .y luego, incluir pruebas (hch, tdf, etcétara) y funciones estocásticas de factorización, o expeculativas estimación de índices, para primos grandes y muy grandes. 
 
 My english is so bad as your surely, but try to get the main idea:
