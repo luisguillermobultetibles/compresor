@@ -463,19 +463,18 @@
     } else if (x % 5n === 0n) {
       return {primalidad: false, factor: 5n};
     } // Pueden agregarse los criterios de divisibilidad...
+
     // Ningún número tiene divisores primos por encima de su raiz cuadrada
     let up = sqrt(x);
 
-    let valorInicial = 7n;
-
-    let multiploDeTres = (valorInicial + 2n) % 3n === 0n;
-
-    function flipFlop() {
-      multiploDeTres = !multiploDeTres; // es más rápido que probar una divisibilidad
-      return multiploDeTres ? 4n : 2n;
+    // y de paso
+    if (x % up === 0n) {
+      return primalidadPorTentativa(up);
     }
 
-    for (var testNo = valorInicial; testNo <= up; testNo += flipFlop()) {
+    let valorInicial = 3n;
+
+    for (var testNo = valorInicial; testNo <= up; testNo += 2n) {
       if (x % testNo === 0n) {
         return {primalidad: false, factor: testNo};
       }
@@ -483,9 +482,38 @@
     return {primalidad: true, factor: x};
   }
 
+  // Original version from ChatGPT
+  function inmaculatedPollardRho(n) {
+    if (n < 2n) {
+      return {primalidad: false, factor: n};
+    } else if (n % 2n === 0n) {
+      return {primalidad: n === 2n, factor: 2n};
+    }
+
+    let a = 2n;
+    let b = 2n;
+    let divisor = 1n;
+
+    while (divisor === 1n) {
+      a = (a * a + 1n) % n;
+      b = (b * b + 1n) % n;
+      b = (b * b + 1n) % n;
+
+      if (b > a) {
+        divisor = mcd(n + a - b, n); // with this improve, to avoid negative result's.
+      } else {
+        divisor = mcd(a - b, n);
+      }
+    }
+
+    return {primalidad: divisor === 1n || divisor === n, factor: divisor === 1n ? n : divisor};
+  }
+
   // Implementación del algoritmo de Pollard Rho para factorización de números enteros
   function pollardRho(n, verbose = false) {
-    if (n % 2n === 0n) {
+    if (n < 2n) {
+      return {primalidad: false, factor: n};
+    } else if (n % 2n === 0n) {
       return {primalidad: n === 2n, factor: 2n};
     }
 
@@ -524,10 +552,184 @@
     return {primalidad: divisor === 1n || divisor === n, factor: divisor === 1n ? n : divisor};
   }
 
-  // Mala implementación del algoritmo de la curva elíptica de Lenstra (ECM) by ShitGPT
+  // Las mejoras de Richard Brent
+
+  // Ejemplo de uso:
+
+  // Pueden utilizarse además del cuadrático
+  let polinomioCuadratico = (x, n) => (x * x + 1n) % n;
+  let polinomioCubico = (x, n) => (x * x * x + x * x + 1n) % n;
+  let polinomioGrado4 = (x, n) => (pow(x, 4n) + pow(x, 3n) + pow(x, 2n) + 1n) % n;
+
+  // Ejemplo de uso:
+  // pollardRhoBrent(123456789n, polinomioCuadratico, true);
+  function pollardRhoBrent(n, polinomyCallback = polinomioCuadratico, verbose = false) {
+    let a = 2n;
+    let b = 2n;
+
+    function mcd(a, b) {
+      while (b !== 0n) {
+        let t = b;
+        b = a % b;
+        a = t;
+      }
+      return a;
+    }
+
+    let cycle = false;
+    let a0, b0;
+
+    while (true) {
+      a = polinomyCallback(a, n);
+      b = polinomyCallback(polinomyCallback(b, n), n);
+
+      if (a > b) {
+        divisor = mcd(a - b, n);
+      } else if (a < b) {
+        divisor = mcd(b - a, n);
+      } else {
+        divisor = n;
+        break;
+      }
+
+      if (!cycle) {
+        a0 = a;
+        b0 = b;
+        cycle = true;
+      } else if (a === a0 && b === b0) {
+        break;
+      }
+
+      if (verbose) console.warn(`d = ${divisor}, x = ${a}, y = ${b}`);
+    }
+
+    return {primalidad: divisor === 1n || divisor === n, factor: divisor === 1n ? n : divisor};
+  }
+
+
+  // Algoritmo de factorización de Pollard p-1
+  function factorizacionPollardPMinusOne(n, maxIterations = 100) {
+    let a = 2n;
+    let b = modpow(a, n - 1n, n);
+    let d = mcd(b - 1n, n);
+
+    for (let i = 2; i <= maxIterations; i++) {
+      a = modpow(a, BigInt(i), n);
+      b = modpow(a, n - 1n, n);
+      d = mcd(b - 1n, n);
+      if (1n < d && d < n) {
+        return d;
+      }
+      if (d === n) {
+        break;
+      }
+    }
+
+    return n;
+  }
+
+  /*
+
+  La de reciprocidad bicuadrática es una ley matemática que establece una relación entre los residuos cuadráticos módulo
+  p y módulo q, dos números primos impares. En concreto, establece que para cualquier número primo impar p y cualquier
+  número entero a que no es múltiplo de p, se tiene que:
+
+    (a/p)(p/a) = (-1)^([(p-1)/2][(a-1)/2])
+
+  donde (a/p) es un símbolo de Legendre y [x] representa la parte entera de x.
+
+  Esta ley tiene múltiples aplicaciones en la teoría de números y es utilizada, por ejemplo, en la criptografía para el
+  diseño de algoritmos de encriptación seguros.
+
+  */
+  function leyReciprocidadBicuadratica(n) {
+    const num = BigInt(n);
+    const legendre = BigInt(2) ** ((num ** BigInt(2) - BigInt(1)) / BigInt(8));
+
+    if (num % BigInt(4) === BigInt(1) || num % BigInt(4) === BigInt(2)) {
+      return 'No se puede aplicar la ley de reciprocidad bicuadrática para este número.';
+    } else if (legendre === BigInt(1) || legendre === num - BigInt(1)) {
+      return 'El símbolo de Legendre de ' + num + ' es 1';
+    } else {
+      return 'El símbolo de Legendre de ' + num + ' es -1';
+    }
+  }
+
+  /*
+
+  La ley de reciprocidad cuadrática establece que si p y q son números primos impares distintos, entonces el símbolo de
+  Jacobi de p respecto a q es igual al símbolo de Jacobi de q respecto a p, excepto cuando tanto p como q sean congruentes
+  a 3 modulo 4, en cuyo caso los signos son opuestos. Esta ley es una generalización de la ley de reciprocidad cuadrática
+  de Euler. El símbolo de Jacobi es una generalización del símbolo de Legendre que permite calcular el número de soluciones
+  de la ecuación cuadrática x^2 ≡ a (mod p), donde a es un número entero y p es un número primo impar.
+
+  */
+
+  function jacobiSymbol(a, n) {
+    // Convertir los parámetros a BigInt si no lo son
+    a = BigInt(a);
+    n = BigInt(n);
+
+    // Verificar que 'n' sea mayor que 0 e impar
+    if (n <= 0n || n % 2n === 0n) {
+      throw new Error('El segundo parámetro \'n\' debe ser mayor que 0 e impar');
+    }
+
+    // Calcular el símbolo de Jacobi
+    let result = 1n;
+    while (a !== 0n) {
+      while (a % 2n === 0n) {
+        a /= 2n;
+        const r = n % 8n;
+        if (r === 3n || r === 5n) {
+          result = -result;
+        }
+      }
+      [a, n] = [n, a]; // Intercambiar valores
+      if (a % 4n === 3n && n % 4n === 3n) {
+        result = -result;
+      }
+      a %= n;
+    }
+
+    if (n === 1n) {
+      return result;
+    }
+
+    return 0n;
+  }
+
+  function quadraticReciprocity(p, q) {
+    // Convertir los parámetros a BigInt si no lo son
+    p = BigInt(p);
+    q = BigInt(q);
+
+    // Verificar que 'p' y 'q' sean primos entre sí
+    if (jacobiSymbol(p, q) !== 1n || jacobiSymbol(q, p) !== 1n) {
+      throw new Error('Los números \'p\' y \'q\' no son primos entre sí');
+    }
+
+    // Verificar que 'p' y 'q' sean primos impares
+    if (p < 3n || q < 3n || p % 2n === 0n || q % 2n === 0n) {
+      throw new Error('Los números \'p\' y \'q\' deben ser primos impares');
+    }
+
+    let result;
+    if (p % 4n === 1n || q % 4n === 1n) {
+      result = 'La ley de reciprocidad cuadrática se cumple';
+    } else {
+      result = 'La ley de reciprocidad cuadrática no se cumple';
+    }
+
+    return result;
+  }
+
+
+  // Implementación del algoritmo de la curva elíptica de Lenstra (ECM) by ChatGPT
   function lenstraECM(n) {
 
     function ecmFactor(n) {
+
       // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
       function gcd(a, b) {
         if (b == 0) {
@@ -629,7 +831,72 @@
     }
 
     // Llamar al algoritmo de la curva elíptica de Lenstra (ECM)
-    return lenstraECM(n);
+    return ecmFactor(n);
+  }
+
+  // Funciones de aritmética modular
+
+  // Función para obtener a mod (c**d)
+  function modBigInt(a, c, d) {
+    if (d === 0n) {
+      return 1n;
+    }
+
+    // Reducir a mediante el módulo c^d
+    a = a % (c ** d);
+    let result = 1n;
+
+    while (d > 0n) {
+      // Si el bit menos significativo de d es 1, multiplicar resultado por a
+      if (d & 1n) {
+        result = (result * a) % (c ** d);
+      }
+
+      // Reducir a mediante el módulo c^d
+      a = (a * a) % (c ** d);
+      d >>= 1n; // Dividir d entre 2
+    }
+
+    return result;
+  }
+
+  // Función para obtener (a**b) mod (c**d)
+  function powerModBigInt(a, b, c, d) {
+    let result = 1n;
+
+    while (b > 0n) {
+      // Si el bit menos significativo de b es 1, multiplicar resultado por a
+      if (b & 1n) {
+        result = (result * a) % (c ** d);
+      }
+
+      // Reducir a mediante el módulo c^d
+      a = (a * a) % (c ** d);
+      b >>= 1n; // Dividir b entre 2
+    }
+
+    return result;
+  }
+
+  // Función para obtener (a**b + e) mod (c**d + f)
+  function powerModPlusBigInt(a, b, e, c, d, f) {
+    let result = 1n;
+
+    while (b > 0n) {
+      // Si el bit menos significativo de b es 1, multiplicar resultado por a
+      if (b & 1n) {
+        result = (result * a) % (c ** d);
+      }
+
+      // Reducir a mediante el módulo c^d
+      a = (a * a) % (c ** d);
+      b >>= 1n; // Dividir b entre 2
+    }
+
+    // Sumar e al resultado y reducir mediante el módulo c^d + f
+    result = (result + e) % (c ** d + f);
+
+    return result;
   }
 
 
@@ -696,25 +963,25 @@
     // Es múltiplo o alguno de los primos de Mersenne conocidos hasta 2023 (Just fix this section, to improve performance).
     // if (valorEnteroGrande % 2n === 0n) return 2n;
 
-    for (let noMercy = 0; noMercy < knownMersenne.length; noMercy++) {
-      let exponent = knownMersenne[noMercy];
-      let rest = modpowplus(2n, exponent, -1n, valorEnteroGrande);
-      rest--;
-      if (rest === 0n) {
-        return pow(2n, exponent) - 1n;
-      } else {
-        while (rest !== 1n) {
-          // ¿Es un cuadrado perfecto?
-          if (exponent % 2n === 0n && isAPerfectSquare(rest)) {
-            return pow(2n, exponent / 2n) - sqrt(rest);
-          }
-          rest = mcd(valorEnteroGrande, rest);
-          if (rest !== 1n && rest !== valorEnteroGrande && valorEnteroGrande % rest === 0n) {
-            return rest;
-          }
-        }
-      }
-    }
+    // for (let noMercy = 0; noMercy < knownMersenne.length; noMercy++) {
+    //   let exponent = knownMersenne[noMercy];
+    //   let rest = modpowplus(2n, exponent, -1n, valorEnteroGrande);
+    //   rest--;
+    //   if (rest === 0n) {
+    //     return pow(2n, exponent) - 1n;
+    //   } else {
+    //     while (rest !== 1n) {
+    //       // ¿Es un cuadrado perfecto?
+    //       if (exponent % 2n === 0n && isAPerfectSquare(rest)) {
+    //         return pow(2n, exponent / 2n) - sqrt(rest);
+    //       }
+    //       rest = mcd(valorEnteroGrande, rest);
+    //       if (rest !== 1n && rest !== valorEnteroGrande && valorEnteroGrande % rest === 0n) {
+    //         return rest;
+    //       }
+    //     }
+    //   }
+    // }
 
     let raizCuadrada = sqrt(valorEnteroGrande);
     if (raizCuadrada >= 2n && valorEnteroGrande % raizCuadrada === 0n) {
@@ -727,7 +994,7 @@
     }
 
     // elimina esto para activar el código de abajo, utilízalo en un mejor lugar.
-    return pollardRho(valorEnteroGrande, true).factor;
+    return factorizacionPollardPMinusOne(valorEnteroGrande);
 
     function existsCandidates(factor1, factor2) {
       // en orden
@@ -1028,14 +1295,15 @@
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
       // console.warn(`Un factor primo de 2^${no} - 1 = ${pow(2n, no) - 1n}, es -->${encontrarUnFactorPrimo(pow(2n, no) - 1n)}<--.`);
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorTentativa(no).factor}<-- (brute force).`);
-      console.warn(`Un factor primo de ${i}, es -->${primalidadPorTentativa(i).factor}<-- (brute force).`);
+      console.warn(`Un factor primo de ${i}, es -->${primalidadPorTentativa(i).factor}<-- (brute force), -->${pollardRho(i).factor}<-- (Pollard),.`);
+      if (primalidadPorTentativa(i).factor !== pollardRho(i).factor) alert(`Falla en ${i}`);
     }
   }
 
   ////////////////
 
   // Fix this...
-  function humanExposition(entero, compression = false) {
+  function humanExposition(entero, html = true, compression = false) {
     let resultado = '';
     // llamamos a la función que calcula los factores primos
     let factoresPrimos = teoremaGeneralDeLaAritmetica(entero);
@@ -1058,8 +1326,19 @@
   function calcular(entero) {
     //instanciamos el elemento de salida
     let salida = document.getElementById('salida');
+
+    let processName = `Factorización del número ${entero}`;
+
+    // Comienzo de la sección crítica
+    console.time(processName);
+
     // llamamos a la función que calcula los factores primos
     let factoresPrimos = teoremaGeneralDeLaAritmetica(entero);
+
+    console.timeEnd(processName);
+    // Fin de la sección crítica
+
+
     // construimos el string del resultado
     let resultado = entero.toString() + ' = ';
     for (let i = 0; i < factoresPrimos.length; i++) {
@@ -1075,6 +1354,76 @@
 
   // remove this line when fix encontrarMenorFactorPrimo and factorización
   // test();
+
+  // Contiene la solución clásica (ignora la función)
+  function lucaslucas1() {
+    // ok
+    function lucasLehmerTest(p) {
+      let s = BigInt(4);
+      const m = BigInt(2) ** BigInt(p) - BigInt(1);
+
+      for (let i = 0; i < p - 2; i++) {
+        s = (s ** BigInt(2) - BigInt(2)) % m;
+      }
+
+      return s === BigInt(0);
+    }
+
+    function isPrime(p) {
+      if (p === 2) return true;
+
+      if (p < 2 || p % 2 === 0) return false;
+
+      const limit = BigInt(Math.sqrt(p));
+      for (let i = BigInt(3); i <= limit; i += BigInt(2)) {
+        if (p % i === BigInt(0)) return false;
+      }
+
+      return lucasLehmerTest(p);
+    }
+
+    const p = BigInt('521');
+    console.log(`¿El número p=${p} es primo? ${isPrime(p)}`);
+  }
+
+  // Contiene la solución mejorada (ignora la función)
+  function lucaslucas2() {
+    // Función para obtener a mod (c**d)
+    function modBigInt(a, c, d) {
+      if (d === 0n) {
+        return 1n;
+      }
+
+      // Reducir a mediante el módulo c^d
+      a = a % (c ** d);
+      let result = 1n;
+
+      while (d > 0n) {
+        // Si el bit menos significativo de d es 1, multiplicar resultado por a
+        if (d & 1n) {
+          result = (result * a) % (c ** d);
+        }
+
+        // Reducir a mediante el módulo c^d
+        a = (a * a) % (c ** d);
+        d >>= 1n; // Dividir d entre 2
+      }
+
+      return result;
+    }
+
+    function lucasLehmerTest(p) {
+      let s = modBigInt(4n, 2n ** BigInt(p) - 1n, BigInt(p));
+      const m = 2n ** BigInt(p) - 1n;
+
+      for (let i = 0; i < p - 2; i++) {
+        s = modBigInt((s ** 2n - 2n), m, BigInt(p));
+      }
+
+      return s === 0n;
+    }
+  }
+
 
 </script>
 <button onclick="calcular(BigInt(leerAreaDeTexto()));">
