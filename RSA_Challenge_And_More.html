@@ -119,7 +119,7 @@
     if (base * exp < 100n) { // fast
       return pow(base, exp) % m;
     } else {
-      let there = primes.find((them) => exp % them === 0);
+      let there = primes.find((them) => exp % them === 0n);
       if (there) {
         exp = exp / there;
         base = pow(base, there);
@@ -994,7 +994,8 @@
     }
 
     // elimina esto para activar el código de abajo, utilízalo en un mejor lugar.
-    return pollardRho(valorEnteroGrande).factor;
+    // return pollardRho(valorEnteroGrande).factor;
+    return numberFieldSieveWithIterations(valorEnteroGrande);
 
     function existsCandidates(factor1, factor2) {
       // en orden
@@ -1416,7 +1417,7 @@
       let s = modBigInt(4n, 2n ** BigInt(p) - 1n, BigInt(p));
       const m = 2n ** BigInt(p) - 1n;
 
-      for (let i = 0; i < p - 2; i++) {
+      for (let i = 0; i < p - 2n; i++) {
         s = modBigInt((s ** 2n - 2n), m, BigInt(p));
       }
 
@@ -1424,6 +1425,326 @@
     }
   }
 
+  // Según ChatGPT: aquí tienes una implementación en JavaScript para encontrar un factor primo de un argumento BigInt utilizando el algoritmo de Criba Cuadrática:
+
+
+  // Función para encontrar un factor primo utilizando la Criba Cuadrática
+  function quadraticSieve(n) {
+    /*
+        Documentación, según Wikipedia:
+
+        El algoritmo de criba cuadrática (QS del inglés quadratic sieve), es un algoritmo de factorización de enteros y,
+       en la práctica, el segundo método más rápido conocido (después de la criba general del cuerpo de números).
+       Es todavía el más rápido para enteros que tienen 100 o menos dígitos decimales, y es considerado mucho más
+       sencillo que la criba de cuerpos numéricos. Es un algoritmo de factorización de propósito general, lo que
+       significa que su tiempo de ejecución únicamente depende el tamaño del entero a ser factorizado, y no sobre
+       una estructura especial o propiedades. Fue inventado por Carl Pomerance en 1981 como una mejora a la criba lineal
+       de Schroeppel.
+
+    */
+
+    // Declaración de miembros: constantes, tipos, variables, etiquetas
+    // y subfunciones de la función quadraticSieve.
+    // Función para calcular el máximo común divisor
+    function gcd(a, b) {
+      if (b === 0n) {
+        return a;
+      }
+      return gcd(b, a % b);
+    }
+
+    // Función para calcular el módulo cuadrado
+    function squareMod(n, m) {
+      let tmpRest = n % m;
+      return (tmpRest * tmpRest) % m;
+    }
+
+    // Función para calcular el símbolo de Legendre
+    function legendreSymbol(a, p) {
+      const ls = squareMod(a, p);
+      if (ls === 1n) {
+        return 1n;
+      } else if (ls === p - 1n) {
+        return -1n;
+      }
+      return 0n;
+    }
+
+    // Función para calcular el símbolo de Jacobi
+    function jacobiSymbol(a, n) {
+      if (a === 0n) {
+        return n === 1n ? 1n : 0n;
+      } else if (a === 2n) {
+        const mod8 = n % 8n;
+        if (mod8 === 1n || mod8 === 7n) {
+          return 1n;
+        } else if (mod8 === 3n || mod8 === 5n) {
+          return -1n;
+        }
+        return 0n;
+      } else if (gcd(a, n) !== 1n) {
+        return 0n;
+      }
+
+      let e = 0n;
+      let m = n - 1n;
+      while (m % 2n === 0n) {
+        m /= 2n;
+        e++;
+      }
+
+      let v = squareMod(a, n);
+      for (let i = 1n; i <= e / 2n; i++) {
+        const prevV = v;
+        v = squareMod(v, n);
+        if (v === 1n && prevV !== 1n && prevV !== n - 1n) {
+          return 0n;
+        }
+      }
+
+      return v === 1n ? 1n : -1n;
+    }
+
+    // Cuerpo o implementación de la función quadraticSieve.
+    {
+      const sqrtN = sqrt(n);
+
+      // Verificar si n es un cuadrado perfecto
+      if (sqrtN * sqrtN === n) {
+        return sqrtN;
+      }
+
+      let a = 2n;
+      while (true) {
+        const b = jacobiSymbol(a * a - n, n);
+        if (b !== -1n) {
+          const factor = gcd(a - b, n);
+          if (factor !== 1n && factor !== n) {
+            return factor;
+          }
+        }
+        a++;
+      }
+    }
+  }
+
+  function numberFieldSieve(n) {
+    // Función auxiliar para calcular el máximo común divisor
+    function gcd(a, b) {
+      if (b === 0n) {
+        return a;
+      }
+      return gcd(b, a % b);
+    }
+
+    // Función auxiliar para calcular el módulo cuadrado
+    function squareMod(n, m) {
+      let tmpRest = n % m;
+      return (tmpRest * tmpRest) % m;
+    }
+
+    // Función auxiliar para calcular el símbolo de Legendre
+    function legendreSymbol(a, p) {
+      const ls = squareMod(a, p);
+      if (ls === 1n) {
+        return 1n;
+      } else if (ls === p - 1n) {
+        return -1n;
+      }
+      return 0n;
+    }
+
+    // Cuerpo de la función numberFieldSieve
+    const sqrtN = sqrt(n);
+
+    // Verificar si n es un cuadrado perfecto
+    if (sqrtN * sqrtN === n) {
+      return sqrtN;
+    }
+
+    let a = 2n;
+    while (true) {
+      const b = legendreSymbol(a * a - n, n);
+      if (b !== -1n) {
+        const factor = gcd(a - b, n);
+        if (factor !== 1n && factor !== n) {
+          return factor;
+        }
+      }
+      a++;
+    }
+  }
+
+  function numberFieldSieveWithIterations(n, maxIterations = BigInt(100 + Math.trunc(2000 * n.toString().length))) {
+
+    console.log(`El número de repeticiones es ${maxIterations}.`);
+
+    // Función auxiliar para calcular el máximo común divisor
+    function gcd(a, b) {
+      if (b === 0n) {
+        return a;
+      }
+      return gcd(b, a % b);
+    }
+
+    // Función auxiliar para calcular el módulo cuadrado
+    function squareMod(n, m) {
+      let tmpRest = n % m;
+      return (tmpRest * tmpRest) % m;
+    }
+
+    // Función auxiliar para calcular el símbolo de Legendre
+    function legendreSymbol(a, p) {
+      const ls = squareMod(a, p);
+      if (ls === 1n) {
+        return 1n;
+      } else if (ls === p - 1n) {
+        return -1n;
+      }
+      return 0n;
+    }
+
+    // Cuerpo de la función numberFieldSieve
+    const sqrtN = sqrt(n);
+
+    // Verificar si n es un cuadrado perfecto
+    if (sqrtN * sqrtN === n) {
+      return sqrtN;
+    }
+
+    let a = 2n;
+    let iterations = 0n;
+
+    while (iterations < maxIterations) {
+      const b = legendreSymbol(a * a - n, n);
+      if (b !== -1n) {
+        const factor = gcd(a - b, n);
+        if (factor !== 1n && factor !== n) {
+          return factor;
+        }
+      }
+      a++;
+      iterations++;
+    }
+
+    // Si no se encontró un factor primo después de maxIterations iteraciones,
+    // se asume que el número es primo
+    return n;
+  }
+
+  // Ejemplo de uso
+  const number = BigInt('1234567890123456789012345678901234567890');
+  const factor = quadraticSieve(number);
+  console.log(`La criba cuadrática de ${factor} es ${number}.`);
+
+  // Recuerda que esta implementación es solo un ejemplo y puede requerir ajustes adicionales según tus necesidades. En cuanto al copyright, ten en cuenta que el código proporcionado es solo una adaptación del algoritmo descrito en Wikipedia y no tiene restricciones de copyright. Sin embargo, ten en cuenta que siempre es recomendable verificar y respetar las licencias de cualquier código o algoritmo que utilices. ¡Espero que esto te sea útil
+
+
+  // Prueba de carrera de tareas
+  class Thread {
+    constructor() {
+      this.tasks = [];
+    }
+
+    addTask(code) {
+      const id = this.generateId();
+      const workerURL = this.createWorkerURL(`(${code.toString()})()`);
+      const worker = new Worker(workerURL);
+      const startingTime = new Date();
+      const task = {
+        id: id,
+        code: code,
+        workerURL: workerURL,
+        worker: worker,
+        startingTime: startingTime,
+        endingTime: null,
+        status: null,
+        result: null, // Agregar el campo "result" al objeto task
+      };
+      worker.onmessage = (event) => {
+        console.log('Punto de control 1: ', event);
+        tasks[tasks.indexOf(task.id)].result = event.data; // Almacenar la respuesta del worker en el campo "result"
+        tasks[tasks.indexOf(task.id)].status = 'completed'; // Actualizar el estado de la tarea a "completed"
+        tasks[tasks.indexOf(task.id)].endingTime = new Date();
+      };
+      worker.onmessage.bind(this);
+      worker.postMessage('start'); // Envía mensaje al worker para que comience la ejecución
+      this.tasks.push(task);
+      return task;
+    }
+
+    getResults() {
+      return this.tasks.map(task => ({id: task.id, result: task.result, status: task.status})); // Retorna los resultados y estado de todas las tareas
+    }
+
+    cancel(id) {
+      const taskIndex = this.tasks.findIndex(task => task.id === id);
+      if (taskIndex !== -1) {
+        const task = this.tasks[taskIndex];
+        task.worker.terminate();
+        URL.revokeObjectURL(task.workerURL);
+        this.tasks.splice(taskIndex, 1);
+        return true;
+      }
+      return false;
+    }
+
+    state(id) {
+      const task = this.tasks.find(task => task.id === id);
+      if (task) {
+        return {id: task.id, status: task.status};
+      }
+      return null;
+    }
+
+    generateId() {
+      return Math.random()
+        .toString(36)
+        .substr(2, 9);
+    }
+
+    createWorkerURL(code) {
+      const blob = new Blob([code], {type: 'application/javascript'});
+      return URL.createObjectURL(blob);
+    }
+  }
+
+  const thread = new Thread();
+
+  const task1 = thread.addTask(() => {
+    console.log('Tarea 1 ejecutándose...');
+    return 'Resultado tarea 1'; // Agregar el return para devolver un resultado
+  });
+
+  const task2 = thread.addTask(() => {
+    console.log('Tarea 2 ejecutándose...');
+    return 'Resultado tarea 2'; // Agregar el return para devolver un resultado
+  });
+
+  const task3 = thread.addTask(() => {
+    console.log('Tarea 3 ejecutándose...');
+    return 'Resultado tarea 3'; // Agregar el return para devolver un resultado
+  });
+
+  const taskIdToCancel = task1.id; // ID de la tarea que se quiere cancelar
+  const canceled = thread.cancel(taskIdToCancel);
+  console.log('Tarea cancelada:', canceled);
+
+  const taskIdToCheckState = task2.id; // ID de la tarea de la que se quiere obtener el estado
+  const taskState = thread.state(taskIdToCheckState);
+  console.log('Estado de la tarea:', taskState);
+
+  async function executeTasks() {
+    const results = thread.getResults(); // Obtener los resultados y estado de todas las tareas
+    console.log('Resultados:', results);
+  }
+
+  executeTasks();
+
+  // Felicidades, ahora sí podemos hacer una competencia de métodos de factorización en paralelo.
+  // MULTITAREAS DENTRO DE HTML, NO ES SOLAMENTE UNA SIMULACION, SON VARIOS HILOS COMO TE LO CUENTO.
+  // Solamente neesita que se almacenen los valores de las funciones.
+  // By Pipo (que es Bultet) 2023
 
 </script>
 <button onclick="calcular(BigInt(leerAreaDeTexto()));">
