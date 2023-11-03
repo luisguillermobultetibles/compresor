@@ -1639,7 +1639,6 @@
 
   // Recuerda que esta implementación es solo un ejemplo y puede requerir ajustes adicionales según tus necesidades. En cuanto al copyright, ten en cuenta que el código proporcionado es solo una adaptación del algoritmo descrito en Wikipedia y no tiene restricciones de copyright. Sin embargo, ten en cuenta que siempre es recomendable verificar y respetar las licencias de cualquier código o algoritmo que utilices. ¡Espero que esto te sea útil
 
-
   // Prueba de carrera de tareas
   class Thread {
     constructor() {
@@ -1659,26 +1658,35 @@
         startingTime: startingTime,
         endingTime: null,
         status: null,
-        result: null, // Agregar el campo "result" al objeto task
+        result: null,
       };
       worker.onmessage = (event) => {
         console.log('Punto de control 1: ', event);
-        tasks[tasks.indexOf(task.id)].result = event.data; // Almacenar la respuesta del worker en el campo "result"
-        tasks[tasks.indexOf(task.id)].status = 'completed'; // Actualizar el estado de la tarea a "completed"
-        tasks[tasks.indexOf(task.id)].endingTime = new Date();
+        task.result = event.data;
+        task.status = 'completed';
+        task.endingTime = new Date();
       };
-      worker.onmessage.bind(this);
-      worker.postMessage('start'); // Envía mensaje al worker para que comience la ejecución
+      worker.postMessage('start');
       this.tasks.push(task);
       return task;
     }
 
     getResults() {
-      return this.tasks.map(task => ({id: task.id, result: task.result, status: task.status})); // Retorna los resultados y estado de todas las tareas
+      return this.tasks.map((task) => ({ id: task.id, result: task.result, status: task.status }));
+    }
+
+    getResult(id) {
+      let result = null;
+      const taskIndex = this.tasks.findIndex((task) => task.id === id);
+      if (taskIndex !== -1) {
+        const task = this.tasks[taskIndex];
+        result = task.result;
+      }
+      return result;
     }
 
     cancel(id) {
-      const taskIndex = this.tasks.findIndex(task => task.id === id);
+      const taskIndex = this.tasks.findIndex((task) => task.id === id);
       if (taskIndex !== -1) {
         const task = this.tasks[taskIndex];
         task.worker.terminate();
@@ -1690,21 +1698,19 @@
     }
 
     state(id) {
-      const task = this.tasks.find(task => task.id === id);
+      const task = this.tasks.find((task) => task.id === id);
       if (task) {
-        return {id: task.id, status: task.status};
+        return { id: task.id, status: task.status };
       }
       return null;
     }
 
     generateId() {
-      return Math.random()
-        .toString(36)
-        .substr(2, 9);
+      return Math.random().toString(36).substr(2, 9);
     }
 
     createWorkerURL(code) {
-      const blob = new Blob([code], {type: 'application/javascript'});
+      const blob = new Blob([code], { type: 'application/javascript' });
       return URL.createObjectURL(blob);
     }
   }
@@ -1713,29 +1719,29 @@
 
   const task1 = thread.addTask(() => {
     console.log('Tarea 1 ejecutándose...');
-    return 'Resultado tarea 1'; // Agregar el return para devolver un resultado
+    return 'Resultado tarea 1';
   });
 
   const task2 = thread.addTask(() => {
     console.log('Tarea 2 ejecutándose...');
-    return 'Resultado tarea 2'; // Agregar el return para devolver un resultado
+    return 'Resultado tarea 2';
   });
 
   const task3 = thread.addTask(() => {
     console.log('Tarea 3 ejecutándose...');
-    return 'Resultado tarea 3'; // Agregar el return para devolver un resultado
+    return 'Resultado tarea 3';
   });
 
-  const taskIdToCancel = task1.id; // ID de la tarea que se quiere cancelar
+  const taskIdToCancel = task1.id;
   const canceled = thread.cancel(taskIdToCancel);
   console.log('Tarea cancelada:', canceled);
 
-  const taskIdToCheckState = task2.id; // ID de la tarea de la que se quiere obtener el estado
+  const taskIdToCheckState = task2.id;
   const taskState = thread.state(taskIdToCheckState);
   console.log('Estado de la tarea:', taskState);
 
   async function executeTasks() {
-    const results = thread.getResults(); // Obtener los resultados y estado de todas las tareas
+    const results = thread.getResults();
     console.log('Resultados:', results);
   }
 
