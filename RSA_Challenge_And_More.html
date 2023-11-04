@@ -5,7 +5,14 @@
     <title>Factorización de números naturales muy grandes.</title>
 </head>
 <body>
+<p>Página de prueba de algoritmos y técnicas de súper computación en html.</p>
+<p>Lic. Luis Guillermo Bultet Ibles. 2023. Cuba.</p>
+<br>
 <textarea id="textarea1"></textarea>
+<br>
+<input id="infija" type="checkbox" checked="false"><label> Habilitar compresión recursiva vs teorema general de la aritmética</label>
+<br>
+<input id="compresionCheckButton" type="checkbox"><label> Habilitar notación infija vs notación html</label>
 <p id="salida"></p>
 <script>
 
@@ -166,16 +173,16 @@
   // x Luis Bultet Ibles. Cuba, logaritmo. (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
   function logaritmo(x, base = null) {
     if (x < 0n) return NaN;
-    if (!base) { // natural
+    if (base === null || base === undefined || !base) { // natural
       return Math.log(16) * (x.toString(16).length - x.toString(16).substring(0, 15).length) + Math.log('0x' + x.substring(0, 15).substring(0, 15));
     }
     switch (base) {
-      case 2:
-        return logaritmo(x, 10) / Math.log10(2);
-      case 10:
+      case 2n:
+        return logaritmo(x, 10n) / Math.log10(2);
+      case 10n:
         return x.toString(10).length + Math.log10('0.' + x.toString(10).substring(0, 15));
       default:
-        return logaritmo(x, 10) / logaritmo(x, base);
+        return logaritmo(x, 10n) / logaritmo(x, base);
     }
   }
 
@@ -963,11 +970,11 @@
     // Es múltiplo o alguno de los primos de Mersenne conocidos hasta 2023 (Just fix this section, to improve performance).
     // if (valorEnteroGrande % 2n === 0n) return 2n;
 
-    // for (let noMercy = 0; noMercy < knownMersenne.length; noMercy++) {
+    // for (let noMercy = 0; noMercy < logaritmo(valorEnteroGrande, 2n); noMercy++) {
     //   let exponent = knownMersenne[noMercy];
     //   let rest = modpowplus(2n, exponent, -1n, valorEnteroGrande);
     //   rest--;
-    //   if (rest === 0n) {
+    //   if (mcd(rest, valorEnteroGrande) === 0n) {
     //     return pow(2n, exponent) - 1n;
     //   } else {
     //     while (rest !== 1n) {
@@ -1305,29 +1312,8 @@
 
   // Fix this...
   function humanExposition(entero, html = true, compression = false) {
-    let resultado = '';
-    // llamamos a la función que calcula los factores primos
-    let factoresPrimos = teoremaGeneralDeLaAritmetica(entero);
-    // construimos el string del resultado
-    for (let i = 0; i < factoresPrimos.length; i++) {
-      if (html) { // si usamos el 'tag' <sup> de HTML
-        resultado += (factoresPrimos[i].factor).toString();
-        +'<sup>'
-        + compression && factoresPrimos.length > 1 ? humanExposition((BigInt(factoresPrimos[i].exponente)), html, compression) : (factoresPrimos[i].exponente).toString()
-          + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : '');
-      } else {
-        resultado += (factoresPrimos[i].factor).toString()
-        + compression && factoresPrimos.length > 1 ? humanExposition((BigInt(factoresPrimos[i].exponente)), html, compression) : (factoresPrimos[i].exponente).toString()
-          + (i < factoresPrimos.length - 1 ? ' x ' : '');
-      }
-    }
-    return resultado;
-  }
 
-  function calcular(entero) {
-    //instanciamos el elemento de salida
-    let salida = document.getElementById('salida');
-
+    // process id
     let processName = `Factorización del número ${entero}`;
 
     // Comienzo de la sección crítica
@@ -1339,15 +1325,50 @@
     console.timeEnd(processName);
     // Fin de la sección crítica
 
-
     // construimos el string del resultado
-    let resultado = entero.toString() + ' = ';
+    let resultado = '';
     for (let i = 0; i < factoresPrimos.length; i++) {
+      let factor = factoresPrimos[i].factor.toString();
+      let exponente = factoresPrimos[i].exponente.toString();
+      if (compression && factoresPrimos[i].exponente > 1n) {
+        exponente = humanExposition(factoresPrimos[i].exponente, html, compression);
+      }
       //usaremos el 'tag' <sup> de HTML
-      resultado += (factoresPrimos[i].factor).toString() + '<sup>' + (factoresPrimos[i].exponente).toString() + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : '');
+      if (html) {
+        resultado += factor + '<sup>' + exponente + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : '');
+      } else {
+        exponente = exponente !== '1' ? '^(' + exponente + ') ' : '';
+        resultado += factor + exponente + (i < factoresPrimos.length - 1 ? ' x ' : '');
+      }
     }
+
+    // let resultado = '';
+    // // construimos el string del resultado
+    // for (let i = 0; i < factoresPrimos.length; i++) {
+    //   if (html) { // si usamos el 'tag' <sup> de HTML
+    //     resultado += (factoresPrimos[i].factor).toString();
+    //     +'<sup>'
+    //     + compression && factoresPrimos.length > 1 ? humanExposition((BigInt(factoresPrimos[i].exponente)), html, compression) : (factoresPrimos[i].exponente).toString()
+    //       + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : '');
+    //   } else {
+    //     resultado += (factoresPrimos[i].factor).toString()
+    //     + compression && factoresPrimos.length > 1 ? humanExposition((BigInt(factoresPrimos[i].exponente)), html, compression) : (factoresPrimos[i].exponente).toString()
+    //       + (i < factoresPrimos.length - 1 ? ' x ' : '');
+    //   }
+    // }
+    return resultado;
+  }
+
+  function calcular(entero) {
+    //instanciamos el elemento de salida
+    let salida = document.getElementById('salida');
+
+    let compresion = document.getElementById('compresionCheckButton').checked;
+
+    let infija = document.getElementById('infija').checked;
+
     // escribimos la salida
-    salida.innerHTML = resultado;
+    salida.innerHTML = 'La descomposición en factores de ' + entero.toString() + ' = ' + humanExposition(entero, infija, compresion);
   }
 
   ///////////////////////
@@ -1445,6 +1466,7 @@
 
     // Declaración de miembros: constantes, tipos, variables, etiquetas
     // y subfunciones de la función quadraticSieve.
+
     // Función para calcular el máximo común divisor
     function gcd(a, b) {
       if (b === 0n) {
@@ -1528,7 +1550,18 @@
     }
   }
 
+  // Esta es la criba del cuerpo de números, el algoritmo más rápido de factorización...
   function numberFieldSieve(n) {
+    /*
+    Documentación, según Wikipedia:
+
+
+
+    */
+
+    // Declaración de miembros: constantes, tipos, variables, etiquetas
+    // y subfunciones de la función numberFieldSieve.
+
     // Función auxiliar para calcular el máximo común divisor
     function gcd(a, b) {
       if (b === 0n) {
@@ -1641,68 +1674,44 @@
 
   // Prueba de carrera de tareas
   class Thread {
-    constructor() {
-      this.tasks = [];
+
+    static results = [];
+
+    constructor(task = () => {
+      return 'Ok';
+    }) {
+      this.addTask(task);
     }
 
-    addTask(code) {
-      const id = this.generateId();
-      const workerURL = this.createWorkerURL(`(${code.toString()})()`);
-      const worker = new Worker(workerURL);
-      const startingTime = new Date();
-      const task = {
-        id: id,
-        code: code,
-        workerURL: workerURL,
-        worker: worker,
-        startingTime: startingTime,
-        endingTime: null,
-        status: null,
-        result: null,
-      };
-      worker.onmessage = (event) => {
+    addTask(arrowFunction) {
+      this.id = this.generateId();
+      this.code = arrowFunction;
+      this.workerURL = this.createWorkerURL(`(${arrowFunction.toString()})();`);
+      this.worker = new Worker(this.workerURL);
+      this.startingTime = new Date();
+      this.endingTime = null;
+      this.status = null;
+      this.result = null;
+      this.worker.onmessage = (event) => {
         console.log('Punto de control 1: ', event);
-        task.result = event.data;
-        task.status = 'completed';
-        task.endingTime = new Date();
+        this.result = event.data;
+        this.status = 'completed';
+        this.endingTime = new Date();
       };
-      worker.postMessage('start');
-      this.tasks.push(task);
-      return task;
+      this.worker.postMessage('start');
     }
 
-    getResults() {
-      return this.tasks.map((task) => ({ id: task.id, result: task.result, status: task.status }));
+    getResult() {
+      return {id: this.id, result: Thread.results[this.id], status: this.status};
     }
 
-    getResult(id) {
-      let result = null;
-      const taskIndex = this.tasks.findIndex((task) => task.id === id);
-      if (taskIndex !== -1) {
-        const task = this.tasks[taskIndex];
-        result = task.result;
-      }
-      return result;
-    }
-
-    cancel(id) {
-      const taskIndex = this.tasks.findIndex((task) => task.id === id);
-      if (taskIndex !== -1) {
-        const task = this.tasks[taskIndex];
-        task.worker.terminate();
-        URL.revokeObjectURL(task.workerURL);
-        this.tasks.splice(taskIndex, 1);
-        return true;
-      }
-      return false;
+    cancel() {
+      this.worker.terminate();
+      URL.revokeObjectURL(this.workerURL);
     }
 
     state(id) {
-      const task = this.tasks.find((task) => task.id === id);
-      if (task) {
-        return { id: task.id, status: task.status };
-      }
-      return null;
+      return {id: this.id, status: this.status};
     }
 
     generateId() {
@@ -1710,47 +1719,46 @@
     }
 
     createWorkerURL(code) {
-      const blob = new Blob([code], { type: 'application/javascript' });
+      const blob = new Blob([code], {type: 'application/javascript'});
       return URL.createObjectURL(blob);
     }
   }
 
-  const thread = new Thread();
+  // Arrancando las tareas
 
-  const task1 = thread.addTask(() => {
+  const task1 = new Thread(() => {
     console.log('Tarea 1 ejecutándose...');
     return 'Resultado tarea 1';
   });
 
-  const task2 = thread.addTask(() => {
+  const task2 = new Thread(() => {
     console.log('Tarea 2 ejecutándose...');
     return 'Resultado tarea 2';
   });
 
-  const task3 = thread.addTask(() => {
+  const task3 = new Thread(() => {
     console.log('Tarea 3 ejecutándose...');
     return 'Resultado tarea 3';
   });
 
-  const taskIdToCancel = task1.id;
-  const canceled = thread.cancel(taskIdToCancel);
+
+  // Cómo eliminar una tarea?
+
+  const canceled = task1.cancel();
   console.log('Tarea cancelada:', canceled);
 
-  const taskIdToCheckState = task2.id;
-  const taskState = thread.state(taskIdToCheckState);
+  // Y cómo conocer el estado
+
+  const taskState = task2.state();
   console.log('Estado de la tarea:', taskState);
-
-  async function executeTasks() {
-    const results = thread.getResults();
-    console.log('Resultados:', results);
-  }
-
-  executeTasks();
 
   // Felicidades, ahora sí podemos hacer una competencia de métodos de factorización en paralelo.
   // MULTITAREAS DENTRO DE HTML, NO ES SOLAMENTE UNA SIMULACION, SON VARIOS HILOS COMO TE LO CUENTO.
   // Solamente neesita que se almacenen los valores de las funciones.
   // By Pipo (que es Bultet) 2023
+
+  // Bueno no son hilos primitivos a bajo nivel y microcódigo, pero son hilos, de alto nivel, tareas
+  // más bien son tubos, pero lo importante es que se ejecutan en paralelo.
 
 </script>
 <button onclick="calcular(BigInt(leerAreaDeTexto()));">
