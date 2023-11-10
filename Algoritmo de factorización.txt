@@ -1,0 +1,339 @@
+"Algoritmo para factorizar cualquier número entero menor que el mayor número de Mersenne conocido."
+
+(Para factorizar mayores es más fácil aún", pero no debería amarrarse a un estado actual, sino opcionalmente
+ para acelerar se le puede pasar un entero primo grande, menor que el que se pretende factorizar, pero esa es
+ otra historia).
+
+Lic. Luis Guillermo Bultet Ibles
+
+por el momento 2^77232917-1
+
+en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquiera menor que ese valor.
+
+
+1. La razón entera de a entre b, queda definida por:
+
+   a = b * cociente + resto
+
+   donde:
+
+   cociente = a / b, es la división entera
+
+   y
+
+   resto    = a % b, es el resto de la división
+
+2. El número a - resto, es divisible por el cociente, es decir:
+
+   cociente (a / b) divide a: (a - resto)
+
+3. Se puede concluir que para un par de números enteros a y b:
+
+   a - (a % b) siempre es divisible por b
+
+4. Esto puede utilizarse para encontrar un divisor de un número x:
+
+   Si definimos una función que acepte a x como argumento,
+
+   y se encargue de encontrar un par de valores a y b, tales que:
+
+   x = a - (a % b) sea divisible por x,
+
+   entonces hemos encontrado a un factor de x en b
+
+5. Tenemos que encontrar dos valores que satisfagan esta ecuación:
+
+   El valor de a se puede seleccionar arbitrariamente dentro de los posibles,
+
+   y del conjunto de soluciones b que genera, también (si existiesen) se toman las convenientes.
+
+   Algoritmo:
+
+   Paso   I. Encontrar a.
+
+		 	 Descripción:
+
+			 Selección de a por el pequeño teorema de Fermat:
+
+				 "Si p es un número primo y a es un entero no divisible por p,
+
+				 entonces a^p - 1 ≡ 1 (mod p). Pierre de Fermat (1640)"
+
+			podemos tomar a = 2, pues si x fuese par se puede determinar fácilmente el divisor 2
+
+			y no fuese necesario aplicar el algoritmo, luego, en caso de los impares:
+
+			tenemos que encontrar un p primo tal que mcd(a, p) ≠ 1:
+
+			Este valor puede ser cualquiera, por el momento, créanme de palabra que es necesario
+
+			tomar uno mayor que x, como veremos más adelante.
+
+			Para acelerar la convergencia, y no andar buscando números primos, y como pueden ser
+
+			cualesquiera, tomamos el mayor número de Mersenne mayor o igual al logaritmo del sucesor de (x + 1), es decir, hacemos:
+
+			a = Mersenne(i), tal que Mersenne(i) >= logaritmo(x + 1)
+
+			*En el caso excepcional de que x sea igual a 2^a - 1, se devuelve el resultado, pues fuese primo por definición del teorema homónimo.
+
+			Entonces de
+
+			a^p - 1 ≡ 1 (mod p)
+
+			obtenemos el teorema o tautología por sustitución directa:
+
+			2^Mersenne(i) - 1 ≡ 1 (mod Mersenne(i))
+
+			para eso basta con tomar
+
+			a = 2^Mersenne(i) - 1
+
+			con el número de Mersenne que cumpla la condición dada, estos números cubren
+
+			todo el dominio entero y son buenos para factorizar dígitos de
+
+			muchas cifras; pues generan predecesores de potencias enormes:
+
+			Finalmente, devolver a.
+
+   Paso  II. Obtener b por la operación de inverso multiplicativo.
+
+			 Descripción:
+
+			 Si ya tenemos un valor de a, podemos deducir de:
+
+			 x = a - (a % b),
+
+			 (a % b) = a - x,  pues pasa al otro lado de la igualdad el resto sumando y el argumento restando,
+
+			 entonces podemos aplicar:
+
+			 b = inverso multiplicativo de (a módulo a - x)
+
+			 de lo anterior se deduce que hay que seleccionar un valor de a, que sea mayor que x
+
+			 Por sustitución directa:
+
+			 divisor b = Inverso multiplicativo o modular de (2^Mersenne(i) - 1 módulo 2^Mersenne(i) - 1 - x)
+
+			 (Está garantizado que 2^Mersenne(i) - 1 no tiene factores comunes con ningún otro).
+
+   Paso III  Devolver el resultado si se encuentra,
+
+			 de otro modo, devolver 1 o x (si fuese primo, pues no tendría divisores).
+
+6. Notas:
+
+   6.1 	Para obtener el inverso multiplicativo utilizando el algoritmo de Euclides extendido:
+
+		El inverso multiplicativo de n módulo p existe si y sólo si n y p son coprimos, es decir, si mcd(n, p)=1.
+
+		Puede obtenerse mediante el Algoritmo de Euclides.
+
+		En particular, invocando el algoritmo extendido de Euclides con n y p como argumentos
+
+		se obtiene una terna (x, y, mcd(n,p)) tal que: xn + yp = mcd(n, p)
+
+		si mcd(n, p) = 1 entonces xn ≡ 1 (módulo p), de donde x es el inverso modular de n módulo p.
+
+		sino (el caso de que mcd(n, p) ≠ 1), entonces no existe el modular inverso.
+
+		Este algoritmo se ejecuta en un tiempo O(log(p)2) (asumiendo que |n|<p).
+
+   6.2  Números de Mersenne conocidos (hasta noviembre de 2023):
+
+        2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203,
+
+		2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497,
+
+		86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221,
+
+		3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657,
+
+		37156667, 42643801, 43112609, 57885161, 74207281, 77232917
+
+
+	6.3 Algoritmo del programa principal:
+
+		Definir una función "encontrarDivisor" que acepte un número entero x como argumento.
+
+		Inicializar la variable a como 2.
+
+		Si x es par, devolver 2 como divisor de x.
+
+		Si x es alguno de los números de Mc (Mersenne conocidos), o si 2^(Mc) - 1 mod x = 0, devolver 2^(Mc) - 1.
+
+		De otro modo, encontrar el número de Mersenne i tal que Mersenne(i) sea mayor o igual al logaritmo de (x + 1).
+
+		Calcular a = 2^Mersenne(i) - 1, si es exactamente igual a x, devolver 1;
+
+		Calcular el resto (a % (a - x)) y almacenarlo en la variable b.
+
+		Calcular el inverso multiplicativo de (a - x) módulo a y almacenarlo en la variable b.
+
+		Si b es igual a 1 o x, devolver b como divisor de x.
+
+		En caso contrario, devolver 1 como divisor de x.
+
+		Nota: Asegurarse de tener una función auxiliar que implemente el algoritmo de Euclides extendido para calcular el inverso multiplicativo.
+
+		Números de Mersenne conocidos (hasta noviembre de 2023): 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657, 37156667, 42643801, 43112609, 57885161, 74207281, 77232917
+
+    6.4 Algoritmos de las dependencias y funciones auxiliares (pseudocódigo, o bien javascript).
+
+        Estas funciones están adaptadas para trabajar con enteros grandes, y no con palabras de máquina;
+
+        para diferenciar un entero grande de una palabra de máquina, se utiliza una n al final del número.
+
+        6.4.1 Función para obtener el inverso multiplicativo.
+
+              function inversoMultiplicativo(a, m) {
+                let {x, y, gcd} = algoritmoEuclidesExtendido(a, m);
+                let result;
+                if (gcd != 1n) {
+                    // "No existe el inverso, por la condición de Bezout."
+                    result = null
+                }
+                else {
+                    x = (x % m + m) % m;
+                    result = x;
+                }
+                return result;
+              }
+
+        6.4.2 Función para obtener de a y b, el mcd, además del par (x, y) tales que ax + by = mcd
+
+              Versión recursiva:
+
+              // This code is contributed by Gautam goel (gautamgoel962)
+
+              function algoritmoEuclidesExtendido(a, b) {
+
+                    // Base Case
+                    if (a == 0n) {
+                        x = 0n;
+                        y = 1n;
+                        return b;
+                    }
+
+                    // To store results of recursive call
+                    let {x1, y1, gcd} = algoritmoEuclidesExtendido(b % a, a);
+
+                    // Update x and y using results of recursive call
+                    x = y1 - b / a * x1;
+                    y = x1;
+
+                    return {x: x, y: y, gcd: gcd};
+                }
+
+                Versión no recursiva:
+
+                // Mi implementación de una versión del algoritmo en Wikipedia.
+                // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+                function algoritmoEuclidesExtendido(a, b) {
+                  let q = [];
+                  let r = [];
+                  let s = [];
+                  let t = [];
+                  let i;
+                  r[0] = a;
+                  s[0] = 1n;
+                  t[0] = 0n;
+                  r[1] = b;
+                  s[1] = 0n;
+                  t[1] = 1n;
+                  i = 1;
+                  while (r[i] !== 0n) {
+                  q[i] = r[i - 1] / r[i];
+                  r[i + 1] = r[i - 1] % r[i];
+                  s[i + 1] = s[i - 1] - q[i] * s[i];
+                  t[i + 1] = t[i - 1] - q[i] * t[i];
+                  i++;
+                  }
+                  return [s[i - 1], t[i - 1], r[i - 1]];
+                }
+
+        6.4.3 Función para obtener (base^exp - 1) mod d (sin necesidad de elevar, desde luego, son enormes los no de Mersenne)
+
+                // Retorna [(base^exp) - d] mod m
+                // Se deduce aplicando el teorema chino de los restos
+                // El argumento d puede ser negativo, en particular -1, para chequear divisibilidad
+                // de expresiones de esta clase y (también conveniente para chequear la igualdad de un
+                // m ≠ 1 con un número de Mersenne, dado su exponente sin necesidad de instanciarlo).
+                function modpowplus(base, exp, d, m) {
+                  return (m + d + modpow(base, exp, m)) % m; // m added to induce positive results.
+                }
+
+        6.4.4 Función para obtener a^b mod p, seguro ya la conocen.
+
+                // Resto de la division base^exp mod m
+                function modpow(a, b, p) {
+                  // Calcula (a^b) % p utilizando el algoritmo de exponenciación modular
+                  let result = 1n;
+                  a = a % p;
+                  while (b > 0n) {
+                    if (b % 2n === 1n) {
+                      result = (result * a) % p;
+                    }
+                    b = b / 2n;
+                    a = (a * a) % p;
+                  }
+                  return result;
+                }
+
+        6.4.5 Funciones para calcular los logaritmos de enteros grandes:
+
+                // x Luis Bultet Ibles. Cuba, logaritmo.
+                // (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
+                function logaritmo(x, base = null) {
+                  if (x < 0n) return NaN;
+                  if (base === null || base === undefined || !base) { // natural
+                    return Math.log(16) * (x.toString(16).length - x.toString(16).substring(0, 15).length) + Math.log('0x' + String(x).substring(0, 15).substring(0, 15));
+                  }
+                  switch (base) {
+                    case 2n:
+                      return (x.toString(10).length + Math.log10('0.' + x.toString(10).substring(0, 15))) / Math.log10(2);
+                    case 10n:
+                      return x.toString(10).length + Math.log10('0.' + x.toString(10).substring(0, 15));
+                    default:
+                      return logaritmo(x, 10n) / logaritmo(x, base);
+                  }
+                }
+
+                // Los valores de los logaritmos para los valores de trabajo, 2023
+                // están muy por debajo del límite teórico de capacidad << Math.exp(maxInteger).
+                function logaritmoEntero(x, base = null) {
+                  return BigInt(Math.trunc(logaritmo(x, base));
+                }
+
+        6.4.5 Funciones para calcular el máximo común divisor entre (greatest common divisor of) a y b
+
+                // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
+                function gcd(a, b) {
+                  if (b == 0) {
+                    return a;
+                  }
+                  return gcd(b, a % b);
+                }
+
+        6.4.6 Funciones para calcular el máximo común divisor entre a^b + c y d
+
+                // Función para obtener el mcd entre los valores a^b + c, d
+                function gcdPlus(a, b, c, d) {
+                  let e = modpowplus(a, b, c, d);
+                  return gcd(e, d);
+                }
+                
+        6.4.7 Funciones para calcular el algoritmo de Euclides extendido entre a^b + c y d
+
+                // Función para obtener x e y tales que el a entre los valores x * (a^b + c) + y * (d) = mcd
+                function gcdExtendedPlus(a, b, c, d) {
+                  let e = modpowplus(a, b, c, d);
+                  return algoritmoEuclidesExtendido(e, d);
+                }                
+
+
+
+Lic. Luis Guillermo Bultet Ibles
+2024
