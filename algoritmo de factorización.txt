@@ -1,0 +1,617 @@
+"Algoritmo para factorizar cualquier número entero menor que el mayor número de Mersenne conocido."
+
+Lic. Luis Guillermo Bultet Ibles
+
+por el momento 2^77232917-1
+
+en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquiera menor que ese valor.
+
+
+1. La razón entera de a entre b, queda definida por:
+
+   a = b * cociente + resto
+
+   donde:
+
+   cociente = a / b, es la división entera
+
+   y
+
+   resto    = a % b, es el resto de la división
+
+2. El número a - resto, es divisible por el cociente, es decir:
+
+   cociente (a / b) divide a: (a - resto)
+
+3. Se puede concluir que para un par de números enteros a y b:
+
+   a - (a % b) siempre es divisible por b
+
+4. Esto puede utilizarse para encontrar un divisor de un número x:
+
+   Si definimos una función que acepte a x como argumento,
+
+   y se encargue de encontrar un par de valores a y b, tales que:
+
+   x = a - (a % b) sea divisible por x,
+
+   entonces hemos encontrado a un factor de x en b
+
+5. Tenemos que encontrar dos valores que satisfagan esta ecuación:
+
+   El valor de a se puede seleccionar arbitrariamente dentro de los posibles,
+
+   y del conjunto de soluciones b que genera, también (si existiesen) se toman las convenientes.
+
+   Algoritmo:
+
+   Paso   I. Encontrar a.
+
+		 	 Descripción:
+
+			 Selección de a por el pequeño teorema de Fermat:
+
+				 "Si p es un número primo y a es un entero no divisible por p,
+
+				 entonces a^p - 1 ≡ 1 (mod p). Pierre de Fermat (1640)"
+
+			podemos tomar a = 2, pues si x fuese par se puede determinar fácilmente el divisor 2
+
+			y no fuese necesario aplicar el algoritmo, luego, en caso de los impares:
+
+			tenemos que encontrar un p primo tal que mcd(a, p) ≠ 1:
+
+			Este valor puede ser cualquiera, por el momento, créanme de palabra que es necesario
+
+			tomar uno mayor que x, como veremos más adelante.
+
+			Para acelerar la convergencia, y no andar buscando números primos, y como pueden ser
+
+			cualesquiera, tomamos el mayor número de Mersenne mayor o igual al logaritmo del sucesor de (x + 1), es decir, hacemos:
+
+			a = Mersenne(i), tal que Mersenne(i) >= logaritmo(x + 1)
+
+			*En el caso excepcional de que x sea igual a 2^a - 1, se devuelve el resultado, pues fuese primo por definición del teorema homónimo.
+
+			Entonces de
+
+			a^p - 1 ≡ 1 (mod p)
+
+			obtenemos el teorema o tautología por sustitución directa:
+
+			2^Mersenne(i) - 1 ≡ 1 (mod Mersenne(i))
+
+			para eso basta con tomar
+
+			a = 2^Mersenne(i) - 1
+
+			con el número de Mersenne que cumpla la condición dada, estos números cubren
+
+			todo el dominio entero y son buenos para factorizar dígitos de
+
+			muchas cifras; pues generan predecesores de potencias enormes:
+
+			Finalmente, devolver a.
+
+   Paso  II. Obtener b por la operación de inverso multiplicativo.
+
+			 Descripción:
+
+			 Si ya tenemos un valor de a, podemos deducir de:
+
+			 x = a - (a % b),
+
+			 (a % b) = a - x,  pues pasa al otro lado de la igualdad el resto sumando y el argumento restando,
+
+			 entonces podemos aplicar:
+
+			 b = inverso multiplicativo de (a módulo a - x)
+
+			 de lo anterior se deduce que hay que seleccionar un valor de a, que sea mayor que x
+
+			 Por sustitución directa:
+
+			 divisor b = Inverso multiplicativo o modular de (2^Mersenne(i) - 1 módulo 2^Mersenne(i) - 1 - x)
+
+			 (Está garantizado que 2^Mersenne(i) - 1 no tiene factores comunes con ningún otro).
+
+   Paso III  Devolver el resultado si se encuentra,
+
+			 de otro modo, devolver 1 o x (si fuese primo, pues no tendría divisores).
+
+6. Notas:
+
+   6.1 	Para obtener el inverso multiplicativo utilizando el algoritmo de Euclides extendido:
+
+		El inverso multiplicativo de n módulo p existe si y sólo si n y p son coprimos, es decir, si mcd(n, p)=1.
+
+		Puede obtenerse mediante el Algoritmo de Euclides.
+
+		En particular, invocando el algoritmo extendido de Euclides con n y p como argumentos
+
+		se obtiene una terna (x, y, mcd(n,p)) tal que: xn + yp = mcd(n, p)
+
+		si mcd(n, p) = 1 entonces xn ≡ 1 (módulo p), de donde x es el inverso modular de n módulo p.
+
+		sino (el caso de que mcd(n, p) ≠ 1), entonces no existe el modular inverso.
+
+		Este algoritmo se ejecuta en un tiempo O(log(p)2) (asumiendo que |n|<p).
+
+   6.2  Números de Mersenne conocidos (hasta noviembre de 2023):
+
+        2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203,
+
+		2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497,
+
+		86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221,
+
+		3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657,
+
+		37156667, 42643801, 43112609, 57885161, 74207281, 77232917
+
+
+	6.3 Algoritmo del programa principal:
+
+		Definir una función "encontrarDivisor" que acepte un número entero x como argumento.
+
+		Inicializar la variable a como 2.
+
+		Si x es par, devolver 2 como divisor de x.
+
+		Si x es alguno de los números de Mc (Mersenne conocidos), o si 2^(Mc) - 1 mod x = 0, devolver 2^(Mc) - 1.
+
+		De otro modo, encontrar el número de Mersenne i tal que Mersenne(i) sea mayor o igual al logaritmo de (x + 1).
+
+		Calcular a = 2^Mersenne(i) - 1, si es exactamente igual a x, devolver 1;
+
+		Calcular el resto (a % (a - x)) y almacenarlo en la variable b.
+
+		Calcular el inverso multiplicativo de (a - x) módulo a y almacenarlo en la variable b.
+
+		Si b es igual a 1 o x, devolver b como divisor de x.
+
+		En caso contrario, devolver 1 como divisor de x.
+
+		Nota: Asegurarse de tener una función auxiliar que implemente el algoritmo de Euclides extendido para calcular el inverso multiplicativo.
+
+		Números de Mersenne conocidos (hasta noviembre de 2023): 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657, 37156667, 42643801, 43112609, 57885161, 74207281, 77232917
+
+    6.4 Algoritmos de las dependencias y funciones auxiliares (pseudocódigo, o bien javascript).
+
+        Estas funciones están adaptadas para trabajar con enteros grandes, y no con palabras de máquina;
+
+        para diferenciar un entero grande de una palabra de máquina, se utiliza una n al final del número.
+
+        6.4.1 Función para obtener el inverso multiplicativo.
+
+              function inversoMultiplicativo(a, m) {
+                let {x, y, gcd} = algoritmoEuclidesExtendido(a, m);
+                let result;
+                if (gcd != 1n) {
+                    // "No existe el inverso, por la condición de Bezout."
+                    result = null
+                }
+                else {
+                    x = (x % m + m) % m;
+                    result = x;
+                }
+                return result;
+              }
+
+        6.4.2 Función para obtener de a y b, el mcd, además del par (x, y) tales que ax + by = mcd
+
+              Versión recursiva:
+
+              // This code is contributed by Gautam goel (gautamgoel962)
+
+              function algoritmoEuclidesExtendido(a, b) {
+
+                    // Base Case
+                    if (a == 0n) {
+                        x = 0n;
+                        y = 1n;
+                        return b;
+                    }
+
+                    // To store results of recursive call
+                    let {x1, y1, gcd} = algoritmoEuclidesExtendido(b % a, a);
+
+                    // Update x and y using results of recursive call
+                    x = y1 - b / a * x1;
+                    y = x1;
+
+                    return {x: x, y: y, gcd: gcd};
+                }
+
+                Versión no recursiva:
+
+                // Mi implementación de una versión del algoritmo en Wikipedia.
+                // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+                function algoritmoEuclidesExtendido(a, b) {
+                  let q = [];
+                  let r = [];
+                  let s = [];
+                  let t = [];
+                  let i;
+                  r[0] = a;
+                  s[0] = 1n;
+                  t[0] = 0n;
+                  r[1] = b;
+                  s[1] = 0n;
+                  t[1] = 1n;
+                  i = 1;
+                  while (r[i] !== 0n) {
+                  q[i] = r[i - 1] / r[i];
+                  r[i + 1] = r[i - 1] % r[i];
+                  s[i + 1] = s[i - 1] - q[i] * s[i];
+                  t[i + 1] = t[i - 1] - q[i] * t[i];
+                  i++;
+                  }
+
+                  return {x: s[i - 1], y: t[i - 1], z: r[i - 1]};
+                }
+
+
+
+        6.4.3 Función para obtener (base^exp - 1) mod d (sin necesidad de elevar, desde luego, son enormes los no de Mersenne)
+
+                // Retorna [(base^exp) + d] mod m
+                // Se deduce aplicando el teorema chino de los restos
+                // El argumento d puede ser negativo, en particular -1, para chequear divisibilidad
+                // de expresiones de esta clase y (también conveniente para chequear la igualdad de un
+                // m ≠ 1 con un número de Mersenne, dado su exponente sin necesidad de instanciarlo).
+                function modpowplus(base, exp, d, m) {
+                  let result = (modpow(base, exp, m) + d) % m;
+                  return result < 0n ? m + result: result;
+                }
+
+        6.4.4 Función para obtener a^b mod p, seguro ya la conocen.
+
+                // Resto de la division base^exp mod m
+                function modpow(a, b, p) {
+                  // Calcula (a^b) % p utilizando el algoritmo de exponenciación modular
+                  let result = 1n;
+                  a = a % p;
+                  while (b > 0n) {
+                    if (b % 2n === 1n) {
+                      result = (result * a) % p;
+                    }
+                    b = b / 2n;
+                    a = (a * a) % p;
+                  }
+                  return result;
+                }
+
+        6.4.5 Funciones para calcular los logaritmos de enteros grandes:
+
+                // x Luis Bultet Ibles. Cuba, logaritmo.
+                // (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
+                function logaritmo(x, base = null) {
+                  if (x < 0n) return NaN;
+                  if (base === null || base === undefined || !base) { // natural
+                    return Math.log(16) * (x.toString(16).length - x.toString(16).substring(0, 15).length) + Math.log('0x' + String(x).substring(0, 15).substring(0, 15));
+                  }
+                  switch (base) {
+                    case 2n:
+                      return (x.toString(10).length + Math.log10('0.' + x.toString(10).substring(0, 15))) / Math.log10(2);
+                    case 10n:
+                      return x.toString(10).length + Math.log10('0.' + x.toString(10).substring(0, 15));
+                    default:
+                      return logaritmo(x, 10n) / logaritmo(x, base);
+                  }
+                }
+
+                // Los valores de los logaritmos para los valores de trabajo, 2023
+                // están muy por debajo del límite teórico de capacidad << Math.exp(maxInteger).
+                function logaritmoEntero(x, base = null) {
+                  return BigInt(Math.trunc(logaritmo(x, base));
+                }
+
+        6.4.5 Funciones para calcular el máximo común divisor entre (greatest common divisor of) a y b
+
+                // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
+                function gcd(a, b) {
+                  if (b === 0n) {
+                    return a;
+                  }
+                  return gcd(b, a % b);
+                }
+
+        6.4.6 Funciones para calcular el máximo común divisor entre a^b + c y d
+
+                // Función para obtener el mcd entre los valores a^b + c, d
+                function gcdPlus(a, b, c, d) {
+                  let e = modpowplus(a, b, c, d);
+                  return gcd(e, d);
+                }
+
+        6.4.7 Funciones para calcular el algoritmo de Euclides extendido entre a^b + c y d
+
+                // Función para obtener x e y tales que el a entre los valores x * (a^b + c) + y * (d) = mcd
+                function gcdExtendedPlus(a, b, c, d) {
+                  let e = modpowplus(a, b, c, d);
+                  return algoritmoEuclidesExtendido(e, d);
+                }
+
+    6.5 Números primos de Mersenne (Referencia, para chequeo de resultados).
+
+     Si un número 2 ^ n - 1 es primo, entonces n también lo es. Se llaman números primos de Mersenne.
+     Si n es primo y 2 ^ n - 1 no es un número de Mersenne, entonces sus factores tienen la forma 2kp + 1 y dejan resto 1 o 7 módulo 8
+     Se plantea que lo anterior elimina el 63% de los candidatos. (Mr. George Woltman Colloquium)
+     Si n es compuesto e igual a: a * b, entonces 2 ^ n - 1 es divisible por 2 ^ a - 1, y por 2 ^ b - 1, de forma independientemente.
+     Lo anterior se obtiene por el desarrollo de la potencia según el binomio de Newton.
+
+     Estos son los números de Mersenne conocidos hasta 2023...
+
+      # 	           n 	                 Mn Nº de cifras    Fecha           Descubridor                         π(Mn) (es el primo no...)
+      1 	           2 	                  3 	       1    antigüedad 	    Euclides                            1
+      2 	           3 	                  7 	       1    antigüedad 	    Euclides                            2
+      3 	           5 	                 31 	       2    antigüedad 	    Euclides                            3
+      4 	           7 	                127 	       3    antigüedad 	    Euclides                            4
+      5 	          13                   8191 	       4    1456 	        anónimo                             6
+      6 	          17                 131071            6    1588 	        Cataldi                             7
+      7 	          19                 524287            6    1588 	        Cataldi                             8
+      8 	          31             2147483647           10    1772 	        Euler                               11
+      9 	          61    2305843009213693951           19    1883 	        Pervushin                           18
+      10 	          89    618970019…449562111           27    1911 	        Powers                              24
+      11 	         107    162259276…010288127           33    1914 	        Powers                              28
+      12 	         127    170141183…884105727           39    1876 	        Lucas                               31
+      13 	         521    686479766…115057151          157    30-01-1952 	    Robinson (SWAC)
+      14 	         607    531137992…031728127          183    30-01-1952 	    Robinson (SWAC)
+      15 	       1.279    104079321…168729087          386    25-06-1952 	    Robinson (SWAC)
+      16 	       2.203    147597991…697771007          664    07-10-1952 	    Robinson (SWAC)
+      17 	       2.281    446087557…132836351          687    09-10-1952 	    Robinson (SWAC)
+      18 	       3.217    259117086…909315071          969    08-09-1957 	    Riesel
+      19 	       4.253    190797007…350484991        1.281    03-11-1961 	    Hurwitz
+      20 	       4.423    285542542…608580607        1.332    03-11-1961 	    Hurwitz
+      21 	       9.689    478220278…225754111        2.917    11-05-1963 	    Gillies
+      22 	       9.941    346088282…789463551        2.993    16-05-1963 	    Gillies
+      23 	      11.213    281411201…696392191        3.376    02-06-1963 	    Gillies                             ¿how hard?
+      24 	      19.937    431542479…968041471        6.002    04-03-1971 	    Tuckerman
+      25 	      21.701    448679166…511882751        6.533    30-10-1978 	    Noll y Nickel
+      26 	      23.209    402874115…779264511        6.987    09-02-1979 	    Noll
+      27 	      44.497    854509824…011228671       13.395    08-04-1979 	    Nelson y Slowinski
+      28 	      86.243    536927995…433438207       25.962    25-09-1982 	    Slowinski
+      29 	     110.503    521928313…465515007       33.265    28-01-1988 	    Colquitt y Welsh
+      30 	     132.049    512740276…730061311       39.751    20-09-1983 	    Slowinski
+      31 	     216.091    746093103…815528447       65.050    06-09-1985 	    Slowinski
+      32 	     756.839    174135906…544677887      227.832    19-02-1992 	    Slowinski y Gage
+      33 	     859.433    129498125…500142591      258.716    10-01-1994 	    Slowinski y Gage
+      34 	   1.257.787 	412245773…089366527      378.632    03-09-1996 	    Slowinski y Gage
+      35 	   1.398.269 	814717564…451315711      420.921    13-11-1996 	    GIMPS / Joel Armengaud
+      36 	   2.976.221 	623340076…729201151      895.932    24-08-1997 	    GIMPS / Gordon Spence
+      37 	   3.021.377 	127411683…024694271      909.526    27-01-1998 	    GIMPS / Roland Clarkson
+      38 	   6.972.593 	437075744…924193791    2.098.960    01-06-1999 	    GIMPS /
+      39 	  13.466.917 	924947738…256259071    4.053.946    14-11-2001 	    GIMPS / Michael Cameron
+      40 	  20.996.011 	125976895…855682047    6.320.430    17-11-2003 	    GIMPS / Michael Shafer
+      41 	  24.036.583 	299410429…733969407    7.235.733    15-05-2004 	    GIMPS / Josh Findley
+      42 	  25.964.951 	122164630…577077247    7.816.230    18-02-2005 	    GIMPS / Martin Nowak
+      43 	  30.402.457 	315416475…652943871    9.152.052    15-12-2005 	    GIMPS / Curtis Cooper y Steven Boone
+      44 	  32.582.657 	124575026…053967871    9.808.358    04-09-2006 	    GIMPS / Curtis Cooper y Steven Boone
+      45 	  37.156.667 	202254406…308220927   11.185.272    06-09-2008 	    GIMPS / Hans-Michael Elvenich
+      46 	  42.643.801 	169873516…562314751   12.837.064    12-04-2009 	    GIMPS / Odd M. Strindmo
+      47 	  43.112.609 	316470269…697152511   12.978.189    23-08-2008 	    GIMPS / Edson Smith
+      48 	  57.885.161 	581887266…724285951   17.425.170    25-01-2013 	    GIMPS / Curtis Cooper
+      49[1]   74.207.281 	300376418…086436351   22.338.618    07-01-2016 	    GIMPS / Curtis Cooper
+      50[2]   77.232.917 	467333183…762179071   23.249.425    26-12-2017 	    GIMPS / Jonathan Pace
+
+      No se conoce si existen más números primos de Mersenne entre el 45º (M37.156.667) y el 50º (M77.232.917) por lo tanto, esta tabla es provisional.
+      Un caso histórico, el 29º número primo de Mersenne fue descubierto después del 30º y el 31º.
+
+      Me gustaría mantener esto bien lejos de las humoristas, no es nada gracioso.
+
+Lic. Luis Guillermo Bultet Ibles
+2024
+
+-------------------------------------- Simbología
+
+.Deducción de la ecuación en forma analítica de π(x), función Pi de Euler, mal llamada
+ función contadora de primos.
+
+.No confundir con la constante de Arquímedes, conocida como pi:
+ π ≈ 3.141592653589793238462643383279528841971693993751582974944592378164628...
+
+.Se define la función π(x) de la siguiente forma:
+
+	argumento		imagen
+	Real			Real
+	x		->	    Su parte entera coincide con la cantidad de números
+				    primos menores o iguales a la parte entera de x.
+
+.Algunos de sus valores son:
+
+    π(1)                            =                          0
+    π(2)                            =                          1
+    π(3)                            =                          2
+    π(4)                            =                          2
+    π(5)                            =                          3
+    π(10)                           =                          4
+    π(100)                          =                         25
+    π(1000)                         =                        168
+    π(10000)                        =                       1229
+    π(100000)                       =                       9592
+    π(1000000)                      =                      78498
+    π(10000000)                     =                     664579
+    π(100000000)                    =                    5761455
+    π(1000000000)                   =                   50847534
+    π(10000000000)                  =                  455052511
+    π(100000000000)                 =                 4118054813
+    π(1000000000000)                =                37607912018
+    π(10000000000000)               =               346065536839
+    π(100000000000000)              =              3204941750802
+    π(1000000000000000)             =             29844570422669
+    π(10000000000000000)            =            279238341033925
+    π(100000000000000000)           =           2623557157654233
+    π(1000000000000000000)          =          24739954287740860
+    π(10000000000000000000)         =         234057667276344607
+    π(100000000000000000000)        =        2220819602560918841
+    π(1000000000000000000000)       =       21127269486018731928
+    π(10000000000000000000000)      =      201467286689315906290
+    π(100000000000000000000000)     =     1925320391606803968923
+    π(1000000000000000000000000)    =    18435599767349200867866
+    π(10000000000000000000000000)   =   176844944073500872481823
+    π(100000000000000000000000000)  =  1699198003310734225063668
+    π(1000000000000000000000000000) = 16351491779623324752602866
+
+.Una de las consecuencias más importantes de la teoría de números es que el valor de π(x)
+
+ se aproxima al de x / ln(x) cuando x tiende al infinito, es decir:
+
+ π(x) ≈ x / ln(x), cuando x es muy grande, o bien
+
+ π(x) / x ≈ 1 / ln(x), ídem...
+
+ o mejor dicho:
+
+ El límite de π(x) * ln(x) / x, cuando x tiende a infinito (x -> ∞), es igual a 1.
+
+ Donde ln(x) es el logaritmo natural del número.
+
+ Este es el llamado teorema de los números primos (de Gauss) y su validez de esSu validez fue demostrada
+
+ de forma independiente, por los matemáticos Jacques Hadamard y Charles de la Vallée-Poussin.
+
+ Esta función es muy útil para estimar la cantidad de primos, pero no es una forma analítica
+
+ exacta, pues no significa que la diferencia entre π(x) y x / ln(x) se aproxime a cero, sino que
+
+ su cociente se aproxima a 1, se puede interpretar como que la densidad media de números primos entre
+
+ los números enteros se aproxima a 1 / ln(x) a medida que x aumenta.
+
+ 25 años después de que Gauss descubriera la aproximación, Legendre lo mejoró aún más:
+
+ π(x) ≈ x / [ln(x) - 1.08366], cuando x tiende a infinito.
+
+ .
+
+  Ahí vamos,
+
+  Definimos a partir del teorema de Wilson, función analítica para la primalidad de x.
+
+  .Se define la función ρ(x) de la siguiente forma:
+
+  	argumento		imagen
+  	Real			Real
+  	x		->	    En números enteros,
+
+  	                0 si el número es compuesto,
+
+  	                1 si el número es primo.
+
+  	                Expresión analítica modular
+
+  	                ρ(x) = Γ²(x - 2) mod x
+
+  	                Expresión analítica en enteros
+
+                    ρ(x) = Γ²(x - 2) - x * int(Γ²(x - 2) / x)
+
+                    Pudiera sustituirse int por su forma analítica,
+
+                    en reales positivos utilizo la función idéntica en el rango
+
+                    que coincide con la parte decimal de x
+
+                    fracc_ir(x) = ½ + Atn(Tan((π/x) - (π/2)) / π
+
+                    luego:
+
+                    trunc_ir(x) = x - fracc_ir(x) = x - ½ - Atn(Tan((π/x) - (π/2)) / π, entonces
+
+                    Expresión analítica definitiva, de la función primalidad:
+
+                    ρ(x) = (Γ²(x - 2) / x) - ½ - Atn(Tan((π/(Γ²(x - 2) / x)) - (π/2)) / π
+
+
+ .Si x es primo, π(x) = π(x-1) + 1, sino π(x) = π(x-1) + 0
+
+  π(x) = π(x - 1) + ρ(x)
+
+  de ahí que:
+
+  π(x) - π(x - 1) = ρ(x)
+
+.π(x) = π(x + 1) excepto cuando x = 2, en ese caso π(x) = π(x + 1) - 1
+
+  eso sucede cuando coinciden la primalidad de dos consecutivos (los únicos dos y tres), luego:
+
+  π(x) + π(x - 1) = 2 π(x) + ρ(x) * ρ(x - 1)
+
+.Entonces de multiplicar π(x) - π(x - 1) = ρ(x) y π(x) + π(x - 1) = 2 π(x) + ρ(x) ρ(x - 1),
+
+ se obtiene una diferencia de cuadrados
+
+ π²(x) - π²(x - 1) = 2 ρ(x) π(x) + ρ(x) ρ(x - 1)
+
+     parte fraccionaria(x)  = 1/2 + atn(tan(πx - π/2)) / π,
+     parte entera(x) = x - frac(x) = x - 1/2 + atn(tan(πx - π/2)) / π,
+     resto de la división(x, y) = y * frac(x/y) = y * (1/2 + atn(tan(πx - π/2)) / π)
+     función primalidad(x) = Γ²(x - 2) mod x = x * (1/2 + atn(tan(π(Γ²(x - 2)) - π/2)) / π)
+
+////////////////////
+
+Deducción:
+
+¡Hola! Por supuesto, intentaré encontrar una relación entre la sucesión π(x) y los valores (2**(x-1)-1)/x en los valores primos de x.
+
+La sucesión π(x) es la función contadora de primos, que cuenta el número de primos menores o iguales que x. Por otro lado, la expresión (2**(x-1)-1)/x devuelve un número cuando x es primo y es conocido como número de Mersenne.
+
+Los números de Mersenne son de la forma 2p - 1, donde p es un número primo. Si p es primo y se le aplica la función contadora de primos π§, se obtiene un número primo. Esto se conoce como número primo de Mersenne.
+
+Entonces, la relación que podemos establecer es que si π(x) = p, donde p es primo, entonces (2(x-1)-1)/x es un número primo de Mersenne.
+
+Por ejemplo, si π(x) = 3, lo cual significa que hay 3 números primos menores o iguales que x, y x es un número primo, entonces (2**(x-1)-1)/x es un número primo de Mersenne.
+
+Sin embargo, debemos tener en cuenta que esta relación no siempre se cumple. No todos los valores de (2**(x-1)-1)/x cuando x es primo son números primos de Mersenne. Por lo tanto, es importante verificar individualmente si cada resultado es un número primo de Mersenne.
+
+Espero haber sido de ayuda. Si tienes alguna otra pregunta, no dudes en preguntar.
+
+//////////////////////////////////////////////////////
+
+Otros datos:
+
+El teorema conocido como “Identidad de Lucas-Lehmer” establece que si p es un número primo de Mersenne, es decir,
+de la forma 2^n - 1, donde n es un número natural primo,
+entonces el MCD (máximo común divisor) de a^(p-1) - 1 y a^(q-1) - 1 es a^(MCD(p-1, q-1)) - 1.
+
+La premisa principal del teorema es que p debe ser un número primo de Mersenne, y se basa en la propiedad del período
+de repetición para las secuencias generadas por números de Mersenne.
+
+Aquí tienes una implementación en JavaScript utilizando el objeto BigInt:
+
+function lucasLehmerMCD(a, p, q) {
+  const m = p - 1;
+  const n = q - 1;
+  const mcd = gcd(m, n);
+  const result = BigInt(a) ** BigInt(mcd) - BigInt(1);
+
+  return result.toString();
+}
+
+function gcd(a, b) {
+  if (b === 0) {
+    return a;
+  }
+
+  return gcd(b, a % b);
+}
+
+// Ejemplo de uso
+const a = 2n; // Número base
+const p = 7n; // Exponente p de Mersenne (Número primo de Mersenne 2^p - 1)
+const q = 11n; // Exponente q de Mersenne (Número primo de Mersenne 2^q - 1)
+
+const result = lucasLehmerMCD(a, p, q);
+console.log(result); // Resultado: “2047” (2^11 - 1)
+
+
+
+En este ejemplo, la función lucasLehmerMCD recibe los parámetros a, p y q, donde a es el número base y p y q
+son los exponenetes utilizados para generar los números primos de Mersenne (2^p - 1 y 2^q - 1 respectivamente).
+La función calcula el MCD de p-1 y q-1 utilizando el algoritmo de Euclides implementado en la función gcd. Luego,
+eleva a la base a a la potencia del MCD y le resta 1. El resultado se retorna como una cadena de texto utilizando
+el método toString().
+
+Recuerda que es importante utilizar el objeto BigInt en JavaScript cuando se trabajan con números enteros
+muy grandes, ya que así se evita la pérdida de precisión que ocurre con el tipo de dato Number estándar.
