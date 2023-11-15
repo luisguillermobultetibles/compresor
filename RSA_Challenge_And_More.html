@@ -607,7 +607,7 @@
           return gcd(b, a % b);
         }
 
-        let _mcd = gcd(x, modpowplus(2n, m, -1n, x) === 0n);
+        let _mcd = gcd(x, modpowplus(2n, m, -1n, x));
         if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
           result.factor = _mcd;
           return true;
