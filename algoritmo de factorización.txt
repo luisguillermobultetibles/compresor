@@ -55,9 +55,23 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 				 entonces a^p - 1 ≡ 1 (mod p). Pierre de Fermat (1640)"
 
-			podemos tomar a = 2, pues si x fuese par se puede determinar fácilmente el divisor 2
+			¿Qué significa esto?
 
-			y no fuese necesario aplicar el algoritmo, luego, en caso de los impares:
+			x ≡ y (mod z)
+
+			se lee x es congruente con y módulo z; y significa, para los no iniciados:
+
+			que dejan el mismo resto al dividir por z, es decir: a mod z = y mod z,
+
+			o dicho de otro modo, se cumple: a % z === y % z, si definimos el operador binario:
+
+			mod o %, como el residuo o resto de la división.
+
+			Volviendo al tema, en la ecuación que nos ocupa podemos tomar de basea = 2,
+
+			pues si x fuese par se puede determinar fácilmente el divisor 2
+
+			y no fuese necesario aplicar el algoritmo, luego, en caso de los valores impares:
 
 			tenemos que encontrar un p primo tal que mcd(a, p) ≠ 1:
 
@@ -101,7 +115,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 			 x = a - (a % b),
 
-			 (a % b) = a - x,  pues pasa al otro lado de la igualdad el resto sumando y el argumento restando,
+			 (a % b) = a - x, pues pasa al otro lado de la igualdad el resto sumando y el argumento restando,
 
 			 entonces podemos aplicar:
 
@@ -162,7 +176,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 		De otro modo, encontrar el número de Mersenne i tal que Mersenne(i) sea mayor o igual al logaritmo de (x + 1).
 
-		Calcular a = 2^Mersenne(i) - 1, si es exactamente igual a x, devolver 1;
+		Calcular a = 2^Mersenne(i) - 1;
 
 		Calcular el resto (a % (a - x)) y almacenarlo en la variable b.
 
@@ -175,6 +189,8 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 		Nota: Asegurarse de tener una función auxiliar que implemente el algoritmo de Euclides extendido para calcular el inverso multiplicativo.
 
 		Números de Mersenne conocidos (hasta noviembre de 2023): 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657, 37156667, 42643801, 43112609, 57885161, 74207281, 77232917
+
+		El próximo, luego del límite de Pace: 2^77232917 - 1 pudiera ser 2^82589933-1, todavía no se conoce.
 
     6.4 Algoritmos de las dependencias y funciones auxiliares (pseudocódigo, o bien javascript).
 
@@ -394,11 +410,166 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
       48 	  57.885.161 	581887266…724285951   17.425.170    25-01-2013 	    GIMPS / Curtis Cooper
       49[1]   74.207.281 	300376418…086436351   22.338.618    07-01-2016 	    GIMPS / Curtis Cooper
       50[2]   77.232.917 	467333183…762179071   23.249.425    26-12-2017 	    GIMPS / Jonathan Pace
+      51      82.589.933                          24,862,048    07-12-2018      GIMPS / Patrick Laroche
+
 
       No se conoce si existen más números primos de Mersenne entre el 45º (M37.156.667) y el 50º (M77.232.917) por lo tanto, esta tabla es provisional.
       Un caso histórico, el 29º número primo de Mersenne fue descubierto después del 30º y el 31º.
 
-      Me gustaría mantener esto bien lejos de las humoristas, no es nada gracioso.
+7. Poniéndolo todo junto:
+
+      function primality(x) {
+        let result = {factor: x, primalidad: false};
+        // Inicializar la variable a como 2.
+        let a = 2n;
+        // Si x es par, devolver 2 como divisor de x.
+        if (!x || x < 2n) {
+          result = {factor: x, primalidad: false};
+        } else {
+          // Si x es alguno de los números de Mc (Mersenne conocidos),
+          // o si 2^(Mc) - 1 mod x = 0, devolver 2^(Mc) - 1.
+          // Known Mersenne number exponents until october 2023
+          let knownMersenne = [2n, 3n, 5n, 7n, 13n, 17n, 19n, 31n, 61n, 89n, 107n, 127n, 521n, 607n, 1279n, 2203n,
+            2281n, 3217n, 4253n, 4423n, 9689n, 9941n, 11213n, 19937n, 21701n, 23209n, 44497n,
+            86243n, 110503n, 132049n, 216091n, 756839n, 859433n, 1257787n, 1398269n, 2976221n,
+            3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
+            37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n]; // El próximo pudiera ser 2^82589933-1
+          if (knownMersenne.some((m) => {
+            if (x % m === 0n) {
+              result.factor = m;
+              return true;
+            } else {
+              return false;
+            }
+          })) {
+            result.primalidad = result.factor === x;
+          } else if (knownMersenne.some((m) => {
+            // Retorna [(base^exp) + d] mod m
+            // Se deduce aplicando el teorema chino de los restos
+            // El argumento d puede ser negativo, en particular -1, para chequear divisibilidad
+            // de expresiones de esta clase y (también conveniente para chequear la igualdad de un
+            // m ≠ 1 con un número de Mersenne, dado su exponente sin necesidad de instanciarlo).
+            function modpowplus(base, exp, d, m) {
+              // Resto de la division base^exp mod m
+              function modpow(base, exp, m) {
+                let result = 1n;
+                while (exp > 0n) {
+                  if ((exp & 1n) === 1n) {
+                    result = (result * base) % m;
+                  }
+                  exp = exp >> 1n;
+                  base = (base * base) % m;
+                }
+                return result;
+              }
+
+              let result = (modpow(base, exp, m) + d) % m;
+              return result < 0n ? m + result : result;
+            }
+
+            // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
+            function gcd(a, b) {
+              if (b === 0n) {
+                return a;
+              }
+              return gcd(b, a % b);
+            }
+
+            let _mcd = gcd(x, modpowplus(2n, m, -1n, x));
+            if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
+              result.factor = _mcd;
+              return true;
+            } else {
+              return false;
+            }
+          })) {
+            result.primalidad = result.factor === x;
+          } else {
+
+            // De otro modo, encontrar el número de Mersenne i
+            // tal que Mersenne(i) sea mayor o igual al logaritmo entero de (x + 1).
+
+            function logaritmoEntero(x, base = null) {
+
+              // x Luis Bultet Ibles. Cuba, logaritmo. (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
+              function logaritmo(x, base = null) {
+                if (x < 0n) return NaN;
+
+                if (base === null || base === undefined || !base) { // natural
+                  return Math.log(Number(x));
+                }
+
+                switch (base) {
+                  case 2n:
+                    return BigInt(Math.log2(Number(x)));
+                  case 10n:
+                    return BigInt(Math.log10(Number(x)));
+                  default:
+                    return BigInt(Math.log(Number(x))) / BigInt(Math.log(Number(base)));
+                }
+              }
+
+              return BigInt(Math.trunc(Number(logaritmo(x, base))));
+            }
+
+            let log2 = logaritmoEntero(x + 1n);
+            let posMin = 0;
+            while (knownMersenne[posMin] < log2 && posMin < knownMersenne.length - 1) {
+              posMin++;
+            }
+            // Calcular a = 2^Mersenne(i) - 1;
+            a = 2n ** knownMersenne[posMin] - 1n;
+
+            // Calcular el resto (a % (a - x)) y almacenarlo en la variable b.
+            function inversoMultiplicativo(a, m) {
+              // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+              // Mi implementación de una versión del algoritmo en Wikipedia.
+              // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+              function algoritmoEuclidesExtendido(a, b) {
+                let q = [];
+                let r = [];
+                let s = [];
+                let t = [];
+                let i;
+                r[0] = a;
+                s[0] = 1n;
+                t[0] = 0n;
+                r[1] = b;
+                s[1] = 0n;
+                t[1] = 1n;
+                i = 1;
+                while (r[i] !== 0n) {
+                  q[i] = r[i - 1] / r[i];
+                  r[i + 1] = r[i - 1] % r[i];
+                  s[i + 1] = s[i - 1] - q[i] * s[i];
+                  t[i + 1] = t[i - 1] - q[i] * t[i];
+                  i++;
+                }
+                return {x: s[i - 1], y: t[i - 1], z: r[i - 1]};
+              }
+
+              let {x, y, gcd} = algoritmoEuclidesExtendido(a, m);
+              let result;
+              if (gcd !== 1n) {
+                // "No existe el inverso, por la condición de Bezout."
+                result = null;
+              } else {
+                x = (x % m + m) % m;
+                result = x;
+              }
+              return result;
+            }
+
+            // Calcular el inverso multiplicativo de (a - x) módulo a y almacenarlo en la variable b.
+            let b = inversoMultiplicativo(a - x, a);
+
+            // Primos
+            result.primalidad = !b || b < 2n || b === x;
+            result.factor = result.primalidad ? x : b;
+          }
+        }
+        return result;
+      }
 
 Lic. Luis Guillermo Bultet Ibles
 2024
