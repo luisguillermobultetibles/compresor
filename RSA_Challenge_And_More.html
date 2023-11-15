@@ -33,11 +33,23 @@
 
   let textArea1 = document.getElementById('textarea1');
 
-  // Try to solve ($200 000.00 premium) RSA-2048
+  // Try to solve ($200 000.00 premium retirado) RSA-2048
+  const RSA_2048 = 25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784406918290641249515082189298559149176184502808489120072844992687392807287776735971418347270261896375014971824691165077613379859095700097330459748808428401797429100642458691817195118746121515172654632282216869987549182422433637259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133844143603833904414952634432190114657544454178424020924616515723350778707749817125772467962926386356373289912154831438167899885040445364023527381951378636564391212010397122822120720357n;
   // textArea1.value = '25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784406918290641249515082189298559149176184502808489120072844992687392807287776735971418347270261896375014971824691165077613379859095700097330459748808428401797429100642458691817195118746121515172654632282216869987549182422433637259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133844143603833904414952634432190114657544454178424020924616515723350778707749817125772467962926386356373289912154831438167899885040445364023527381951378636564391212010397122822120720357';
+  // De verdad que no es primo, no pasa la prueba china.
+
+  /*
+
+    599823897
+    419433555789
+527783033874687778946687
+
+
+  */
 
   // By the way, begin with this (should return: 465675465116607065549 x 4892055594575155744537):
-  textArea1.value = '3405216300313504830198257210261655966267675384939576673511952248673362411735468038563372942490642693347467098478001335308975250937544195016567619003881616581236469669041265048258537672640665463788514955970507947571047389698184377657355682259659379177022817188359345341243392636514070566217447251850070571480516170787647344639275129176217682619396957509988852559050815094899119273811632676055806597283353578559544597435660107932846181164403554578224521980922371344982004954744947671889457981629190043745603074129550595705148033748074400384250426619344631335191298245210926069812566566078649792586377987899724032939882251114016759873436781730775872542761850297205528168913014427877873693607685642431568955810061806772536785342169354600440970717468879613846425783841452360706615751771436613387820470838114784129829717383821672031891046689524997794852111471334550655423073873902897251302655117188251656610234291491121248240445081547918201170467611571581199482079106671527752098222693031868837060919791708943843768404406641474438580353806106943164418846416040298959554375337500566517394988430088924858580286243780477533876990046865285269715830068376198629862066631612350161944705322118895058583325087799628008808757794447247498260598375534330784129642281105429434347039219480683114237584581062123260604906453400842321463528782535007336953624603886315153245660419983454159353103323610612128888908318885568953086702334710765132039444847804378993419090689588822190144011845538362910077658158256855911539393534628195788126975642820671960038795741353486714292916964865346559596343384934418598281828211087048647383152955212351160688553820034390970520856885389504165919483513569420468207229867701986649862393859388750045503679635721779745999222652606322073667021790621567793599232889209408029326738917935160031194914540406992255116936118231078175916351157401421435037499779581862250394497294989138937944589115746637271086620986632999375685686929871241269657292057866993269718024018605211282433932998120138618871336205487369389749750897797941916787686017331310432382424295397394153331276861585409642431629370511619447925821370535265524073475329696472450322247741571029969995399092938132933711822375255950130804347686175249093717361152945717053657562150905550020512570966820321634995846441592759666700760332803799057476197075324637846791910834886939833786920375073590631543298568386777276782059915197303739269504961472133198505216128927411639946173171031086206969666767188157407328113307292411113483557089761354000418219248540894532719593418891885158661824404980944671270792818634618307550163011068483795833207548971795420532375551746155787548389505644576382098191583994012712098100936134091612769904478085504917446181533641424671007431736078792438157458867415502746566404460014256342218770971917689729350131580995770805558163537058667726710607209817923972296769838794779434114207745612548504801013253090838553166897658335659269013901857653916714799350902647181525613449719142054491291860418552161636012799087121472707339771648116201827523936452308382402110572859195250161756388332200839820703404793048612071811468209146151295713744586974897766393037057567381925992618644101365267839319958370726251558455850346650100837249835931123223590830099522596001037236079389134875880994561034518704266768152248684173598604104437629250854300853039039395609075709872102487790618816944354652065385380410589277744293212890625000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+  // textArea1.value = '3405216300313504830198257210261655966267675384939576673511952248673362411735468038563372942490642693347467098478001335308975250937544195016567619003881616581236469669041265048258537672640665463788514955970507947571047389698184377657355682259659379177022817188359345341243392636514070566217447251850070571480516170787647344639275129176217682619396957509988852559050815094899119273811632676055806597283353578559544597435660107932846181164403554578224521980922371344982004954744947671889457981629190043745603074129550595705148033748074400384250426619344631335191298245210926069812566566078649792586377987899724032939882251114016759873436781730775872542761850297205528168913014427877873693607685642431568955810061806772536785342169354600440970717468879613846425783841452360706615751771436613387820470838114784129829717383821672031891046689524997794852111471334550655423073873902897251302655117188251656610234291491121248240445081547918201170467611571581199482079106671527752098222693031868837060919791708943843768404406641474438580353806106943164418846416040298959554375337500566517394988430088924858580286243780477533876990046865285269715830068376198629862066631612350161944705322118895058583325087799628008808757794447247498260598375534330784129642281105429434347039219480683114237584581062123260604906453400842321463528782535007336953624603886315153245660419983454159353103323610612128888908318885568953086702334710765132039444847804378993419090689588822190144011845538362910077658158256855911539393534628195788126975642820671960038795741353486714292916964865346559596343384934418598281828211087048647383152955212351160688553820034390970520856885389504165919483513569420468207229867701986649862393859388750045503679635721779745999222652606322073667021790621567793599232889209408029326738917935160031194914540406992255116936118231078175916351157401421435037499779581862250394497294989138937944589115746637271086620986632999375685686929871241269657292057866993269718024018605211282433932998120138618871336205487369389749750897797941916787686017331310432382424295397394153331276861585409642431629370511619447925821370535265524073475329696472450322247741571029969995399092938132933711822375255950130804347686175249093717361152945717053657562150905550020512570966820321634995846441592759666700760332803799057476197075324637846791910834886939833786920375073590631543298568386777276782059915197303739269504961472133198505216128927411639946173171031086206969666767188157407328113307292411113483557089761354000418219248540894532719593418891885158661824404980944671270792818634618307550163011068483795833207548971795420532375551746155787548389505644576382098191583994012712098100936134091612769904478085504917446181533641424671007431736078792438157458867415502746566404460014256342218770971917689729350131580995770805558163537058667726710607209817923972296769838794779434114207745612548504801013253090838553166897658335659269013901857653916714799350902647181525613449719142054491291860418552161636012799087121472707339771648116201827523936452308382402110572859195250161756388332200839820703404793048612071811468209146151295713744586974897766393037057567381925992618644101365267839319958370726251558455850346650100837249835931123223590830099522596001037236079389134875880994561034518704266768152248684173598604104437629250854300853039039395609075709872102487790618816944354652065385380410589277744293212890625000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+  textArea1.value = '12345';
 
   function leerAreaDeTexto() {
     return textArea1.value;
@@ -107,13 +119,13 @@
   }
 
   // Resto de la division base^exp mod m
-  function slowModpow(base, exp, m) {
+  function modpow(base, exp, m) {
     let result = 1n;
     while (exp > 0n) {
-      if (exp % 2n !== 0n) {
+      if ((exp & 1n) === 1n) {
         result = (result * base) % m;
       }
-      exp = exp / 2n;
+      exp = exp >> 1n;
       base = (base * base) % m;
     }
     return result;
@@ -139,23 +151,13 @@
     }
   }
 
-  // Use this global variable as a proxy
-  let viaRapida = false;
-
-  function modpow(base, exp, m) {
-    if (viaRapida) {
-      return fastModpow(base, exp, m);
-    } else {
-      return slowModpow(base, exp, m);
-    }
-  }
 
   function menor(x, y) {
-    if (x < y) return x; else return y;
+    return (x < y) ? x : y;
   }
 
   function mayor(x, y) {
-    if (x > y) return x; else return y;
+    return x > y ? x : y;
   }
 
   function mcd(a, b) {
@@ -171,20 +173,30 @@
     return result;
   }
 
+  function mcm(a, b) {
+    return a * b / mcd(a, b);
+  }
+
   // x Luis Bultet Ibles. Cuba, logaritmo. (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
   function logaritmo(x, base = null) {
     if (x < 0n) return NaN;
+
     if (base === null || base === undefined || !base) { // natural
-      return Math.log(16) * (x.toString(16).length - x.toString(16).substring(0, 15).length) + Math.log('0x' + x.substring(0, 15).substring(0, 15));
+      return Math.log(Number(x));
     }
+
     switch (base) {
       case 2n:
-        return logaritmo(x, 10n) / Math.log10(2);
+        return BigInt(Math.log2(Number(x)));
       case 10n:
-        return x.toString(10).length + Math.log10('0.' + x.toString(10).substring(0, 15));
+        return BigInt(Math.log10(Number(x)));
       default:
-        return logaritmo(x, 10n) / logaritmo(x, base);
+        return BigInt(Math.log(Number(x))) / BigInt(Math.log(Number(base)));
     }
+  }
+
+  function logaritmoEntero(x, base = null) {
+    return BigInt(Math.trunc(Number(logaritmo(x, base))));
   }
 
   // Elevar el número neperiano e a la potencia de x
@@ -193,6 +205,27 @@
     e.length = Number(menor(BigInt(e.length), Math.round(logaritmo(x, 10))));
     let result = pow(BigInt(e), x);
     result.length = 1 + Math.trunc(Number(x) / x.length);
+    return result;
+  }
+
+  function exponent(a) {
+    let e = '27182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664238';
+    const digitosSignificativos = Math.floor(2.302585092994045 * Number(a));
+    let ePrima = Number(Math.min(e.substr(0, digitosSignificativos + 1), e.length))
+    ; // Recortar la cadena e al número de dígitos significativos
+
+    let result;
+
+    if (BigInt(a) <= BigInt(43)) {
+      result = BigInt(Number(a)); // is ok
+    } else {
+      if (BigInt(a) % BigInt(2) === BigInt(0)) {
+        result = BigInt(Number(a) ** BigInt(2)) * BigInt(ePrima) ** BigInt(2);
+      } else {
+        result = BigInt(Number(a - 1)) * BigInt(ePrima);
+      }
+    }
+
     return result;
   }
 
@@ -229,12 +262,14 @@
   }
 
   // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
-  function extendedEuclides(a, b) {
-    var q = [];
-    var r = [];
-    var s = [];
-    var t = [];
-    var i;
+  // Mi implementación de una versión del algoritmo en Wikipedia.
+  // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+  function algoritmoEuclidesExtendido(a, b) {
+    let q = [];
+    let r = [];
+    let s = [];
+    let t = [];
+    let i;
     r[0] = a;
     s[0] = 1n;
     t[0] = 0n;
@@ -249,7 +284,8 @@
       t[i + 1] = t[i - 1] - q[i] * t[i];
       i++;
     }
-    return [s[i - 1], t[i - 1], r[i - 1]];
+
+    return {x: s[i - 1], y: t[i - 1], z: r[i - 1]};
   }
 
   // resuelve una ecuación diofántica lineal., encontrar [a, b] tal que ax + by = z
@@ -260,8 +296,8 @@
       return []; // NTS (Bezout condition)
     }
     let q = extendedEuclides(x, y);
-    let a = q[0] * z / m_c_d;
-    let b = q[1] * z / m_c_d;
+    let a = q.x * z / m_c_d;
+    let b = q.y * z / m_c_d;
     return [a, b];
   }
 
@@ -458,6 +494,29 @@
 
   }
 
+  // Función auxiliar para determinar si un número pequeño es primo.
+  function esPrimo(numero) {
+    if (numero <= 1n) {
+      return false;
+    }
+    if (numero <= 3n) {
+      return true;
+    }
+
+    if (numero % 2n === 0n || numero % 3n === 0n) {
+      return false;
+    }
+
+    let i = 5n;
+    while (i * i <= numero) {
+      if (numero % i === 0n || numero % (i + 2n) === 0n) {
+        return false;
+      }
+      i += 6n;
+    }
+    return true;
+  }
+
   // (primalidad de números prqueños por fuerza bruta, lenta y exhaustiva)
   function primalidadPorTentativa(x) {
     if (!x || x < 2n) {
@@ -488,6 +547,160 @@
       }
     }
     return {primalidad: true, factor: x};
+  }
+
+  // Encontrar factor utilizando el inverso multiplicativo, implementación de: algoritmo de factorización.txt
+  function primality(x) {
+    let result = {factor: x, primalidad: false};
+    // Inicializar la variable a como 2.
+    let a = 2n;
+    // Si x es par, devolver 2 como divisor de x.
+    if (!x || x < 2n) {
+      result = {factor: x, primalidad: false};
+    } else {
+      // Si x es alguno de los números de Mc (Mersenne conocidos),
+      // o si 2^(Mc) - 1 mod x = 0, devolver 2^(Mc) - 1.
+      // Known Mersenne number exponents until october 2023
+      let knownMersenne = [2n, 3n, 5n, 7n, 13n, 17n, 19n, 31n, 61n, 89n, 107n, 127n, 521n, 607n, 1279n, 2203n,
+        2281n, 3217n, 4253n, 4423n, 9689n, 9941n, 11213n, 19937n, 21701n, 23209n, 44497n,
+        86243n, 110503n, 132049n, 216091n, 756839n, 859433n, 1257787n, 1398269n, 2976221n,
+        3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
+        37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n]; // El próximo pudiera ser 2^82589933-1
+      if (knownMersenne.some((m) => {
+        if (x % m === 0n) {
+          result.factor = m;
+          return true;
+        } else {
+          return false;
+        }
+      })) {
+        result.primalidad = result.factor === x;
+      } else if (knownMersenne.some((m) => {
+        // Retorna [(base^exp) + d] mod m
+        // Se deduce aplicando el teorema chino de los restos
+        // El argumento d puede ser negativo, en particular -1, para chequear divisibilidad
+        // de expresiones de esta clase y (también conveniente para chequear la igualdad de un
+        // m ≠ 1 con un número de Mersenne, dado su exponente sin necesidad de instanciarlo).
+        function modpowplus(base, exp, d, m) {
+          // Resto de la division base^exp mod m
+          function modpow(base, exp, m) {
+            let result = 1n;
+            while (exp > 0n) {
+              if ((exp & 1n) === 1n) {
+                result = (result * base) % m;
+              }
+              exp = exp >> 1n;
+              base = (base * base) % m;
+            }
+            return result;
+          }
+
+          let result = (modpow(base, exp, m) + d) % m;
+          return result < 0n ? m + result : result;
+        }
+
+        // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
+        function gcd(a, b) {
+          if (b === 0n) {
+            return a;
+          }
+          return gcd(b, a % b);
+        }
+
+        let _mcd = gcd(x, modpowplus(2n, m, -1n, x) === 0n);
+        if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
+          result.factor = _mcd;
+          return true;
+        } else {
+          return false;
+        }
+      })) {
+        result.primalidad = result.factor === x;
+      } else {
+
+        // De otro modo, encontrar el número de Mersenne i
+        // tal que Mersenne(i) sea mayor o igual al logaritmo entero de (x + 1).
+
+        function logaritmoEntero(x, base = null) {
+
+          // x Luis Bultet Ibles. Cuba, logaritmo. (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
+          function logaritmo(x, base = null) {
+            if (x < 0n) return NaN;
+
+            if (base === null || base === undefined || !base) { // natural
+              return Math.log(Number(x));
+            }
+
+            switch (base) {
+              case 2n:
+                return BigInt(Math.log2(Number(x)));
+              case 10n:
+                return BigInt(Math.log10(Number(x)));
+              default:
+                return BigInt(Math.log(Number(x))) / BigInt(Math.log(Number(base)));
+            }
+          }
+
+          return BigInt(Math.trunc(Number(logaritmo(x, base))));
+        }
+
+        let log2 = logaritmoEntero(x + 1n);
+        let posMin = 0;
+        while (knownMersenne[posMin] < log2 && posMin < knownMersenne.length - 1) {
+          posMin++;
+        }
+        // Calcular a = 2^Mersenne(i) - 1;
+        a = 2n ** knownMersenne[posMin] - 1n;
+
+        // Calcular el resto (a % (a - x)) y almacenarlo en la variable b.
+        function inversoMultiplicativo(a, m) {
+          // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+          // Mi implementación de una versión del algoritmo en Wikipedia.
+          // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+          function algoritmoEuclidesExtendido(a, b) {
+            let q = [];
+            let r = [];
+            let s = [];
+            let t = [];
+            let i;
+            r[0] = a;
+            s[0] = 1n;
+            t[0] = 0n;
+            r[1] = b;
+            s[1] = 0n;
+            t[1] = 1n;
+            i = 1;
+            while (r[i] !== 0n) {
+              q[i] = r[i - 1] / r[i];
+              r[i + 1] = r[i - 1] % r[i];
+              s[i + 1] = s[i - 1] - q[i] * s[i];
+              t[i + 1] = t[i - 1] - q[i] * t[i];
+              i++;
+            }
+            return {x: s[i - 1], y: t[i - 1], z: r[i - 1]};
+          }
+
+          let {x, y, gcd} = algoritmoEuclidesExtendido(a, m);
+          let result;
+          if (gcd !== 1n) {
+            // "No existe el inverso, por la condición de Bezout."
+            result = null;
+          } else {
+            x = (x % m + m) % m;
+            result = x;
+          }
+          return result;
+        }
+
+        // Calcular el inverso multiplicativo de (a - x) módulo a y almacenarlo en la variable b.
+        let b = inversoMultiplicativo(a - x, a);
+
+        // Primos
+        result.primalidad = !b || b < 2n || b === x;
+        result.factor = result.primalidad ? x : b;
+      }
+    }
+    return result;
   }
 
   // Original version from ChatGPT
@@ -1288,26 +1501,6 @@
     return result;
   }
 
-  function test() {
-    function repetir(digito, veces) {
-      let result = '';
-      for (let i = 0; i < veces; i++) {
-        result = result + digito;
-      }
-      return result;
-    }
-
-    alert('Enter para comenzar el test de depuración.');
-    for (let i = 0n; i < 1111111n; i++) {
-      let no = BigInt(repetir('1', i));
-      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
-      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
-      // console.warn(`Un factor primo de 2^${no} - 1 = ${pow(2n, no) - 1n}, es -->${encontrarUnFactorPrimo(pow(2n, no) - 1n)}<--.`);
-      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorTentativa(no).factor}<-- (brute force).`);
-      console.warn(`Un factor primo de ${i}, es -->${primalidadPorTentativa(i).factor}<-- (brute force), -->${pollardRho(i).factor}<-- (Pollard),.`);
-      if (primalidadPorTentativa(i).factor !== pollardRho(i).factor) alert(`Falla en ${i}`);
-    }
-  }
 
   ////////////////
 
@@ -1411,31 +1604,34 @@
 
   // Contiene la solución mejorada (ignora la función)
   function lucaslucas2() {
-    // Función para obtener a mod (c**d)
-    function modBigInt(a, c, d) {
-      if (d === 0n) {
-        return 1n;
-      }
 
-      // Reducir a mediante el módulo c^d
-      a = a % (c ** d);
-      let result = 1n;
 
-      while (d > 0n) {
-        // Si el bit menos significativo de d es 1, multiplicar resultado por a
-        if (d & 1n) {
-          result = (result * a) % (c ** d);
+    function lucasLehmerTest2(p) {
+
+      // Función para obtener a mod (c**d)
+      function modBigInt(a, c, d) {
+        if (d === 0n) {
+          return 1n;
         }
 
         // Reducir a mediante el módulo c^d
-        a = (a * a) % (c ** d);
-        d >>= 1n; // Dividir d entre 2
+        a = a % (c ** d);
+        let result = 1n;
+
+        while (d > 0n) {
+          // Si el bit menos significativo de d es 1, multiplicar resultado por a
+          if (d & 1n) {
+            result = (result * a) % (c ** d);
+          }
+
+          // Reducir a mediante el módulo c^d
+          a = (a * a) % (c ** d);
+          d >>= 1n; // Dividir d entre 2
+        }
+
+        return result;
       }
 
-      return result;
-    }
-
-    function lucasLehmerTest(p) {
       let s = modBigInt(4n, 2n ** BigInt(p) - 1n, BigInt(p));
       const m = 2n ** BigInt(p) - 1n;
 
@@ -1764,6 +1960,1070 @@
 
   // Bueno no son hilos primitivos a bajo nivel y microcódigo, pero son hilos al final, de alto nivel, tareas
   // más bien son tubos, pero lo importante es que se ejecutan en paralelo.
+
+
+  // Factorización por búsqueda y captura.
+  // Optimizar, para que también busque por la izquierda.
+  function primalidadPorBusquedayCaptura(X, zeros = true) {
+    // Copyright: ® 2023 Luis Bultet Ibles.
+
+    function preSent(fact) {
+      return {primality: fact == 1n && BigInt(fact) !== X, factor: BigInt(fact)};
+    }
+
+    if (X < 0n) {
+      return preSent(-X);
+    }
+
+    // Raiz cuadrada from https://stackoverflow.com/questions/53683995/javascript-big-integer-square-root
+    function sqrt(value) {
+
+      if (value < 2n) {
+        return value;
+      }
+
+      function newtonIteration(n, x0) {
+        const x1 = ((n / x0) + x0) >> 1n;
+        if (x0 === x1 || x0 === (x1 - 1n)) {
+          return x0;
+        }
+        return newtonIteration(n, x1);
+      }
+
+      return newtonIteration(value, 1n);
+    }
+
+    // Subfunción: Cuántos de los últimos dígitos coinciden
+    function coincidenciasAlFinal(X, Y) {
+      let resultado = 0;
+      for (let i = 1; i < Math.min(X.length, Y.length); i++) {
+        if (X[X.length - i] === Y[Y.length - i]) {
+          resultado++;
+        } else {
+          break;
+        }
+      }
+      return resultado;
+    }
+
+    // Subfunción: Extraer los n últimos dígitos de X
+    function nUltimosDigitosDeX(n, X) {
+      return String(X).substring(String(X).length - n);
+    }
+
+    // Último dígito de X
+    const ultimoDigito = nUltimosDigitosDeX(1, X);
+
+    // Lista de candidatos de factores
+    let candidatos = [];
+
+    // Etapa 1: Agregar los candidatos de factores
+    switch (ultimoDigito) {
+      case '0':
+        return preSent(2n);
+      case '1':
+        candidatos.push(['1', '1'], ['3', '7'], ['9', '9']);
+        break;
+      case '2':
+        return preSent(2n);
+      case '3':
+        candidatos.push(['1', '3'], ['7', '9']);
+        break;
+      case '4':
+        return preSent(2n);
+      case '5':
+        return preSent(5n);
+      case '6':
+        return 2n;
+      case '7':
+        candidatos.push(['1', '7'], ['3', '9']);
+        break;
+      case '8':
+        return preSent(2n);
+      case '9':
+        candidatos.push(['1', '9'], ['3', '3'], ['7', '7']);
+        break;
+    }
+
+    // Etapa 2: Calcular la raíz cuadrada de X
+    const raizCuadrada = sqrt(X);
+
+    // Debug, ignore it.
+    function rapport(digit) {
+      console.log((100 * digit / X.toString().length).toFixed(3), '% , analizando dígito ', digit, ' uso de memoria: ', candidatos.length);
+    }
+
+    // Debug, ignore it.
+    rapport(1);
+
+    // Generaciones
+    let generaciones;
+
+    // Etapa 3: Buscar divisor primo
+    for (let digitosNecesarios = 2; digitosNecesarios <= raizCuadrada.toString().length; digitosNecesarios++) {
+
+      generaciones = candidatos.length;
+
+      if (generaciones === 0) { // se eliminaron todos los candidatos.
+        break;
+      }
+
+      // Debug, ignore it.
+      rapport(digitosNecesarios); // actualiza la barra de progreso
+
+      // Etapa 3.2: Agregar los 10 dígitos a la derecha y a la izquierda de los factores
+      while (generaciones > 0) {
+        generaciones--;
+        let candidato = candidatos.shift();
+        for (let j = zeros ? 0 : 1; j < 9; j++) {
+          for (let k = zeros ? 0 : 1; k < 9; k++) {
+            let f1 = String(j) + candidato[0];
+            let f2 = String(k) + candidato[1];
+
+            [f1, f2] = [menor(f1, f2), mayor(f1, f2)];
+
+            // Ya existe, no lo agrego
+            if (candidatos.some((x) => x[0] === f1 && x[1] === f2)) {
+              continue;
+            }
+
+            // La suma de las longitudes se pasan del objetivo, se supone que producto se pase o se encuentren soluciones menores
+            if (f1.length + f2.length > X.toString().length || BigInt(f1) > raizCuadrada || BigInt(f2) > raizCuadrada) {
+              continue;
+            }
+
+            // Si ambos de ellos comienzan con "0", no volver a chequearlos
+            if (f1[0] !== '0' || f2[0] !== '0') {
+
+              // Calcular el producto de los valores absolutos de los candidatos.
+              let subProd = BigInt(f1) * BigInt(f2);
+
+              // El producto se pasa
+              if (subProd > X) {
+                continue;
+              } else if (subProd < X) { // El producto es menor
+                // Comprobar si alguno de los candidatos divide a X
+                if (X % BigInt(f1) === 0n && (BigInt(f1) !== 1n && BigInt(f1) !== X)) {
+                  return preSent(f1);
+                } else if (X % BigInt(f2) === 0n && (BigInt(f2) !== 1n && BigInt(f2) !== X)) {
+                  return preSent(f2);
+                }
+              } else if (subProd === X) { // El producto es igual
+                return preSent(menor(f1, f2));
+              }
+
+              // Coinciden los dígitos necesarios al final
+              if (coincidenciasAlFinal(X.toString(), subProd.toString()) < digitosNecesarios) {
+                continue;
+              }
+            }
+
+            candidatos.push([f1, f2]);
+          }
+        }
+      }
+    }
+
+    // Etapa 5: Devolver el número X si no se encontraron factores
+    return preSent(X);
+  }
+
+  /*
+    CREADO POR JLCY 17-1-2016
+    APLICANDO EL LEMA DE BEZOUT SE CONSIGUE LLEGAR AL MCD DE "a" Y "p"
+    COMO UNA COMBINACION LINEAL DE "a" y "p" CON EL ALGORITMO DE EUCLIDES.
+    YA CON ESTO SI EL MCD ES 1 , "a" y "p" son primos relativos y existe el inverso de "a" modulo "m"
+    ESTA SOLUCION ES MAS OPTIMA YA QUE NO PARA SOBRE TODOS LOS POSIBLES INVERSOS
+    */
+  function obtenerUnInversoMultiplicativo(a, m) {
+    let c1 = 1n;
+    let c2 = -(m / a); // coeficiente de a y b respectivamente
+    let t1 = 0n;
+    let t2 = 1n; // coeficientes penúltima corrida
+    let r = m % a; // residuo, asignamos 1 como condición de entrada
+    let x = a;
+    let y = r;
+    let c;
+    while (r !== 0n) {
+      c = x / y; // cociente
+      r = x % y; // residuo
+      // guardamos valores temporales de los coeficientes
+      // multiplicamos los coeficientes por -1*cociente de la division
+      c1 *= -c;
+      c2 *= -c;
+      //sumamos la corrida anterior
+      c1 += t1;
+      c2 += t2;
+      //actualizamos corrida anterior
+      t1 = -(c1 - t1) / c;
+      t2 = -(c2 - t2) / c;
+      x = y;
+      y = r;
+    }
+    //residuo anterior es 1, son primos relativos y el inverso existe
+    return (x === 1n) ? t2 : null; //residuo anterior es 1, son primos relativos y el inverso existe; de otro modo null.
+  }
+
+
+  // Calculador de inversos modulares (CIM) (from Wikipedia)
+  // Hallar todos los b, tal que (a * b)(mod m) = 1 .
+  function obtenerTodosLosInversosMultiplicativos(a, m) {
+    let resultado = [];
+
+    let b; // Valores para los que se cumple que (a * b)(mod m)
+    let x; // Candidatos
+
+    for (b = 0n; b < m; b++) {
+      x = (a * b) % m;
+      if (x === 1n) {
+        resultado.push(b);
+      }
+    }
+
+    return resultado;
+  }
+
+  // El inverso multiplicativo de a módulo m se puede obtener mediante el Algoritmo de Euclides.
+  // En particular, invocando el algoritmo extendido de Euclides con a y m como argumentos
+  // se obtiene una tripla (x,y,mcd(a,m)) tal que:
+  // xa + ym = mcd(a, m)
+  // si mcd(a, m) = 1, entonces
+  // xa congruente con 1 (mod m)
+  // de donde x es el inverso modular de a módulo m.
+  // Si el MCD(a, m)≠ 1 entonces no existe el modular inverso.
+  // Este algoritmo se ejecuta en un tiempo O(log(m)²) (asumiendo que |a|<m).
+  function obtenerUnInversoMultiplicativoPorAlgoritmoEuclides(a, m) {
+    let result;
+
+    let bezout_mcd = mcd(a, m);
+    if (bezout_mcd !== 1n) {
+      result = null; // no existe el modular inverso.
+    } else {
+      result = extendedEuclides(a, m)[0]; // a
+    }
+
+    return result;
+
+  }
+
+  // Funciones aritméticas elementales y avanzadas, para enteros BigInt.
+  // En estas expresiones / se refiere a la división entera y % al residuo
+  // o resto de la división.
+
+  // Función para calcular el máximo común divisor
+  function maximoComunDivisor(a, b) { // ok
+    let result;
+    let [minFactor, maxFactor] = [menor(a, b), mayor(a, b)];
+    // this trivial checks avoids div. by zero.
+    result = maxFactor;
+    while (minFactor !== 0n) {
+      maxFactor = result;
+      result = minFactor;
+      minFactor = maxFactor % minFactor;
+    }
+    return result;
+  }
+
+  // Función para calcular el minimoComunMultiplo
+  function minimoComunMultiplo(a, b) { // ok
+    return a * b / mcd(a, b);
+  }
+
+  // Función para calcular el menor múltiplo de a, mayor que b.
+  function menorMultiploMayor(a, b) { // ok
+    return a * ((b + a - 1n) / a);
+  }
+
+  // Función para calcular el mayor múltiplo de a, menor que b.
+  function mayorMultiploMenor(a, b) { // ok
+    return a * ((b + a - 1n) / a - 1n);
+  }
+
+  // ok
+  function euclideanAlgorithmExtended(a, b) {
+    if (b === 0n) {
+      return [a, 1n, 0n];
+    }
+    const [gcd, x1, y1] = euclideanAlgorithmExtended(b, a % b);
+    const x = y1;
+    const y = x1 - (a / b) * BigInt(y1);
+    return [gcd, x, y];
+  }
+
+
+  // Función para determinar el mayor divisor de a menor que b utilizando el pequeño teorema de Fermat
+  function mayorDivisorDeA(a, b) {
+    if (b < 2n) {
+      return null;
+    }
+
+    if (a === 0n || b === 2n) {
+      return b - 1n;
+    }
+
+    if (a === 1n) {
+      return 1n;
+    }
+
+    if (a < b) {
+      return a;
+    }
+
+    if (a % b) {
+      let c = a / b;
+      if (c < b) return c;
+    }
+
+    // Buscamos el menor exponente n para el cual a^n ≡ 1 (mod b)
+    let n = 1n;
+    while (modpow(a, n, b) !== 1n) {
+      n++;
+    }
+
+    // Otra vía
+    // // El mayor divisor de a menor que b es a^(n-1)
+    // return modpow(a, n - 1n, b);
+    //
+    // // Encuentra el mayor primo menor que "n"
+    // function findLargestPrime(n) {
+    //   let largestPrime = n - 1n;
+    //   while (!isPrime(largestPrime, 10)) {
+    //     largestPrime--;
+    //   }
+    //   return largestPrime;
+    // }
+    //
+    // if (a <= 0n || b <= 0n) {
+    //   return null;
+    // }
+    //
+    // const p = findLargestPrime(b);
+    // const inverse = multiplicativeInverse(a % p, p);
+    //
+    // if (inverse === null) {
+    //   return null;
+    // }
+    //
+    // return (a * inverse) % b;
+  }
+
+  // Función para calcular el mayor divisor de a, menor que b.
+  function mayorDivisorMenor(a, b) { // arreglar
+
+    // arreglar las condiciones
+    if (a === 0n || (b !== 0n && a % b === 0n) || (b !== 0n && a % (b - 1n) === 0n)) {
+      return b - 1n;
+    }
+
+    // funciones auxiliares
+
+    // Función para calcular el mayor número menor que a, divisor de b utilizando el algoritmo extendido de Euclides.
+    function euclideanAlgorithmExtended(a, b) {
+      if (b === 0n) {
+        return [a, 1n, 0n];
+      }
+      const [gcd, x1, y1] = euclideanAlgorithmExtended(b, a % b);
+      const x = y1;
+      const y = x1 - (a / b) * y1;
+      return [gcd, x, y]; // ax + by = gcd
+    }
+
+    // Calcula el inverso multiplicativo de "a" módulo "n".
+    function multiplicativeInverse(a, n) {
+      const [gcd, x, y] = euclideanAlgorithmExtended(a, n);
+      if (gcd !== 1n) {
+        return null;
+      }
+      return (x % n + n) % n;
+    }
+
+    // Calcula a^b modulo p
+    function powerMod(a, b, p) {
+      let result = 1n;
+      a = a % p;
+      while (b > 0n) {
+        if (b % 2n === 1n) {
+          result = (result * a) % p;
+        }
+        b = b / 2n;
+        a = (a * a) % p;
+      }
+      return result;
+    }
+
+
+    /*
+        Función para calcular el mayor número menor que a, divisor de b utilizando el pequeño teorema de Fermat.
+        El pequeño teorema de Fermat establece que si p es un número primo y a, es un número entero no divisible por p,
+        entonces a^(p-1) ≡ 1 mod p.
+
+        Por lo tanto, podemos usar este teorema para calcular el inverso multiplicativo de a módulo p de la siguiente manera:
+
+        a^(p-2) ≡ a^(-1) mod p.
+
+        En este caso, queremos encontrar el mayor número menor que a, divisor de b.
+
+        Entonces, podemos buscar a^n mod b = 1 para el menor n posible.
+
+        A punto de encontrarlo, a^n-1 será el mayor número menor que a, divisor de b.
+
+        La implementación actual de esta función es por fuerza bruta, utilice el algoritmo de extendido de Euclides para
+        lograr una complejidad O(log(p)) por debajo la del método mostradoa O(log(p)³), que además retorna null o 1, si no se
+        encuentra el número, para lo cual puede utilizar la identidad de Bezout.
+    */
+
+
+  }
+
+
+  function AnalizarElDesparpajoFeChatGPTParaMayorDivisorMenor(a, b) {
+    if (a === 0n || (b !== 0n && a % b === 0n) || (b !== 0n && a % (b - 1n) === 0n)) {
+      return b - 1n;
+    }
+
+    // Función para calcular el mayor número menor que a, divisor de b utilizando el algoritmo extendido de Euclides.
+    function euclideanAlgorithmExtended(a, b) {
+      if (b === 0n) {
+        return [a, 1n, 0n];
+      }
+      const [gcd, x1, y1] = euclideanAlgorithmExtended(b, a % b);
+      const x = y1;
+      const y = x1 - (a / b) * y1;
+      return [gcd, x, y];
+    }
+
+    // Calcula el inverso multiplicativo de "a" módulo "n".
+    function multiplicativeInverse(a, n) {
+      const [gcd, x, y] = euclideanAlgorithmExtended(a, n);
+      if (gcd !== 1n) {
+        return null;
+      }
+      return (x % n + n) % n;
+    }
+
+    let n = 2n;
+    while (n <= a && n <= b) {
+      // Si "n" es un divisor de "b" pero no de "a", encontramos el número buscado.
+      if (b % n === 0n && a % n !== 0n) {
+        const inverse = multiplicativeInverse(n, a);
+        if (inverse !== null) {
+          // El mayor número menor que "a", divisor de "b" es n^inverse.
+          return n ** inverse;
+        }
+      }
+      n += 1n;
+    }
+
+    return null; // Si no se encuentra el número buscado.
+  }
+
+
+  // Función para calcular el menor divisor de a, mayor que b.
+  function menorDivisorMayor(a, b) { // arreglar
+    if (b >= a) {
+      return null; // un # más grande no puede dividir a otro más pequeño.
+    }
+    // tarea
+  }
+
+  function test() {
+    function repetir(digito, veces) {
+      let result = '';
+      for (let i = 0; i < veces; i++) {
+        result = result + digito;
+      }
+      return result;
+    }
+
+    // Algoritmo para encontrar un factor arbitrario
+    function primalidadPorFactorArbitrario(x) {
+      if (!x || x < 2n) {
+        return {primalidad: false, factor: x};
+      } else if (x === 2n || x === 3n || x === 5n) {
+        return {primalidad: true, factor: x};
+      } else if (x % 2n === 0n) {
+        return {primalidad: false, factor: 2n};
+      } else if (x % 3n === 0n) {
+        return {primalidad: false, factor: 3n};
+      } else if (x % 5n === 0n) {
+        return {primalidad: false, factor: 5n};
+      } // Pueden agregarse los criterios de divisibilidad...
+
+      // Ningún número tiene divisores primos por encima de su raiz cuadrada
+      let r2 = root(x, 2n);
+      if (r2 * r2 === x) { // es un cuadrado perfecto
+        return primalidadPorFactorArbitrario(r2);
+      }
+
+      // Pero además, si es compuesto y no es una raíz cuadrada, ni una raíz cúbica;
+      // debe tener al menos un factor común, con alguno entre su raíz cúbica y su raíz cuadrada.
+      let r3 = root(x, 3n);
+      if (r3 * r3 * r3 === x) { // es un cubo perfecto
+        return primalidadPorFactorArbitrario(r3);
+      }
+
+      // Este algoritmo trata de encontrar ese número, y luego calcular su máximo común denominador
+      // que debe ser es un divisor del número, si existiese.
+
+      // implementar la búsqueda del menor divisor de un valor (x), mayor que un otro valor dado (en este caso 1).
+      let resultado = mayorDivisorDeA(x, r2);
+
+      return {
+        primalidad: resultado === 1n || resultado === x,
+        factor: resultado,
+      };
+    }
+
+    alert('Enter para comenzar el test de depuración.');
+    for (let i = 0n; i < 1111111n; i++) {
+      let no = BigInt(repetir('1', i));
+      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
+      // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
+      // console.warn(`Un factor primo de 2^${no} - 1 = ${pow(2n, no) - 1n}, es -->${encontrarUnFactorPrimo(pow(2n, no) - 1n)}<--.`);
+      console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorTentativa(no).factor}<-- (Primalidad por tentativa).`);
+      console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorBusquedayCaptura(no).factor}<-- (Primalidad por búsqueda y captura).`);
+      // console.warn(`Un factor primo de ${i}, es -->${primalidadPorTentativa(i).factor}<-- (brute force), -->${pollardRho(i).factor}<-- (Pollard),.`);
+      if (primalidadPorTentativa(i).factor !== primalidadPorBusquedayCaptura(i).factor) alert(`Falla en ${i}.`);
+    }
+  }
+
+  function bueyFactor(n) {
+
+    function powerMod(a, b, p) {
+      // Calcula (a^b) % p utilizando el algoritmo de exponenciación modular
+      let result = 1n;
+      a = a % p;
+      while (b > 0n) {
+        if (b % 2n === 1n) {
+          result = (result * a) % p;
+        }
+        b = b / 2n;
+        a = (a * a) % p;
+      }
+      return result;
+    }
+
+    function euclideanAlgorithm(a, b) {
+      // Encuentra el máximo común divisor de a y b utilizando el algoritmo de Euclides
+      while (b !== 0n) {
+        const temp = b;
+        b = a % b;
+        a = temp;
+      }
+      return a;
+    }
+
+    let a = 2n; // Empezamos con a = 2
+    let b = 2n;
+    let d;
+
+    while (true) {
+      a = powerMod(a, 2n, n) + 1n;
+      b = powerMod(b, 2n, n) + 1n;
+      b = powerMod(b, 2n, n) + 1n;
+
+      d = euclideanAlgorithmExtended(a > b ? a - b : b - a, n)[0];
+
+      if (d !== 1n && d !== n) {
+        return d; // Se encontró un factor
+      }
+    }
+  }
+
+
+  // Función para encontrar un factor primo de x utilizando el teorema de Fermat y el MCD
+  function findPrimeFactor(p, base = 2n) {
+
+// Función para calcular el valor a^b % p de forma eficiente utilizando el algoritmo de exponenciación rápida
+    function modpow(a, b, p) {
+      let result = 1n;
+      while (b > 0n) {
+        if (b & 1n) { // si b es impar
+          result = (result * a) % p;
+        }
+        a = (a * a) % p;
+        b >>= 1n; // dividir b por 2
+      }
+      return result;
+    }
+
+    console.log(BigInt(p.toString().length));
+    let factor, i;
+    for (let i = 0n; i < BigInt(p.toString().length); i++) {
+      console.log(i);
+      // El original
+      factor = mcd(p, p - modpow(base, p + i, p) - 1n);
+      if (factor !== 1n && factor !== p) {
+        return factor;
+      }
+      // Los bastardos
+      factor = mcd(p, p - modpow(base, p + i, p) + 1n);
+      if (factor !== 1n && factor !== p) {
+        console.log('bastardo 1');
+        return factor;
+      }
+      factor = mcd(p, p - modpow(base, p - i, p) - 1n);
+      if (factor !== 1n && factor !== p) {
+        console.log('bastardo 2');
+        return factor;
+      }
+      factor = mcd(p, p - modpow(base, p - i, p) + 1n);
+      if (factor !== 1n && factor !== p) {
+        console.log('bastardo 3');
+        return factor;
+      }
+
+    }
+
+    return null; // si no se encuentra ningún factor primo
+  }
+
+  function test2() {
+    function identicalOnTheRange(x) {
+      return 1 / 2 + Math.atan(Math.tan((Math.PI * x) - (Math.PI / 2))) / Math.PI;
+    }
+
+    for (let i = -10; i < 10; i += 0.025) {
+      console.log(`f(${i.toFixed(3)}) = ${identicalOnTheRange(i)}`);
+    }
+  }
+
+  function test3() {
+    function isPrime(n) {
+      if (n <= 1) {
+        return false;
+      }
+      if (n <= 3) {
+        return true;
+      }
+      if (n % 2 === 0 || n % 3 === 0) {
+        return false;
+      }
+      let i = 5;
+      while (i * i <= n) {
+        if (n % i === 0 || n % (i + 2) === 0) {
+          return false;
+        }
+        i += 6;
+      }
+      return true;
+    }
+
+    function mcd(a, b) {
+      let result;
+      let [minFactor, maxFactor] = [menor(a, b), mayor(a, b)];
+      // this trivial checks avoids div. by zero.
+      result = maxFactor;
+      while (minFactor !== 0) {
+        maxFactor = result;
+        result = minFactor;
+        minFactor = maxFactor % minFactor;
+      }
+      return result;
+    }
+
+    function classicLucasLehmerTest(p) {
+      let result;
+      if (p === 2n) {
+        result = true;
+      } else {
+        let s = 4n;
+        for (let i = 3n; i <= p; i++) {
+          s = (s * s - 2n) % ((1n << p) - 1n); // (s * s - 2n) % ((2 ** p) - 1n);
+        }
+        return s === 0n;
+      }
+      return result;
+    }
+
+    // Contiene la solución mejorada
+    function modernLucasLehmerTest(p) {
+      // Función para obtener a mod (c**d)
+      function modBigInt(a, c, d) {
+        if (d === 0n) {
+          return 1n;
+        }
+
+        if (c === 0n) {
+          return 0n;
+        }
+
+        // Reducir a mediante el módulo c^d
+        a = a % (c ** d);
+        let result = 1n;
+
+        while (d > 0n) {
+          // Si d es par, multiplicar resultado por a
+          if (d % 2n !== 0n) {
+            result = (result * a) % (c ** d);
+          }
+
+          // Reducir a mediante el módulo c^d
+          a = (a * a) % (c ** d);
+          d = d >> 1n;  // Corrección: usar desplazamiento a la derecha en lugar de división
+        }
+
+        return result;
+      }
+
+      let result;
+      if (p === 2n) {
+        result = true;
+      } else {
+        let s = 4n;
+        const m = 2n ** p - 1n;
+
+        for (let i = 0n; i < p - 2n; i++) {
+          s = modBigInt((s ** 2n - 2n), m, p);
+        }
+
+        result = (s === 0n);
+      }
+      return result;
+    }
+
+
+    result = '';
+    let no = 0;
+    for (let i = 2n; i < 9999999999999n; i++) {
+      // if (!isPrime(i)) continue;
+      // console.log(`f(${i}) = ${eulerPi(i)}`);
+      let mR = classicLucasLehmerTest(i);
+      if (mR) {
+        no++;
+        console.log(`2^${i} - 1 ${mR ? `is` : `is not`} prime number ${no} según el test.`);
+        console.log(' ');
+      }
+      // result = result + `${primeCount(i)}, `;
+    }
+    return result;
+  }
+
+  /*
+
+  a - (a % b) siempre es divisible por b
+
+  de x si encuentro x = a - (a % b), b es factor para un a grande.
+
+  pero
+
+  a % b = a - b * int(a/b)
+
+  a % b = a - b * ((a/b) - fraccir(a/b))
+
+  a % b = a - b * ((a/b) - fraccir(a/b))
+
+        = a - b (a/b) - (1/2 + atn(tan(πx - π/2)) / π)
+
+        luego
+
+    x = a + (1/2 + atn(tan(πx - π/2)) / π)
+
+    si defino:
+
+     parte fraccionaria(x)  = 1/2 + atn(tan(πx - π/2)) / π,
+     parte entera(x) = x - frac(x) = x - 1/2 + atn(tan(πx - π/2)) / π,
+     resto de la división(x, y) = y * frac(x/y) = y * (1/2 + atn(tan(πx - π/2)) / π)
+     función primalidad(x) = Γ²(x - 2) mod x = x * (1/2 + atn(tan(π(Γ²(x - 2)) - π/2)) / π)
+
+     ///////////
+
+
+     Si y divide a x
+
+     y * (1/2 + atn(tan(πx/y - π/2)) / π) = 0
+
+    tan(π y / 2) = tan(πx/y - π/2)
+
+  */
+
+
+  function test2() {
+    function identicalOnTheRange(x) {
+      return 1 / 2 + Math.atan(Math.tan((Math.PI * x) - (Math.PI / 2))) / Math.PI;
+    }
+
+    // Funciones de enteros convertidas a analíticas
+    let π = 3.141592653589793238462643383279528841971693993751582974944592378164628;
+
+    // Para valores impares de x
+
+    // Solamente funciona cuando x no es entero...
+    function parteFraccionaria(x) {
+      return 1 / 2 + Math.atan(Math.tan((π * x - π / 2))) / π; // ok
+    }
+
+    function parteEntera(x) {
+      return x - parteFraccionaria(x);
+    }
+
+    function residuoDivision(x, y) {
+      return x - y * parteEntera(x / y);
+    }
+
+    // despeje: f(x) = 2x - 2 atan(tan(pi x / ( 2 y ) - pi / 2)) / pi
+
+    // Stable diffussion:
+    // Yo: Hola, Soy yo otra vez; necesito que vuelvas a despejar: y, en función de x, la siguiente ecuación:
+    // 1 / 2 + atan(tan((π * (x / y) - π / 2))) / π = 0
+
+
+    // parte entera(x) = x - frac(x) = x - 1/2 + atn(tan(πx - π/2)) / π,
+    // resto de la división(x, y) = y * frac(x/y) = y * (1/2 + atn(tan(πx - π/2)) / π)
+    // cociente de la división(x, y) = x - y*(y * frac(x/y) = y * (1/2 + atn(tan(πx - π/2)) / π))
+    // función primalidad(x) = Γ²(x - 2) mod x = x * (1/2 + atn(tan(π(Γ²(x - 2)) - π/2)) / π)
+
+    for (let a = 0; a < 20; a++) {
+      for (let b = 1; b <= 4; b++) {
+
+        console.log(`parte fraccionaria de (${a.toFixed(3)}/${b.toFixed(3)} = ${a / b}) = ${parteFraccionaria(a / b).toFixed(3)}`);
+        // console.log(`parte entera de (${a.toFixed(3)}/${b.toFixed(3)} = ${Math.trunc(a / b).toFixed(3)}) = ${parteEntera(a / b).toFixed(3)}`);
+        // console.log(`resto de la división de (${a.toFixed(3)} por ${b.toFixed(3)} = ${(a % b).toFixed(3)}) = ${residuoDivision(a, b).toFixed(3)}`);
+
+      }
+    }
+
+  }
+
+  // Las últimas trovas están en: "algoritmo de factorizacion.txt"
+  // https://stablediffusion.fr/chatgpt3
+
+  function li(x) {
+    // Función de Li aproximada
+    return x / logaritmo(x);
+  }
+
+  // Más o menos...
+  function primeCount(x) {
+
+    function nextPrime(n) {
+      if (n <= 2n) {
+        return 2n;
+      }
+
+      let prime = n % 2n === 0n ? n + 1n : n + 2n;
+
+      while (!isPrime(prime)) {
+        prime += 2n;
+      }
+
+      return prime;
+    }
+
+    function isPrime(n) {
+      if (n <= 1n) {
+        return false;
+      }
+      if (n <= 3n) {
+        return true;
+      }
+      if (n % 2n === 0n || n % 3n === 0n) {
+        return false;
+      }
+      let i = 5n;
+      while (i * i <= n) {
+        if (n % i === 0n || n % (i + 2n) === 0n) {
+          return false;
+        }
+        i += 6n;
+      }
+      return true;
+    }
+
+    function li(x) {
+      // Función de Li aproximada
+      const logx = Math.log(x);
+      const lix = x / Math.log(x);
+
+      return BigInt(Math.floor(lix));
+    }
+
+    if (x <= 2n) {
+      return 0n;
+    }
+
+    const logx = Math.log(Number(x));
+    const sqrtx = Math.sqrt(Number(x));
+    const lix = li(x);
+
+    let sum = 0n;
+
+    for (let p = 2n; p <= x; p = nextPrime) {
+      sum += 1n;
+    }
+
+    const piLi = lix - sum;
+
+    let error = NaN;
+
+    if (sum > piLi) {
+      error = '+';
+    } else if (sum < piLi) {
+      error = '-';
+    } else {
+      error = '0';
+    }
+
+    const result = {
+      indice: sum,
+      error: error,
+    };
+
+    return result;
+  }
+
+  // arreglar con valores realles precisión:
+  function riemmann() {
+    // Función para calcular la diferencia entre Li(x) y π(x) utilizando la fórmula de la función de Riemann (arreglar)
+    function calcularDiferencia(x) {
+
+      // Función para calcular los ceros no triviales de la función zeta de Riemann (solo una aproximación)
+      function calcularCeroNoTrivial(n) {
+        if (n < 6) {
+          // Aproximación de los ceros no triviales para los primeros valores de n
+          const ceros = [14.134725141734693, 21.022039638771554, 25.010857580145688, 30.42487612585944, 32.93506158773918, 37.58617815882568];
+
+          // Retornar el n-ésimo cero no trivial, si está disponible. De lo contrario, retornar NaN.
+          return ceros[Number(n) - 1];
+        } else {
+
+          const pi = 3.141592653589793238462643383279502884197169399375;
+          const realPart = pi / (Number(n) ** 2);
+
+          // Retornar la parte real del cero no trivial
+          if (n % BigInt(2) === BigInt(0)) {
+            return realPart;
+          } else {
+            return realPart + pi;
+          }
+        }
+      }
+
+      // Variable para almacenar la diferencia
+      let diferencia = 0;
+
+      // Definir la precisión deseada (cantidad de términos de la fórmula a considerar)
+      const precision = BigInt(100);
+
+      // Calcular la diferencia utilizando la fórmula de la función de Riemann
+      for (let n = BigInt(1); n <= precision; n++) {
+        const ceroNoTrivial = calcularCeroNoTrivial(n);
+        const coseno = Math.cos(parseFloat(ceroNoTrivial) * Math.log(parseFloat(x)));
+        const termino = coseno / (Number(n) * (ceroNoTrivial ** 2));
+
+        // Sumar el término al resultado
+        diferencia += Number(termino);
+      }
+
+      // Multiplicar la diferencia por x para ajustar la escala
+      diferencia = Number(x) * diferencia;
+
+      // Retornar la diferencia calculada
+      return diferencia;
+
+    }
+
+
+    // Prueba de la función calcularDiferencia para x = 100
+    const x = 100;
+    const diferencia = calcularDiferencia(x);
+    console.log('Diferencia entre Li(x) y π(x) para x =', x, ':', diferencia);
+  }
+
+
+  function test4() {
+
+
+    function upToDate(x) {
+      let Men = [2n, 3n, 5n, 7n, 13n, 17n, 19n, 31n, 61n, 89n, 107n, 127n, 521n, 607n, 1279n, 2203n,
+        2281n, 3217n, 4253n, 4423n, 9689n, 9941n, 11213n, 19937n, 21701n, 23209n, 44497n,
+        86243n, 110503n, 132049n, 216091n, 756839n, 859433n, 1257787n, 1398269n, 2976221n,
+        3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
+        37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n];
+
+      function lucasLehmerMCD(a, p, q) {
+        function gcd(a, b) {
+          if (b === 0n) {
+            return a;
+          }
+          return gcd(b, a % b);
+        }
+
+        const m = p - 1n;
+        const n = q - 1n;
+        const mcd = gcd(m, n);
+        const result = a ** mcd - 1n;
+        return result;
+      }
+
+      for (let i = 0; i < Men.length; i++) {
+        result = x % Men[i];
+        if (result === 0n) {
+          return Men[i]; // Devuelve el factor primo
+        }
+        // .. seguir
+        result = mcd(modpow(Men[i], x - 1n, x), x);
+        if (result > 1n && result < x && x % result === 0n) {
+          return result; // Devuelve el factor primo
+        }
+      }
+
+      return x; // Si no se encuentra un factor, devuelve 1
+    }
+
+    for (let i = -10; i < 10; i += 0.025) {
+      console.log(`f(${i.toFixed(3)}) = ${upToDate(i)}`);
+    }
+  }
+
+  function encontrarRaices(n) {
+
+    // Raiz cuadrada
+    // from https://stackoverflow.com/questions/53683995/javascript-big-integer-square-root
+    function sqrt(value) {
+      if (value < 0n) {
+        throw 'square root of negative numbers is not supported';
+      }
+
+      if (value < 2n) {
+        return value;
+      }
+
+      function newtonIteration(n, x0) {
+        const x1 = ((n / x0) + x0) >> 1n;
+        if (x0 === x1 || x0 === (x1 - 1n)) {
+          return x0;
+        }
+        return newtonIteration(n, x1);
+      }
+
+      return newtonIteration(value, 1n);
+    }
+
+    // Convierte n a un número entero
+    n = BigInt(n);
+
+    // Coeficientes de la ecuación cuadrática
+    let a = 1n;
+    let b = n;
+    let c = -(n * n - 2n);
+
+    // Calcula las raíces usando la fórmula cuadrática
+    let discriminante = b * b - 4n * a * c;
+
+    if (discriminante < 0n) {
+      // Si el discriminante es negativo, no hay raíces reales
+      return null;
+    } else {
+      // Calcula las dos raíces
+      let raiz1 = (-b + sqrt(discriminante)) / (2n * a);
+      let raiz2 = (-b - sqrt(discriminante)) / (2n * a);
+
+      // Devuelve las raíces como un arreglo
+      return [2n * n * raiz1 + 1n, 2n * n * raiz2 + 1n];
+    }
+  }
+
 
 </script>
 <button onclick="calcular(BigInt(leerAreaDeTexto()));">
