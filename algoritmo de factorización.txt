@@ -2,7 +2,7 @@
 
 Lic. Luis Guillermo Bultet Ibles
 
-por el momento 2^77232917-1
+por el momento 2^82589933-1
 
 en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquiera menor que ese valor.
 
@@ -53,7 +53,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 				 "Si p es un número primo y a es un entero no divisible por p,
 
-				 entonces a^p - 1 ≡ 1 (mod p). Pierre de Fermat (1640)"
+				 entonces a^(p - 1) ≡ 1 (mod p). Pierre de Fermat (1640)"
 
 			¿Qué significa esto?
 
@@ -161,7 +161,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 		3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657,
 
-		37156667, 42643801, 43112609, 57885161, 74207281, 77232917
+		37156667, 42643801, 43112609, 57885161, 74207281, 77232917, 82589933
 
 
 	6.3 Algoritmo del programa principal:
@@ -188,9 +188,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 		Nota: Asegurarse de tener una función auxiliar que implemente el algoritmo de Euclides extendido para calcular el inverso multiplicativo.
 
-		Números de Mersenne conocidos (hasta noviembre de 2023): 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657, 37156667, 42643801, 43112609, 57885161, 74207281, 77232917
-
-		El próximo, luego del límite de Pace: 2^77232917 - 1 pudiera ser 2^82589933-1, todavía no se conoce.
+		Números de Mersenne conocidos (hasta noviembre de 2023): 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657, 37156667, 42643801, 43112609, 57885161, 74207281, 77232917, 82589933
 
     6.4 Algoritmos de las dependencias y funciones auxiliares (pseudocódigo, o bien javascript).
 
@@ -433,7 +431,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
             2281n, 3217n, 4253n, 4423n, 9689n, 9941n, 11213n, 19937n, 21701n, 23209n, 44497n,
             86243n, 110503n, 132049n, 216091n, 756839n, 859433n, 1257787n, 1398269n, 2976221n,
             3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
-            37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n]; // El próximo pudiera ser 2^82589933-1
+            37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n, 82589933n];
           if (knownMersenne.some((m) => {
             if (x % m === 0n) {
               result.factor = m;
@@ -736,7 +734,39 @@ Por ejemplo, si π(x) = 3, lo cual significa que hay 3 números primos menores o
 
 Sin embargo, debemos tener en cuenta que esta relación no siempre se cumple. No todos los valores de (2**(x-1)-1)/x cuando x es primo son números primos de Mersenne. Por lo tanto, es importante verificar individualmente si cada resultado es un número primo de Mersenne.
 
-Espero haber sido de ayuda. Si tienes alguna otra pregunta, no dudes en preguntar.
+//////////////////////////////////////////////////////
+
+    La función φ de Euler, también conocida como función indicatriz de Euler o función totiente, es una función importante en
+    teoría de números. Si n es un número entero positivo, entonces φ(n) se define como la cantidad de enteros positivos menores
+    o iguales a n que son coprimos con n, es decir, que no comparten ningún factor primo con n. Formalmente, se puede definir
+    como φ(n) = |{k ∈ N : k ≤ n, mcd(k, n) = 1}|, donde mcd(k, n) representa el máximo común divisor de k y n.
+    La función φ de Euler es importante porque proporciona el tamaño del grupo multiplicativo de enteros módulo n, es decir,
+    el orden del grupo de unidades del anillo. Junto con el teorema de Lagrange de los posibles tamaños de subgrupos de un
+    grupo, la función φ proporciona una demostración del teorema de Euler, que establece que para todo a coprimo con n,
+    a^(φ(n)) ≡ 1 (mod n). Además, la función φ de Euler juega un papel clave en la definición del sistema de cifrado RSA.
+    La notación estándar φ(n) proviene del tratado de Carl Friedrich Gauss de 1801 Disquisitiones arithmeticae, aunque
+    Gauss no usó paréntesis alrededor del argumento y escribió φn. Por lo tanto, a menudo se la llama función phi de
+    Euler o simplemente función phi.
+
+    La función φ de Euler y π(x) están relacionadas a través del teorema de los números primos. El teorema establece que
+    la cantidad de números primos menores o iguales a x es aproximadamente igual a x/ln(x), donde ln(x) es el logaritmo
+    natural de x. La función φ de Euler se utiliza para calcular la cantidad de enteros positivos menores o iguales a n
+    que son coprimos con n. Si n es primo, entonces φ(n) = n - 1, ya que todos los enteros positivos menores que n son
+    coprimos con n. Por lo tanto, la cantidad de números primos menores o iguales a n es igual a φ(n) + 1. Si n no es
+    primo, entonces φ(n) es menor que n - 1, por lo que la cantidad de números primos menores o iguales a n es menor que
+    φ(n) + 1. Sin embargo, la cantidad de números primos menores o iguales a n sigue siendo aproximadamente igual a n/ln(n),
+    lo que sugiere que la función φ de Euler y π(x) están relacionadas de alguna manera. En resumen, la función φ de Euler
+    y π(x) están relacionadas a través del teorema de los números primos, que establece que la cantidad de números primos
+    menores o iguales a x es aproximadamente igual a x/ln(x).
+
+    Una consecuencia importante de la función φ de Euler es su papel en la definición del sistema de cifrado RSA.
+    La función φ de Euler proporciona el tamaño del grupo multiplicativo de enteros módulo n, que es el orden del grupo
+    de unidades del anillo. Junto con el teorema de Lagrange de los posibles tamaños de subgrupos de un grupo,
+    la función φ proporciona una demostración del teorema de Euler, que establece que para todo a coprimo con n,
+    a^(φ(n)) ≡ 1 (mod n). Este teorema es fundamental en la criptografía y es la base matemática del algoritmo de
+    cifrado RSA, que es ampliamente utilizado para asegurar la comunicación en línea y proteger la privacidad de la
+    información. Por lo tanto, la función φ de Euler tiene importantes aplicaciones en la seguridad de la información
+    y la criptografía moderna.
 
 //////////////////////////////////////////////////////
 
