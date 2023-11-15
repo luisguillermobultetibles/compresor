@@ -1,9 +1,5 @@
 "Algoritmo para factorizar cualquier número entero menor que el mayor número de Mersenne conocido."
 
-(Para factorizar mayores es más fácil aún", pero no debería amarrarse a un estado actual, sino opcionalmente
- para acelerar se le puede pasar un entero primo grande, menor que el que se pretende factorizar, pero esa es
- otra historia).
-
 Lic. Luis Guillermo Bultet Ibles
 
 por el momento 2^77232917-1
@@ -59,9 +55,23 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 				 entonces a^p - 1 ≡ 1 (mod p). Pierre de Fermat (1640)"
 
-			podemos tomar a = 2, pues si x fuese par se puede determinar fácilmente el divisor 2
+			¿Qué significa esto?
 
-			y no fuese necesario aplicar el algoritmo, luego, en caso de los impares:
+			x ≡ y (mod z)
+
+			se lee x es congruente con y módulo z; y significa, para los no iniciados:
+
+			que dejan el mismo resto al dividir por z, es decir: a mod z = y mod z,
+
+			o dicho de otro modo, se cumple: a % z === y % z, si definimos el operador binario:
+
+			mod o %, como el residuo o resto de la división.
+
+			Volviendo al tema, en la ecuación que nos ocupa podemos tomar de basea = 2,
+
+			pues si x fuese par se puede determinar fácilmente el divisor 2
+
+			y no fuese necesario aplicar el algoritmo, luego, en caso de los valores impares:
 
 			tenemos que encontrar un p primo tal que mcd(a, p) ≠ 1:
 
@@ -105,7 +115,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 			 x = a - (a % b),
 
-			 (a % b) = a - x,  pues pasa al otro lado de la igualdad el resto sumando y el argumento restando,
+			 (a % b) = a - x, pues pasa al otro lado de la igualdad el resto sumando y el argumento restando,
 
 			 entonces podemos aplicar:
 
@@ -122,6 +132,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
    Paso III  Devolver el resultado si se encuentra,
 
 			 de otro modo, devolver 1 o x (si fuese primo, pues no tendría divisores).
+
 6. Notas:
 
    6.1 	Para obtener el inverso multiplicativo utilizando el algoritmo de Euclides extendido:
@@ -165,7 +176,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
 		De otro modo, encontrar el número de Mersenne i tal que Mersenne(i) sea mayor o igual al logaritmo de (x + 1).
 
-		Calcular a = 2^Mersenne(i) - 1, si es exactamente igual a x, devolver 1;
+		Calcular a = 2^Mersenne(i) - 1;
 
 		Calcular el resto (a % (a - x)) y almacenarlo en la variable b.
 
@@ -178,6 +189,8 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 		Nota: Asegurarse de tener una función auxiliar que implemente el algoritmo de Euclides extendido para calcular el inverso multiplicativo.
 
 		Números de Mersenne conocidos (hasta noviembre de 2023): 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583, 25964951, 30402457, 32582657, 37156667, 42643801, 43112609, 57885161, 74207281, 77232917
+
+		El próximo, luego del límite de Pace: 2^77232917 - 1 pudiera ser 2^82589933-1, todavía no se conoce.
 
     6.4 Algoritmos de las dependencias y funciones auxiliares (pseudocódigo, o bien javascript).
 
@@ -250,7 +263,8 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
                   t[i + 1] = t[i - 1] - q[i] * t[i];
                   i++;
                   }
-                  return [s[i - 1], t[i - 1], r[i - 1]];
+
+                  return {x: s[i - 1], y: t[i - 1], z: r[i - 1]};
                 }
 
 
@@ -264,7 +278,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
                 // m ≠ 1 con un número de Mersenne, dado su exponente sin necesidad de instanciarlo).
                 function modpowplus(base, exp, d, m) {
                   let result = (modpow(base, exp, m) + d) % m;
-                  return result < 0 ? m + result: result;
+                  return result < 0n ? m + result: result;
                 }
 
         6.4.4 Función para obtener a^b mod p, seguro ya la conocen.
@@ -313,7 +327,7 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
                 // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
                 function gcd(a, b) {
-                  if (b == 0) {
+                  if (b === 0n) {
                     return a;
                   }
                   return gcd(b, a % b);
@@ -337,70 +351,438 @@ en noviembre 2023, este algoritmo, garantiza encontrar un divisor para cualquier
 
     6.5 Números primos de Mersenne (Referencia, para chequeo de resultados).
 
-	     Si un número 2 ^ n - 1 es primo, entonces n también lo es. Se llaman números primos de Mersenne.
-	     Si n es primo y 2 ^ n - 1 no es un número de Mersenne, entonces sus factores tienen la forma 2kp + 1 y dejan resto 1 o 7 módulo 8
-	     Se plantea que lo anterior elimina el 63% de los candidatos. (Mr. George Woltman Colloquium)
-	     Si n es compuesto e igual a: a * b, entonces 2 ^ n - 1 es divisible por 2 ^ a - 1, y por 2 ^ b - 1, de forma independientemente.
-	     Lo anterior se obtiene por el desarrollo de la potencia según el binomio de Newton.
-	
-	     Estos son los números de Mersenne conocidos hasta 2023...
-	
-	      # 	  n 	            Mn 	                  Nº de cifras        Fecha         Descubridor                         π(Mn) (es el primo no...)
-	      1 	  2 	            3 	                  1 	                  antigüedad 	Euclides                            1
-	      2 	  3 	            7 	                  1 	                  antigüedad 	Euclides                            2
-	      3 	  5 	            31 	                  2 	                  antigüedad 	Euclides                            3
-	      4 	  7 	            127 	          3 	                  antigüedad 	Euclides                            4
-	      5 	  13 	            8191 	          4 	                  1456 	        anónimo                             6
-	      6 	  17 	            131071 	          6 	                  1588 	        Cataldi                             7
-	      7 	  19 	            524287 	          6 	                  1588 	        Cataldi                             8
-	      8 	  31 	            2147483647 	          10 	                  1772 	        Euler                               11
-	      9 	  61 	            2305843009213693951   19 	                  1883 	        Pervushin                           18
-	      10 	  89 	            618970019…449562111   27 	                  1911 	        Powers                              24
-	      11 	  107 	            162259276…010288127   33 	                  1914 	        Powers                              28
-	      12 	  127 	            170141183…884105727   39 	                  1876 	        Lucas                               31
-	      13 	  521 	            686479766…115057151   157 	                  30-01-1952 	Robinson (SWAC)
-	      14 	  607 	            531137992…031728127   183 	                  30-01-1952 	Robinson (SWAC)
-	      15 	  1.279 	    104079321…168729087   386 	                  25-06-1952 	Robinson (SWAC)
-	      16 	  2.203 	    147597991…697771007   664 	                  07-10-1952 	Robinson (SWAC)
-	      17 	  2.281 	    446087557…132836351   687 	                  09-10-1952 	Robinson (SWAC)
-	      18 	  3.217 	    259117086…909315071   969 	                  08-09-1957 	Riesel
-	      19 	  4.253 	    190797007…350484991   1.281 	          03-11-1961 	Hurwitz
-	      20 	  4.423 	    285542542…608580607   1.332 	          03-11-1961 	Hurwitz
-	      21 	  9.689 	    478220278…225754111   2.917 	          11-05-1963 	Gillies
-	      22 	  9.941 	    346088282…789463551   2.993 	          16-05-1963 	Gillies
-	      23 	  11.213 	    281411201…696392191   3.376 	          02-06-1963 	Gillies                             ¿how hard?
-	      24 	  19.937 	    431542479…968041471   6.002 	          04-03-1971 	Tuckerman
-	      25 	  21.701 	    448679166…511882751   6.533 	          30-10-1978 	Noll y Nickel
-	      26 	  23.209 	    402874115…779264511   6.987 	          09-02-1979 	Noll
-	      27 	  44.497 	    854509824…011228671   13.395 	          08-04-1979 	Nelson y Slowinski
-	      28 	  86.243 	    536927995…433438207   25.962 	          25-09-1982 	Slowinski
-	      29 	  110.503 	    521928313…465515007   33.265 	          28-01-1988 	Colquitt y Welsh
-	      30 	  132.049 	    512740276…730061311   39.751 	          20-09-1983 	Slowinski
-	      31 	  216.091 	    746093103…815528447   65.050 	          06-09-1985 	Slowinski
-	      32 	  756.839 	    174135906…544677887   227.832 	          19-02-1992 	Slowinski y Gage
-	      33 	  859.433 	    129498125…500142591   258.716 	          10-01-1994 	Slowinski y Gage
-	      34 	  1.257.787 	    412245773…089366527   378.632 	          03-09-1996 	Slowinski y Gage
-	      35 	  1.398.269 	    814717564…451315711   420.921 	          13-11-1996 	GIMPS / Joel Armengaud
-	      36 	  2.976.221 	    623340076…729201151   895.932 	          24-08-1997 	GIMPS / Gordon Spence
-	      37 	  3.021.377 	    127411683…024694271   909.526 	          27-01-1998 	GIMPS / Roland Clarkson
-	      38 	  6.972.593 	    437075744…924193791   2.098.960 	          01-06-1999 	GIMPS /
-	      39 	  13.466.917 	    924947738…256259071   4.053.946 	          14-11-2001 	GIMPS / Michael Cameron
-	      40 	  20.996.011 	    125976895…855682047   6.320.430 	          17-11-2003 	GIMPS / Michael Shafer
-	      41 	  24.036.583 	    299410429…733969407   7.235.733 	          15-05-2004 	GIMPS / Josh Findley
-	      42 	  25.964.951 	    122164630…577077247   7.816.230 	          18-02-2005 	GIMPS / Martin Nowak
-	      43 	  30.402.457 	    315416475…652943871   9.152.052 	          15-12-2005 	GIMPS / Curtis Cooper y Steven Boone
-	      44 	  32.582.657 	    124575026…053967871   9.808.358 	          04-09-2006 	GIMPS / Curtis Cooper y Steven Boone
-	      45 	  37.156.667 	    202254406…308220927   11.185.272 	          06-09-2008 	GIMPS / Hans-Michael Elvenich
-	      46 	  42.643.801 	    169873516…562314751   12.837.064 	          12-04-2009 	GIMPS / Odd M. Strindmo
-	      47 	  43.112.609 	    316470269…697152511   12.978.189 	          23-08-2008 	GIMPS / Edson Smith
-	      48 	  57.885.161 	    581887266…724285951   17.425.170 	          25-01-2013 	GIMPS / Curtis Cooper
-	      49[1]       74.207.281 	    300376418…086436351   22.338.618 	          07-01-2016 	GIMPS / Curtis Cooper
-	      50[2]       77.232.917 	    467333183…762179071   23.249.425 	          26-12-2017 	GIMPS / Jonathan Pace
-	
-	      No se conoce si existen más números primos de Mersenne entre el 45º (M37.156.667) y el 50º (M77.232.917) por lo tanto, esta tabla es provisional.
-	      Un caso histórico, el 29º número primo de Mersenne fue descubierto después del 30º y el 31º.            
+     Si un número 2 ^ n - 1 es primo, entonces n también lo es. Se llaman números primos de Mersenne.
+     Si n es primo y 2 ^ n - 1 no es un número de Mersenne, entonces sus factores tienen la forma 2kp + 1 y dejan resto 1 o 7 módulo 8
+     Se plantea que lo anterior elimina el 63% de los candidatos. (Mr. George Woltman Colloquium)
+     Si n es compuesto e igual a: a * b, entonces 2 ^ n - 1 es divisible por 2 ^ a - 1, y por 2 ^ b - 1, de forma independientemente.
+     Lo anterior se obtiene por el desarrollo de la potencia según el binomio de Newton.
+
+     Estos son los números de Mersenne conocidos hasta 2023...
+
+      # 	           n 	                 Mn Nº de cifras    Fecha           Descubridor                         π(Mn) (es el primo no...)
+      1 	           2 	                  3 	       1    antigüedad 	    Euclides                            1
+      2 	           3 	                  7 	       1    antigüedad 	    Euclides                            2
+      3 	           5 	                 31 	       2    antigüedad 	    Euclides                            3
+      4 	           7 	                127 	       3    antigüedad 	    Euclides                            4
+      5 	          13                   8191 	       4    1456 	        anónimo                             6
+      6 	          17                 131071            6    1588 	        Cataldi                             7
+      7 	          19                 524287            6    1588 	        Cataldi                             8
+      8 	          31             2147483647           10    1772 	        Euler                               11
+      9 	          61    2305843009213693951           19    1883 	        Pervushin                           18
+      10 	          89    618970019…449562111           27    1911 	        Powers                              24
+      11 	         107    162259276…010288127           33    1914 	        Powers                              28
+      12 	         127    170141183…884105727           39    1876 	        Lucas                               31
+      13 	         521    686479766…115057151          157    30-01-1952 	    Robinson (SWAC)
+      14 	         607    531137992…031728127          183    30-01-1952 	    Robinson (SWAC)
+      15 	       1.279    104079321…168729087          386    25-06-1952 	    Robinson (SWAC)
+      16 	       2.203    147597991…697771007          664    07-10-1952 	    Robinson (SWAC)
+      17 	       2.281    446087557…132836351          687    09-10-1952 	    Robinson (SWAC)
+      18 	       3.217    259117086…909315071          969    08-09-1957 	    Riesel
+      19 	       4.253    190797007…350484991        1.281    03-11-1961 	    Hurwitz
+      20 	       4.423    285542542…608580607        1.332    03-11-1961 	    Hurwitz
+      21 	       9.689    478220278…225754111        2.917    11-05-1963 	    Gillies
+      22 	       9.941    346088282…789463551        2.993    16-05-1963 	    Gillies
+      23 	      11.213    281411201…696392191        3.376    02-06-1963 	    Gillies                             ¿how hard?
+      24 	      19.937    431542479…968041471        6.002    04-03-1971 	    Tuckerman
+      25 	      21.701    448679166…511882751        6.533    30-10-1978 	    Noll y Nickel
+      26 	      23.209    402874115…779264511        6.987    09-02-1979 	    Noll
+      27 	      44.497    854509824…011228671       13.395    08-04-1979 	    Nelson y Slowinski
+      28 	      86.243    536927995…433438207       25.962    25-09-1982 	    Slowinski
+      29 	     110.503    521928313…465515007       33.265    28-01-1988 	    Colquitt y Welsh
+      30 	     132.049    512740276…730061311       39.751    20-09-1983 	    Slowinski
+      31 	     216.091    746093103…815528447       65.050    06-09-1985 	    Slowinski
+      32 	     756.839    174135906…544677887      227.832    19-02-1992 	    Slowinski y Gage
+      33 	     859.433    129498125…500142591      258.716    10-01-1994 	    Slowinski y Gage
+      34 	   1.257.787 	412245773…089366527      378.632    03-09-1996 	    Slowinski y Gage
+      35 	   1.398.269 	814717564…451315711      420.921    13-11-1996 	    GIMPS / Joel Armengaud
+      36 	   2.976.221 	623340076…729201151      895.932    24-08-1997 	    GIMPS / Gordon Spence
+      37 	   3.021.377 	127411683…024694271      909.526    27-01-1998 	    GIMPS / Roland Clarkson
+      38 	   6.972.593 	437075744…924193791    2.098.960    01-06-1999 	    GIMPS /
+      39 	  13.466.917 	924947738…256259071    4.053.946    14-11-2001 	    GIMPS / Michael Cameron
+      40 	  20.996.011 	125976895…855682047    6.320.430    17-11-2003 	    GIMPS / Michael Shafer
+      41 	  24.036.583 	299410429…733969407    7.235.733    15-05-2004 	    GIMPS / Josh Findley
+      42 	  25.964.951 	122164630…577077247    7.816.230    18-02-2005 	    GIMPS / Martin Nowak
+      43 	  30.402.457 	315416475…652943871    9.152.052    15-12-2005 	    GIMPS / Curtis Cooper y Steven Boone
+      44 	  32.582.657 	124575026…053967871    9.808.358    04-09-2006 	    GIMPS / Curtis Cooper y Steven Boone
+      45 	  37.156.667 	202254406…308220927   11.185.272    06-09-2008 	    GIMPS / Hans-Michael Elvenich
+      46 	  42.643.801 	169873516…562314751   12.837.064    12-04-2009 	    GIMPS / Odd M. Strindmo
+      47 	  43.112.609 	316470269…697152511   12.978.189    23-08-2008 	    GIMPS / Edson Smith
+      48 	  57.885.161 	581887266…724285951   17.425.170    25-01-2013 	    GIMPS / Curtis Cooper
+      49[1]   74.207.281 	300376418…086436351   22.338.618    07-01-2016 	    GIMPS / Curtis Cooper
+      50[2]   77.232.917 	467333183…762179071   23.249.425    26-12-2017 	    GIMPS / Jonathan Pace
+      51      82.589.933                          24,862,048    07-12-2018      GIMPS / Patrick Laroche
 
 
+      No se conoce si existen más números primos de Mersenne entre el 45º (M37.156.667) y el 50º (M77.232.917) por lo tanto, esta tabla es provisional.
+      Un caso histórico, el 29º número primo de Mersenne fue descubierto después del 30º y el 31º.
+
+7. Poniéndolo todo junto:
+
+      function primality(x) {
+        let result = {factor: x, primalidad: false};
+        // Inicializar la variable a como 2.
+        let a = 2n;
+        // Si x es par, devolver 2 como divisor de x.
+        if (!x || x < 2n) {
+          result = {factor: x, primalidad: false};
+        } else {
+          // Si x es alguno de los números de Mc (Mersenne conocidos),
+          // o si 2^(Mc) - 1 mod x = 0, devolver 2^(Mc) - 1.
+          // Known Mersenne number exponents until october 2023
+          let knownMersenne = [2n, 3n, 5n, 7n, 13n, 17n, 19n, 31n, 61n, 89n, 107n, 127n, 521n, 607n, 1279n, 2203n,
+            2281n, 3217n, 4253n, 4423n, 9689n, 9941n, 11213n, 19937n, 21701n, 23209n, 44497n,
+            86243n, 110503n, 132049n, 216091n, 756839n, 859433n, 1257787n, 1398269n, 2976221n,
+            3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
+            37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n]; // El próximo pudiera ser 2^82589933-1
+          if (knownMersenne.some((m) => {
+            if (x % m === 0n) {
+              result.factor = m;
+              return true;
+            } else {
+              return false;
+            }
+          })) {
+            result.primalidad = result.factor === x;
+          } else if (knownMersenne.some((m) => {
+            // Retorna [(base^exp) + d] mod m
+            // Se deduce aplicando el teorema chino de los restos
+            // El argumento d puede ser negativo, en particular -1, para chequear divisibilidad
+            // de expresiones de esta clase y (también conveniente para chequear la igualdad de un
+            // m ≠ 1 con un número de Mersenne, dado su exponente sin necesidad de instanciarlo).
+            function modpowplus(base, exp, d, m) {
+              // Resto de la division base^exp mod m
+              function modpow(base, exp, m) {
+                let result = 1n;
+                while (exp > 0n) {
+                  if ((exp & 1n) === 1n) {
+                    result = (result * base) % m;
+                  }
+                  exp = exp >> 1n;
+                  base = (base * base) % m;
+                }
+                return result;
+              }
+
+              let result = (modpow(base, exp, m) + d) % m;
+              return result < 0n ? m + result : result;
+            }
+
+            // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
+            function gcd(a, b) {
+              if (b === 0n) {
+                return a;
+              }
+              return gcd(b, a % b);
+            }
+
+            let _mcd = gcd(x, modpowplus(2n, m, -1n, x));
+            if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
+              result.factor = _mcd;
+              return true;
+            } else {
+              return false;
+            }
+          })) {
+            result.primalidad = result.factor === x;
+          } else {
+
+            // De otro modo, encontrar el número de Mersenne i
+            // tal que Mersenne(i) sea mayor o igual al logaritmo entero de (x + 1).
+
+            function logaritmoEntero(x, base = null) {
+
+              // x Luis Bultet Ibles. Cuba, logaritmo. (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
+              function logaritmo(x, base = null) {
+                if (x < 0n) return NaN;
+
+                if (base === null || base === undefined || !base) { // natural
+                  return Math.log(Number(x));
+                }
+
+                switch (base) {
+                  case 2n:
+                    return BigInt(Math.log2(Number(x)));
+                  case 10n:
+                    return BigInt(Math.log10(Number(x)));
+                  default:
+                    return BigInt(Math.log(Number(x))) / BigInt(Math.log(Number(base)));
+                }
+              }
+
+              return BigInt(Math.trunc(Number(logaritmo(x, base))));
+            }
+
+            let log2 = logaritmoEntero(x + 1n);
+            let posMin = 0;
+            while (knownMersenne[posMin] < log2 && posMin < knownMersenne.length - 1) {
+              posMin++;
+            }
+            // Calcular a = 2^Mersenne(i) - 1;
+            a = 2n ** knownMersenne[posMin] - 1n;
+
+            // Calcular el resto (a % (a - x)) y almacenarlo en la variable b.
+            function inversoMultiplicativo(a, m) {
+              // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+              // Mi implementación de una versión del algoritmo en Wikipedia.
+              // encuentra [s, t, r] tal que as + bt = d, donde d = mcd(a, b).
+              function algoritmoEuclidesExtendido(a, b) {
+                let q = [];
+                let r = [];
+                let s = [];
+                let t = [];
+                let i;
+                r[0] = a;
+                s[0] = 1n;
+                t[0] = 0n;
+                r[1] = b;
+                s[1] = 0n;
+                t[1] = 1n;
+                i = 1;
+                while (r[i] !== 0n) {
+                  q[i] = r[i - 1] / r[i];
+                  r[i + 1] = r[i - 1] % r[i];
+                  s[i + 1] = s[i - 1] - q[i] * s[i];
+                  t[i + 1] = t[i - 1] - q[i] * t[i];
+                  i++;
+                }
+                return {x: s[i - 1], y: t[i - 1], z: r[i - 1]};
+              }
+
+              let {x, y, gcd} = algoritmoEuclidesExtendido(a, m);
+              let result;
+              if (gcd !== 1n) {
+                // "No existe el inverso, por la condición de Bezout."
+                result = null;
+              } else {
+                x = (x % m + m) % m;
+                result = x;
+              }
+              return result;
+            }
+
+            // Calcular el inverso multiplicativo de (a - x) módulo a y almacenarlo en la variable b.
+            let b = inversoMultiplicativo(a - x, a);
+
+            // Primos
+            result.primalidad = !b || b < 2n || b === x;
+            result.factor = result.primalidad ? x : b;
+          }
+        }
+        return result;
+      }
 
 Lic. Luis Guillermo Bultet Ibles
 2024
+
+-------------------------------------- Simbología
+
+.Deducción de la ecuación en forma analítica de π(x), función Pi de Euler, mal llamada
+ función contadora de primos.
+
+.No confundir con la constante de Arquímedes, conocida como pi:
+ π ≈ 3.141592653589793238462643383279528841971693993751582974944592378164628...
+
+.Se define la función π(x) de la siguiente forma:
+
+	argumento		imagen
+	Real			Real
+	x		->	    Su parte entera coincide con la cantidad de números
+				    primos menores o iguales a la parte entera de x.
+
+.Algunos de sus valores son:
+
+    π(1)                            =                          0
+    π(2)                            =                          1
+    π(3)                            =                          2
+    π(4)                            =                          2
+    π(5)                            =                          3
+    π(10)                           =                          4
+    π(100)                          =                         25
+    π(1000)                         =                        168
+    π(10000)                        =                       1229
+    π(100000)                       =                       9592
+    π(1000000)                      =                      78498
+    π(10000000)                     =                     664579
+    π(100000000)                    =                    5761455
+    π(1000000000)                   =                   50847534
+    π(10000000000)                  =                  455052511
+    π(100000000000)                 =                 4118054813
+    π(1000000000000)                =                37607912018
+    π(10000000000000)               =               346065536839
+    π(100000000000000)              =              3204941750802
+    π(1000000000000000)             =             29844570422669
+    π(10000000000000000)            =            279238341033925
+    π(100000000000000000)           =           2623557157654233
+    π(1000000000000000000)          =          24739954287740860
+    π(10000000000000000000)         =         234057667276344607
+    π(100000000000000000000)        =        2220819602560918841
+    π(1000000000000000000000)       =       21127269486018731928
+    π(10000000000000000000000)      =      201467286689315906290
+    π(100000000000000000000000)     =     1925320391606803968923
+    π(1000000000000000000000000)    =    18435599767349200867866
+    π(10000000000000000000000000)   =   176844944073500872481823
+    π(100000000000000000000000000)  =  1699198003310734225063668
+    π(1000000000000000000000000000) = 16351491779623324752602866
+
+.Una de las consecuencias más importantes de la teoría de números es que el valor de π(x)
+
+ se aproxima al de x / ln(x) cuando x tiende al infinito, es decir:
+
+ π(x) ≈ x / ln(x), cuando x es muy grande, o bien
+
+ π(x) / x ≈ 1 / ln(x), ídem...
+
+ o mejor dicho:
+
+ El límite de π(x) * ln(x) / x, cuando x tiende a infinito (x -> ∞), es igual a 1.
+
+ Donde ln(x) es el logaritmo natural del número.
+
+ Este es el llamado teorema de los números primos (de Gauss) y su validez de esSu validez fue demostrada
+
+ de forma independiente, por los matemáticos Jacques Hadamard y Charles de la Vallée-Poussin.
+
+ Esta función es muy útil para estimar la cantidad de primos, pero no es una forma analítica
+
+ exacta, pues no significa que la diferencia entre π(x) y x / ln(x) se aproxime a cero, sino que
+
+ su cociente se aproxima a 1, se puede interpretar como que la densidad media de números primos entre
+
+ los números enteros se aproxima a 1 / ln(x) a medida que x aumenta.
+
+ 25 años después de que Gauss descubriera la aproximación, Legendre lo mejoró aún más:
+
+ π(x) ≈ x / [ln(x) - 1.08366], cuando x tiende a infinito.
+
+ .
+
+  Ahí vamos,
+
+  Definimos a partir del teorema de Wilson, función analítica para la primalidad de x.
+
+  .Se define la función ρ(x) de la siguiente forma:
+
+  	argumento		imagen
+  	Real			Real
+  	x		->	    En números enteros,
+
+  	                0 si el número es compuesto,
+
+  	                1 si el número es primo.
+
+  	                Expresión analítica modular
+
+  	                ρ(x) = Γ²(x - 2) mod x
+
+  	                Expresión analítica en enteros
+
+                    ρ(x) = Γ²(x - 2) - x * int(Γ²(x - 2) / x)
+
+                    Pudiera sustituirse int por su forma analítica,
+
+                    en reales positivos utilizo la función idéntica en el rango
+
+                    que coincide con la parte decimal de x
+
+                    fracc_ir(x) = ½ + Atn(Tan((π/x) - (π/2)) / π
+
+                    luego:
+
+                    trunc_ir(x) = x - fracc_ir(x) = x - ½ - Atn(Tan((π/x) - (π/2)) / π, entonces
+
+                    Expresión analítica definitiva, de la función primalidad:
+
+                    ρ(x) = (Γ²(x - 2) / x) - ½ - Atn(Tan((π/(Γ²(x - 2) / x)) - (π/2)) / π
+
+
+ .Si x es primo, π(x) = π(x-1) + 1, sino π(x) = π(x-1) + 0
+
+  π(x) = π(x - 1) + ρ(x)
+
+  de ahí que:
+
+  π(x) - π(x - 1) = ρ(x)
+
+.π(x) = π(x + 1) excepto cuando x = 2, en ese caso π(x) = π(x + 1) - 1
+
+  eso sucede cuando coinciden la primalidad de dos consecutivos (los únicos dos y tres), luego:
+
+  π(x) + π(x - 1) = 2 π(x) + ρ(x) * ρ(x - 1)
+
+.Entonces de multiplicar π(x) - π(x - 1) = ρ(x) y π(x) + π(x - 1) = 2 π(x) + ρ(x) ρ(x - 1),
+
+ se obtiene una diferencia de cuadrados
+
+ π²(x) - π²(x - 1) = 2 ρ(x) π(x) + ρ(x) ρ(x - 1)
+
+     parte fraccionaria(x)  = 1/2 + atn(tan(πx - π/2)) / π,
+     parte entera(x) = x - frac(x) = x - 1/2 + atn(tan(πx - π/2)) / π,
+     resto de la división(x, y) = y * frac(x/y) = y * (1/2 + atn(tan(πx - π/2)) / π)
+     función primalidad(x) = Γ²(x - 2) mod x = x * (1/2 + atn(tan(π(Γ²(x - 2)) - π/2)) / π)
+
+////////////////////
+
+Deducción:
+
+¡Hola! Por supuesto, intentaré encontrar una relación entre la sucesión π(x) y los valores (2**(x-1)-1)/x en los valores primos de x.
+
+La sucesión π(x) es la función contadora de primos, que cuenta el número de primos menores o iguales que x. Por otro lado, la expresión (2**(x-1)-1)/x devuelve un número cuando x es primo y es conocido como número de Mersenne.
+
+Los números de Mersenne son de la forma 2p - 1, donde p es un número primo. Si p es primo y se le aplica la función contadora de primos π§, se obtiene un número primo. Esto se conoce como número primo de Mersenne.
+
+Entonces, la relación que podemos establecer es que si π(x) = p, donde p es primo, entonces (2(x-1)-1)/x es un número primo de Mersenne.
+
+Por ejemplo, si π(x) = 3, lo cual significa que hay 3 números primos menores o iguales que x, y x es un número primo, entonces (2**(x-1)-1)/x es un número primo de Mersenne.
+
+Sin embargo, debemos tener en cuenta que esta relación no siempre se cumple. No todos los valores de (2**(x-1)-1)/x cuando x es primo son números primos de Mersenne. Por lo tanto, es importante verificar individualmente si cada resultado es un número primo de Mersenne.
+
+Espero haber sido de ayuda. Si tienes alguna otra pregunta, no dudes en preguntar.
+
+//////////////////////////////////////////////////////
+
+Otros datos:
+
+El teorema conocido como “Identidad de Lucas-Lehmer” establece que si p es un número primo de Mersenne, es decir,
+de la forma 2^n - 1, donde n es un número natural primo,
+entonces el MCD (máximo común divisor) de a^(p-1) - 1 y a^(q-1) - 1 es a^(MCD(p-1, q-1)) - 1.
+
+La premisa principal del teorema es que p debe ser un número primo de Mersenne, y se basa en la propiedad del período
+de repetición para las secuencias generadas por números de Mersenne.
+
+Aquí tienes una implementación en JavaScript utilizando el objeto BigInt:
+
+function lucasLehmerMCD(a, p, q) {
+  const m = p - 1;
+  const n = q - 1;
+  const mcd = gcd(m, n);
+  const result = BigInt(a) ** BigInt(mcd) - BigInt(1);
+
+  return result.toString();
+}
+
+function gcd(a, b) {
+  if (b === 0) {
+    return a;
+  }
+
+  return gcd(b, a % b);
+}
+
+// Ejemplo de uso
+const a = 2n; // Número base
+const p = 7n; // Exponente p de Mersenne (Número primo de Mersenne 2^p - 1)
+const q = 11n; // Exponente q de Mersenne (Número primo de Mersenne 2^q - 1)
+
+const result = lucasLehmerMCD(a, p, q);
+console.log(result); // Resultado: “2047” (2^11 - 1)
+
+
+
+En este ejemplo, la función lucasLehmerMCD recibe los parámetros a, p y q, donde a es el número base y p y q
+son los exponenetes utilizados para generar los números primos de Mersenne (2^p - 1 y 2^q - 1 respectivamente).
+La función calcula el MCD de p-1 y q-1 utilizando el algoritmo de Euclides implementado en la función gcd. Luego,
+eleva a la base a a la potencia del MCD y le resta 1. El resultado se retorna como una cadena de texto utilizando
+el método toString().
+
+Recuerda que es importante utilizar el objeto BigInt en JavaScript cuando se trabajan con números enteros
+muy grandes, ya que así se evita la pérdida de precisión que ocurre con el tipo de dato Number estándar.
