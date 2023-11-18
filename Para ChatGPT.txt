@@ -37,7 +37,17 @@ Como x es conocido, 2 k1 k2 x + (k1 + k2) = (2^(x - 1) - 1) / x puede resolverse
 
 donde a = k1 k2 y b = k1 + k2, al obtenerse los valores de a y b, pueden obtenerse los de k1 y k2 por la via cuadrática:
 
-Establece un algoritmo en javascript para obtener k1 y k2, a partir de x.
+Puede establecerse un algoritmo en javascript para obtener k1 y k2, a partir de x, o bien:
+
+de 4 k1 k2 x² + 2 (k1 + k2) x = 2^x - 2, puede decirse que 
+
+2 (k1 + k2) x ≡ 2^x - 2 (mod 4x²), que a esta se le pueda aplicar el inverso modular.
+
+2 (k1 + k2) x ≡ 2^x - 2 (mod 4x²) nos permitiría obyener k1 y k2 si existiesen pues el resto de la primera parte del prodcto es cero no influye en la congruencia...
+
+
+
+
 
 
 
