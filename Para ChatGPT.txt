@@ -1,0 +1,45 @@
+https://gptchatly.com/ChatGPT-sin-necesidad-de-registrarse.html
+
+Si en la expresión 2^x - 1, x es un número compuesto, entonces se puede escribir como el producto de dos números enteros distintos, digamos a y b, donde a y b son mayores que 1. Por lo tanto, podemos escribir x = a * b.
+
+Entonces, la expresión 2^x - 1 se puede reescribir como:
+
+2^x - 1 = 2^(a*b) - 1.
+
+Ahora, podemos utilizar la identidad algebraica a^b - 1 = (a-1)(a^(b-1) + a^(b-2)+ ... + a + 1) para factorizar la expresión.
+
+Aplicando esta identidad a la expresión 2^x - 1, obtenemos:
+
+2^x - 1 = 2^(a*b) -1 = (2^a)^b - 1.
+
+Ahora, podemos ver que esta expresión tiene la forma de una diferencia de cuadrados, es decir, a^2 - b^2 = (a - b)(a + b).
+
+De manera similar, podemos factorizar la expresión anterior de la siguiente manera:
+
+(2^a)^b - 1 = (2^a - 1)((2^a)^(b-1) + (2^)^(b-2) + ... + (2^a) + 1).
+
+Entonces, si x es compuesto, los factores de la expresión 2^x - 1 son (2^a - 1) y ((2^a)^(b-1) + (2^a)^(b-2) + ... + (2^a) + 1), donde a y b son factores enteros distintos de x.
+
+Si x es primo, y aun 2^x - 1 sigue siendo primo, entonces sus factores tienen la forma: (2 k1 x + 1)(2 k2 x + 1) = 2^x - 1, de lo que puede observarse:
+
+(2 k1 x + 1)(2 k2 x + 1) = 2^x - 1
+
+4 k1 k2 x² + 2 (k1 + k2) x + 1 = 2^x - 1
+
+4 k1 k2 x² + 2 (k1 + k2) x = 2^x - 2
+
+2 k1 k2 x² + (k1 + k2) x = 2^(x - 1) - 1
+
+2 k1 k2 x + (k1 + k2) = (2^(x - 1) - 1) / x (es divisible por el pequeño terema de Fermat)
+
+Como x es conocido, 2 k1 k2 x + (k1 + k2) = (2^(x - 1) - 1) / x puede resolverse como una ecuación diofántica
+
+2 a x + b = (2^(x - 1) - 1) / x
+
+donde a = k1 k2 y b = k1 + k2, al obtenerse los valores de a y b, pueden obtenerse los de k1 y k2 por la via cuadrática:
+
+Establece un algoritmo en javascript para obtener k1 y k2, a partir de x.
+
+
+
+
