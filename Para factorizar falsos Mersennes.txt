@@ -45,7 +45,7 @@ de 4 k1 k2 x² + 2 (k1 + k2) x = 2^x - 2, puede decirse que
 
 2 (k1 + k2) x ≡ 2^x - 2 (mod 4x²), que a esta se le pueda aplicar el inverso modular.
 
-2 (k1 + k2) x ≡ 2^x - 2 (mod 4x²) nos permitiría obyener k1 y k2 si existiesen pues el resto de la primera parte del prodcto es cero no influye en la congruencia...
+2 (k1 + k2) x ≡ 2^x - 2 (mod 4x²) nos permitiría obyener k1 y k2 si existiesen pues el resto de la primera parte del producto es cero no influye en la congruencia...
 
 
 
