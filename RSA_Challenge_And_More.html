@@ -151,7 +151,6 @@
     }
   }
 
-
   function menor(x, y) {
     return (x < y) ? x : y;
   }
@@ -550,9 +549,17 @@
   }
 
   // Encontrar factor utilizando el inverso multiplicativo, implementación de: algoritmo de factorización.txt
+  // Optimizar
   function primality(x) {
     // Definición de constantes, tipos, variables,
     // etiquetas y subprogramas.
+
+    // Known Mersenne number exponents until october 2023
+    let knownMersenne = [2n, 3n, 5n, 7n, 13n, 17n, 19n, 31n, 61n, 89n, 107n, 127n, 521n, 607n, 1279n, 2203n,
+      2281n, 3217n, 4253n, 4423n, 9689n, 9941n, 11213n, 19937n, 21701n, 23209n, 44497n,
+      86243n, 110503n, 132049n, 216091n, 756839n, 859433n, 1257787n, 1398269n, 2976221n,
+      3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
+      37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n, 82589933n];
 
     // Retorna [(base^exp) + d] mod m
     // Se deduce aplicando el teorema chino de los restos
@@ -574,7 +581,7 @@
       }
 
       let result = (modpow(base, exp, m) + d) % m;
-      return result < 0n ? m + result : result;
+      return result < 0n ? (m + result) % m : result;
     }
 
     // Función auxiliar para calcular el máximo común divisor (GCD) entre dos números
@@ -595,13 +602,13 @@
         if (base === null || base === undefined || !base) { // natural
           return Math.log(Number(x));
         }
-        switch (base) {
+        switch (BigInt(base)) {
           case 2n:
-            return BigInt(Math.log2(Number(x)));
+            return Math.log2(Number(x));
           case 10n:
-            return BigInt(Math.log10(Number(x)));
+            return Math.log10(Number(x));
           default:
-            return BigInt(Math.log(Number(x))) / BigInt(Math.log(Number(base)));
+            return Math.log(Number(x)) / Math.log(Number(base));
         }
       }
 
@@ -657,56 +664,45 @@
     } else {
       // Si x es alguno de los números de Mc (Mersenne conocidos),
       // o si 2^(Mc) - 1 mod x = 0, devolver 2^(Mc) - 1.
-      // Known Mersenne number exponents until october 2023
-      let knownMersenne = [2n, 3n, 5n, 7n, 13n, 17n, 19n, 31n, 61n, 89n, 107n, 127n, 521n, 607n, 1279n, 2203n,
-        2281n, 3217n, 4253n, 4423n, 9689n, 9941n, 11213n, 19937n, 21701n, 23209n, 44497n,
-        86243n, 110503n, 132049n, 216091n, 756839n, 859433n, 1257787n, 1398269n, 2976221n,
-        3021377n, 6972593n, 13466917n, 20996011n, 24036583n, 25964951n, 30402457n, 32582657n,
-        37156667n, 42643801n, 43112609n, 57885161n, 74207281n, 77232917n, 82589933n];
       if (knownMersenne.some((m) => {
-        if (x % m === 0n) {
-          result.factor = m;
+        if (x % BigInt(m) === 0n) {
+          result.factor = BigInt(m);
           return true;
         } else {
-          return false;
-        }
-      })) {
-        result.primalidad = result.factor === x;
-      } else if (knownMersenne.some((m) => {
-        let _mcd = gcd(x, modpowplus(2n, m, -1n, x));
-        if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
-          result.factor = _mcd;
-          return true;
-        } else {
+          let _mcd = gcd(x, modpowplus(2n, m, -1n, x));
+          if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
+            result.factor = _mcd;
+            return true;
+          } else {
+            _mcd = gcd(x, modpowplus(2n, m, 1n, x));
+            if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
+              result.factor = _mcd;
+              return true;
+            }
+          }
           return false;
         }
       })) {
         result.primalidad = result.factor === x;
       } else {
-
-        let Men;
-        let log2 = logaritmoEntero(x + 1n);
         // Y con todos los números de Mersenne menores que el número
-        while (log2 > 0) {
-          Men = knownMersenne.find((m) => m >= log2);
-          console.log('revisar, ', knownMersenne, Men);
-          Men = Men ? Men : 2n;
-          // Revisar
-          console.log(Men);
-          a = 2n ** Men - 1n;
-
-          // Calcular el inverso multiplicativo de (a - x) módulo a y almacenarlo en la variable b.
-          let b = inversoMultiplicativo(a - x, a);
-
-          // Primos
-          result.primalidad = !b || b < 2n || b === x;
-          result.factor = result.primalidad ? x : b;
-          if (result.factor !== x) break;
-          log2--;
+        let maximo = knownMersenne[knownMersenne.length - 1];
+        for (let i = 2n; i <= maximo; i = i + 1n) {
+          console.log(`${i} de ${maximo}.`);
+          _mcd = gcd(x, modpowplus(2n, i, 1n, x));
+          if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
+            result.factor = _mcd;
+            break;
+          }
+          _mcd = gcd(x, modpowplus(2n, i, -1n, x));
+          if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
+            result.factor = _mcd;
+            break;
+          }
         }
-
       }
     }
+    result.primalidad = result.factor === x;
     return result;
   }
 
