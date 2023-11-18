@@ -686,8 +686,9 @@
         result.primalidad = result.factor === x;
       } else {
         // Y con todos los números de Mersenne menores que el número
+        // Utilizar el inverso multiplicativo ...
         let maximo = knownMersenne[knownMersenne.length - 1];
-        for (let i = 2n; i <= maximo; i = i + 1n) {
+        for (let i = maximo; i > maximo - 1000n * logaritmoEntero(x, 2n); i = i - 1n) {
           console.log(`${i} de ${maximo}.`);
           _mcd = gcd(x, modpowplus(2n, i, 1n, x));
           if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
