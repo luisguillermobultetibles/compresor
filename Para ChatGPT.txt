@@ -1,4 +1,3 @@
-https://gptchatly.com/ChatGPT-sin-necesidad-de-registrarse.html
 
 Si en la expresión 2^x - 1, x es un número compuesto, entonces se puede escribir como el producto de dos números enteros distintos, digamos a y b, donde a y b son mayores que 1. Por lo tanto, podemos escribir x = a * b.
 
