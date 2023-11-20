@@ -17,7 +17,7 @@
 <p id="salida"></p>
 <script>
 
-  document.title = 'Factorización de números grandes (Capítulo I: Ruptura de los retos de RSA en 1 hora).';
+  document.title = 'Factorización de números grandes (Capítulo I: Ruptura de los retos de RSA en 10 minutos).';
 
   // Factorización "hacker" de números naturales grandes por algoritmo de Branch and Exchange.
   // Copyright ®Luis Guillermo Bultet Ibles, el lunes 30 de octubre de 2023; 01:56 PM
@@ -548,7 +548,7 @@
     return {primalidad: true, factor: x};
   }
 
-  // Encontrar factor utilizando el inverso multiplicativo, implementación de: algoritmo de factorización.txt
+  // Encontrar factor primo, implementación de: algoritmo de factorización.txt
   // Optimizar
   function primality(x) {
     // Definición de constantes, tipos, variables,
@@ -592,27 +592,26 @@
       return gcd(b, a % b);
     }
 
-    // De otro modo, encontrar el número de Mersenne i
-    // tal que Mersenne(i) sea mayor o igual al logaritmo entero de (x + 1).
-
-    function logaritmoEntero(x, base = null) {
-      // x Luis Bultet Ibles. Cuba, logaritmo. (basado en una versión © 2022 PeakU Inc. All Rights Reserved. Colombia)
-      function logaritmo(x, base = null) {
-        if (x < 0n) return NaN;
-        if (base === null || base === undefined || !base) { // natural
-          return Math.log(Number(x));
-        }
-        switch (BigInt(base)) {
-          case 2n:
-            return Math.log2(Number(x));
-          case 10n:
-            return Math.log10(Number(x));
-          default:
-            return Math.log(Number(x)) / Math.log(Number(base));
-        }
+    // Raiz cuadrada
+    // from https://stackoverflow.com/questions/53683995/javascript-big-integer-square-root
+    function sqrt(value) {
+      if (value < 0n) {
+        throw 'square root of negative numbers is not supported';
       }
 
-      return BigInt(Math.trunc(Number(logaritmo(x, base))));
+      if (value < 2n) {
+        return value;
+      }
+
+      function newtonIteration(n, x0) {
+        const x1 = ((n / x0) + x0) >> 1n;
+        if (x0 === x1 || x0 === (x1 - 1n)) {
+          return x0;
+        }
+        return newtonIteration(n, x1);
+      }
+
+      return newtonIteration(value, 1n);
     }
 
     // Calcular el resto (a % (a - x)) y almacenarlo en la variable b.
@@ -662,43 +661,22 @@
     if (!x || x < 2n) {
       result = {factor: x, primalidad: false};
     } else {
+      // Si es un cuadrado perfecto
+      let raiz2 = sqrt(x);
+      if (x % raiz2 === 0n) {
+        return {factor: raiz2, primalidad: false};
+      }
       // Si x es alguno de los números de Mc (Mersenne conocidos),
       // o si 2^(Mc) - 1 mod x = 0, devolver 2^(Mc) - 1.
-      if (knownMersenne.some((m) => {
-        if (x % BigInt(m) === 0n) {
-          result.factor = BigInt(m);
-          return true;
-        } else {
-          let _mcd = gcd(x, modpowplus(2n, m, -1n, x));
+      for (const m of knownMersenne) {
+        console.log(`Testing with Mersenne: 2 ^ ${m} - 1.`);
+        // This is the critical area, were you I should implement the modular inverse:
+        for (let termino = 0n; termino < 200n * BigInt(x.toString().length); termino++) {
+          let _mcd = gcd(x, raiz2 + modpowplus(2n, m, termino, x));
           if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
             result.factor = _mcd;
-            return true;
-          } else {
-            _mcd = gcd(x, modpowplus(2n, m, 1n, x));
-            if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
-              result.factor = _mcd;
-              return true;
-            }
-          }
-          return false;
-        }
-      })) {
-        result.primalidad = result.factor === x;
-      } else {
-        // Y con todos los números de Mersenne menores que el número
-        // Utilizar el inverso multiplicativo ...
-        let maximo = knownMersenne[knownMersenne.length - 1];
-        for (let i = maximo; i > maximo - 1000n * logaritmoEntero(x, 2n); i = i - 1n) {
-          console.log(`${i} de ${maximo}.`);
-          _mcd = gcd(x, modpowplus(2n, i, 1n, x));
-          if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
-            result.factor = _mcd;
-            break;
-          }
-          _mcd = gcd(x, modpowplus(2n, i, -1n, x));
-          if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
-            result.factor = _mcd;
-            break;
+            result.primalidad = result.factor === x;
+            return result;
           }
         }
       }
