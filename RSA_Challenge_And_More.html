@@ -10,11 +10,14 @@
 <br>
 <textarea id="textarea1"></textarea>
 <br>
-<input id="infija" type="checkbox" checked="false"><label> Habilitar compresión recursiva vs teorema general de la
+<input id="infija" type="checkbox" checked="false" onchange="calcular(BigInt(leerAreaDeTexto()));"><label> Habilitar compresión recursiva vs teorema general de la
     aritmética</label>
 <br>
-<input id="compresionCheckButton" type="checkbox"><label> Habilitar notación infija vs notación html</label>
+<input id="compresionCheckButton" type="checkbox" onchange="calcular(BigInt(leerAreaDeTexto()));"><label> Habilitar notación infija vs notación html</label>
 <p id="salida"></p>
+<button onclick="calcular(BigInt(leerAreaDeTexto()));">
+    Factorizar
+</button>
 <script>
 
   document.title = 'Factorización de números grandes (Capítulo I: Ruptura de los retos de RSA en 10 minutos).';
@@ -517,7 +520,7 @@
   }
 
   // (primalidad de números prqueños por fuerza bruta, lenta y exhaustiva)
-  function primalidadPorTentativa(x) {
+  function factorizacionPorTentativa(x) {
     if (!x || x < 2n) {
       return {primalidad: false, factor: x};
     } else if (x === 2n || x === 3n || x === 5n) {
@@ -535,7 +538,7 @@
 
     // y de paso
     if (x % up === 0n) {
-      return primalidadPorTentativa(up);
+      return factorizacionPorTentativa(up);
     }
 
     let valorInicial = 3n;
@@ -670,14 +673,44 @@
       // o si 2^(Mc) - 1 mod x = 0, devolver 2^(Mc) - 1.
       for (const m of knownMersenne) {
         console.log(`Testing with Mersenne: 2 ^ ${m} - 1.`);
-        // This is the critical area, were you I should implement the modular inverse:
-        for (let termino = 0n; termino < 200n * BigInt(x.toString().length); termino++) {
-          let _mcd = gcd(x, raiz2 + modpowplus(2n, m, termino, x));
-          if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
-            result.factor = _mcd;
-            result.primalidad = result.factor === x;
-            return result;
+        // Punto crítico: This is the critical area, were you I should implement the modular inverse:
+        for (const base of knownMersenne) {
+          for (let termino = -m; termino <= m * BigInt(x.toString().length); termino++) {
+            let _mcd = gcd(x, raiz2 + modpowplus(base, m, termino, x));
+            if (_mcd > 1n && _mcd < x && x % _mcd === 0n) {
+              result.factor = _mcd;
+              result.primalidad = result.factor === x;
+              return result;
+            }
           }
+
+          // ¿Qué falta por implementar?
+          // Quizás no sea necesario utilizar el inverso multiplicativo, sino lo siguiente:
+          // Factorización de x, se toma un valor p primo, pudiera probarse el número de Mersenne actual dentro del ciclo.
+          // Si x es par, 2 es solución
+          // Si p divide a x, p es solución
+          // Si p es primo, entonces 2^(p - 1) - 1 es divisible por p, continúa:
+          // Pera factorizar x, calculamos el mcd entre x y 2^(p - 1) - 1
+          // Si ese mcd divide a x, mcd es solución.
+          // Ahora, calculamos el mcm entre x y 2^(p - 1) - 1, que es igual a:
+          // El producto de x por 2^(p - 1) - 1, dividido por el mcd, por la definición: a · b = mcd(a, b) · mcm(a, b)
+          // Ya sabemos que 2^(p - 1) - 1 no tiene divisores comunes con x,
+          // Pero recordemos que por el pequeño teorema de Fermat, 2^(p - 1) - 1 es divisible por p, luego
+          // Por regla de tres:
+          // 1, p, x y hasta el propio 2^(p - 1) - 1 son cada uno, por separado, divisores del mcm entre x y 2^(p - 1) - 1
+          // en la misma proporción de que cualquier divisor arbitrario d lo es a x.
+          // Si definimos una función d(t), no le quedaría más remedio que ser el divisor de x en los valores anteriores:
+          // d(t) = x² / MCM(x ; 2^(p - 1) - 1)
+          // Se evalúa la función d(t), en los tres casos en t, (1, p y x), si alguna imagen es no trivial, distinta de 1 y de x, es solución,
+          // de otro modo, no se encontraron factores triviales x es un número primo o bien, pasar a probar con el próximo primo de mersenne menor que x
+          // Si no hay otro menor, romper el ciclo y devolver a x como primo.
+
+          // Para simplificar los cálculos pudiera probarse con todos los número de Mersenne que sean menores que el número
+          // Y utilizar las funciones modpowplus, y para obtener el mcd entre 2^(p - 1) - 1 y x, calculamos el resto inicial
+          // con modpowplus (una variante de modpow con una suma o diferencia), y luego con esta, se obtiene el mcd:
+
+          // Revisar, 11111111111n es divisible por 21649n
+
         }
       }
     }
@@ -1111,7 +1144,7 @@
     // hasta 18 dígitos...
     let valorEnteroGrande = BigInt(decimal);
     if (decimal.length < 18) {
-      return primalidadPorTentativa(valorEnteroGrande).factor;
+      return factorizacionPorTentativa(valorEnteroGrande).factor;
     }
 
     // Extraer los n últimos dígitos de X
@@ -1198,7 +1231,7 @@
 
     // elimina esto para activar el código de abajo, utilízalo en un mejor lugar.
     // return pollardRho(valorEnteroGrande).factor;
-    return numberFieldSieveWithIterations(valorEnteroGrande);
+    return factorizacionNumberFieldSieveWithIterations(valorEnteroGrande);
 
     function existsCandidates(factor1, factor2) {
       // en orden
@@ -1511,10 +1544,10 @@
       }
       //usaremos el 'tag' <sup> de HTML
       if (html) {
-        resultado += factor + '<sup>' + exponente + '</sup>' + (i < factoresPrimos.length - 1 ? ' x ' : '');
+        resultado += factor + '<sup>' + exponente + '</sup>' + (i < factoresPrimos.length - 1 ? ' ˣ ' : '');
       } else {
         exponente = exponente !== '1' ? '^(' + exponente + ') ' : '';
-        resultado += factor + exponente + (i < factoresPrimos.length - 1 ? ' x ' : '');
+        resultado += factor + exponente + (i < factoresPrimos.length - 1 ? ' ˣ ' : '');
       }
     }
 
@@ -1629,7 +1662,7 @@
 
 
   // Función para encontrar un factor primo utilizando la Criba Cuadrática
-  function quadraticSieve(n) {
+  function factorizacionQuadraticSieve(n) {
     /*
         Documentación, según Wikipedia:
 
@@ -1730,7 +1763,7 @@
   }
 
   // Esta es la criba del cuerpo de números, el algoritmo más rápido de factorización...
-  function numberFieldSieve(n) {
+  function factorizacionNumberFieldSieve(n) {
     /*
     Documentación, según Wikipedia:
 
@@ -1787,7 +1820,7 @@
     }
   }
 
-  function numberFieldSieveWithIterations(n, maxIterations = BigInt(100 + Math.trunc(2000 * n.toString().length))) {
+  function factorizacionNumberFieldSieveWithIterations(n, maxIterations = BigInt(100 + Math.trunc(2000 * n.toString().length))) {
 
     console.log(`El número de repeticiones es ${maxIterations}.`);
 
@@ -1846,7 +1879,7 @@
 
   // Ejemplo de uso
   const number = BigInt('1234567890123456789012345678901234567890');
-  const factor = quadraticSieve(number);
+  const factor = factorizacionQuadraticSieve(number);
   console.log(`La criba cuadrática de ${factor} es ${number}.`);
 
   // Recuerda que esta implementación es solo un ejemplo y puede requerir ajustes adicionales según tus necesidades. En cuanto al copyright, ten en cuenta que el código proporcionado es solo una adaptación del algoritmo descrito en Wikipedia y no tiene restricciones de copyright. Sin embargo, ten en cuenta que siempre es recomendable verificar y respetar las licencias de cualquier código o algoritmo que utilices. ¡Espero que esto te sea útil
@@ -1923,7 +1956,6 @@
     console.log('Tarea 3 ejecutándose...');
     return 'Resultado tarea 3';
   });
-
 
   // Cómo eliminar una tarea?
 
@@ -2181,7 +2213,7 @@
     if (bezout_mcd !== 1n) {
       result = null; // no existe el modular inverso.
     } else {
-      result = extendedEuclides(a, m)[0]; // a
+      result = euclideanAlgorithmExtended(a, m).x; // a
     }
 
     return result;
@@ -2462,10 +2494,10 @@
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
       // console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${encontrarUnFactorPrimo(no)}<--.`);
       // console.warn(`Un factor primo de 2^${no} - 1 = ${pow(2n, no) - 1n}, es -->${encontrarUnFactorPrimo(pow(2n, no) - 1n)}<--.`);
-      console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorTentativa(no).factor}<-- (Primalidad por tentativa).`);
+      console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${factorizacionPorTentativa(no).factor}<-- (Primalidad por tentativa).`);
       console.warn(`Un factor primo de ${no} (con ${i} dígitos 1), es -->${primalidadPorBusquedayCaptura(no).factor}<-- (Primalidad por búsqueda y captura).`);
       // console.warn(`Un factor primo de ${i}, es -->${primalidadPorTentativa(i).factor}<-- (brute force), -->${pollardRho(i).factor}<-- (Pollard),.`);
-      if (primalidadPorTentativa(i).factor !== primalidadPorBusquedayCaptura(i).factor) alert(`Falla en ${i}.`);
+      if (factorizacionPorTentativa(i).factor !== primalidadPorBusquedayCaptura(i).factor) alert(`Falla en ${i}.`);
     }
   }
 
@@ -3028,10 +3060,567 @@
     // console.log(modpow(2n, Math.trunc(82589933 - )))
   }
 
+  //
+
+  //
+  function lapso(anhos = 0, meses = 0, dias = 0, horas = 0, minutos = 0, segundos = 0, milisegundos = 0) {
+    return milisegundos + (1000 * segundos) + (1000 * 60 * minutos) + (1000 * 60 * horas) + (1000 * 60 * 60 * dias) + (1000 * 60 * 60 * 24 * (146097 / 4800) * (anhos * 12 + meses));
+  }
+
+  // calcular lapso entre el momento presente y un tiempo futuro + o pasado -
+  function moment(anhos = 0, meses = 0, dias = 0, horas = 0, minutos = 0, segundos = 0, milisegundos = 0, baseDate = new Date()) {
+    return new Date(Number(baseDate) + this.lapso(anhos, meses, dias, horas, minutos, segundos, milisegundos));
+  }
+
+  function testPi(x = 100) {
+    function esPrimo(num) {
+      if (num <= 1) return false;
+      if (num <= 3) return true;
+      if (num % 2 === 0 || num % 3 === 0) return false;
+
+      for (let i = 5; i * i <= num; i += 6) {
+        if (num % i === 0 || num % (i + 2) === 0) return false;
+      }
+
+      return true;
+    }
+
+    function contarPrimosAproximadamente11(x) {
+      if (x < 2) return 0; // No hay números primos menores que 2.
+      // Usar la estimación del Teorema del número primo para obtener un valor aproximado.
+      const aproximacion = x / (Math.log(x) - 1.1);
+      return Math.round(aproximacion);
+    }
+
+    function contarPrimosAproximadamente(x) {
+      if (x < 2) return 0; // No hay números primos menores que 2.
+
+      // Usar la estimación del Teorema del número primo para obtener un valor aproximado.
+      const aproximacion = x / Math.log(x);
+      return Math.round(aproximacion);
+    }
+
+    function contarPrimosExactamente(x) {
+      let cuentaPrimos = 0;
+      for (let i = 2; i <= x; i++) {
+        if (esPrimo(i)) cuentaPrimos++;
+      }
+      return cuentaPrimos;
+    }
+
+// Ejemplos de uso:
+    console.log(`Aproximación de la cantidad de primos hasta ${x}:`, contarPrimosAproximadamente(x));
+    console.log(`Aproximación 1.1 de la cantidad de primos hasta ${x}:`, contarPrimosAproximadamente11(x));
+    console.log(`Cantidad exacta de números primos hasta ${x}:`, contarPrimosExactamente(x));
+  }
+
+  function factorizarConInversoModular(x = 91) {
+    function mcd(a, b) {
+      while (b != 0) {
+        let temp = b;
+        b = a % b;
+        a = temp;
+      }
+      return a;
+    }
+
+    function inversoModular(a, m) {
+      let m0 = m, t, q;
+      let x0 = 0, x1 = 1;
+
+      if (m == 1) return 0;
+
+      // Aplicar el algoritmo de Euclides extendido
+      while (a > 1) {
+        q = Math.floor(a / m);
+        t = m;
+        m = a % m, a = t;
+        t = x0;
+        x0 = x1 - q * x0;
+        x1 = t;
+      }
+
+      if (x1 < 0) x1 += m0;
+
+      return x1;
+    }
+
+    function factorizarConInversoModular(n) {
+      for (let i = 2; i < n; i++) {
+        if (mcd(i, n) === 1) { // i y n son coprimos
+          let invMod = inversoModular(i, n);
+
+          // Verificar si el inverso modular proporciona un factor no trivial
+          let factor = mcd(n, invMod + i);
+          if (factor > 1 && factor < n) {
+            return factor; // Se ha encontrado un factor no trivial
+          }
+        }
+      }
+      return n; // n es primo o no se pudo factorizar
+    }
+
+    console.log(factorizarConInversoModular(x)); // Debería devolver 7 o 13
+  }
+
+  function factorizarPollardRhoModificada(x = 10403n) {
+    function gcdBigInt(a, b) {
+      while (b !== 0n) {
+        let temp = b;
+        b = a % b;
+        a = temp;
+      }
+      return a;
+    }
+
+    // Función modificada de iteración de Pollard Rho para funcionar con BigInt
+    function fBigInt(x, c, n) {
+      return (x * x + c) % n;
+    }
+
+    function pollardRhoBigInt(n) {
+      if (n === 1n) return n;
+      if (n % 2n === 0n) return 2n;
+
+      let x = BigInt(Math.floor(Math.random() * (Number(n - 1n))) + 1);
+      let y = x;
+      let c = BigInt(Math.floor(Math.random() * (Number(n - 1n))) + 1);
+      let d = 1n;
+
+      while (d === 1n) {
+        x = fBigInt(x, c, n);
+        y = fBigInt(fBigInt(y, c, n), c, n);
+        d = gcdBigInt((y > x) ? y - x : x - y, n);
+      }
+
+      if (d === n) {
+        return pollardRhoBigInt(n); // Puede intentar con diferentes valores c si es necesario
+      }
+
+      return d;
+    }
+
+    // Ejemplo de uso:
+    console.log(pollardRhoBigInt(x)); // Debería retornar un factor no trivial de n
+  }
+
+  // Problema x = a - a mob b (para deducir divisor b)
+  function inversoModularPositivoExplicado(x = 10) {
+    // Para resolver este problema con un algoritmo de complejidad logarítmica, necesitamos replantearnos cómo encontramos
+    // los pares (a, b). Si despejamos b de la ecuación x = a - a mod b, la ecuación resultante a mod b = a - x sugiere que
+    // b debe ser un divisor de la diferencia a - x. Esto significa que basta con encontrar los divisores de a - x para
+    // poder determinar los valores posibles de b.
+
+    // Con esto en cuenta, sólo necesitamos iterar sobre los posibles valores de a y, para cada uno de ellos, encontrar
+    // sus divisores. Los divisores los podemos encontrar con una eficiencia que tiende a ser mejor que lineal cuando se
+    // implementa con la técnica de ir por pares (considerando que no todos los números tienen una gran cantidad de divisores).
+    // Aquí tienes un ejemplo de una función que usa esta técnica:
+
+
+    function findPairs(x) {
+      const pairs = [];
+
+      // El bucle sobre el posible valor de ‘a’
+      for (let a = x + 1; true; a++) {
+        let difference = a - x;
+        // Encontramos divisores de la diferencia ‘a - x’
+        for (let b = 1; b * b <= difference; b++) {
+          if (difference % b === 0) {
+            // ‘b’ es un divisor
+            pairs.push({a, b});
+            // Encontraremos otro divisor si la división no es cuadrada
+            let otherDivisor = difference / b;
+            if (b !== otherDivisor) {
+              pairs.push({a, otherDivisor});
+            }
+          }
+        }
+        // Para encontrar solamente los primeros pares de (a, b) que son soluciones
+        if (pairs.length > 0) break;
+      }
+
+      return pairs;
+    }
+
+    // Sin embargo, aunque este método es más eficiente que un enfoque cuadrático completo, no es logarítmico en la forma
+    // estricta. Encontrar los divisores de un número puede ser más eficiente que simplemente iterar sobre todos los enteros
+    // hasta ese número, pero no alcanza una complejidad logarítmica.
+
+    // Para tener un algoritmo logarítmico estricto necesitaríamos una función matemática o enfoque analítico que no requiera
+    // la iteración en función del tamaño de x, pero tal función no es evidente para esta clase de problemas de factores y
+    // divisores. La tarea de enumerar todos los pares (a, b) que satisfagan x = a - a % b se presta naturalmente a una
+    // complejidad que, en el mejor de los casos, tiende a ser lineal para números sin muchos factores, y sub-cuadrática
+    // para la mayoría de los casos prácticos.
+
+    // Este otro caso me sirve para encontrar una sola solución:
+
+    function findPairDifferentFromOneAndX(x) {
+      for (let a = x + 1; ; a++) {
+        let difference = a - x;
+
+        // Como ya sabemos que ‘b’ puede ser ‘1’ o ‘difference’, buscamos valores
+        // diferentes, entonces comenzamos desde ‘2’ hasta ‘difference - 1’.
+        for (let b = 2; b < difference; b++) {
+          if (difference % b === 0) {
+            // Hemos encontrado un ‘b’ que es un divisor de ‘a - x’
+            // y es diferente de ‘1’ y ‘x’
+            return {a, b};
+          }
+        }
+
+        // Un chequeo adicional: si ‘difference’ llega a ser igual a ‘x + 1’,
+        // no necesitamos seguir, ya que ‘b’ no podría ser diferente de ‘x’ o ‘1’.
+        if (difference === x + 1) break;
+      }
+      // Si el loop termina, quiere decir que no se encontró una pareja que cumpla las condiciones.
+      return null;
+    }
+
+    // Este algoritmo busca el primer par ((a, b)) que cumpla la condición sin que (b) sea igual a (1) o (x).
+    // Es esencialmente lineal con respecto a los valores de (a - x), y su complejidad en tiempo es mejor que hacer un
+    // recorrido completo de todos los números desde (1) hasta (a). Sin embargo, hay que tener en cuenta que, en teoría,
+    // este algoritmo todavía puede ser de orden cuadrático si (x) está suficientemente cerca de (a)
+    // (por ejemplo, (x) y (a - x) son ambos números grandes y primos), aunque en la práctica esto no suele ser un problema
+    // común con valores usuales de (x).
+
+    // En caso de valores muy grandes de (x), donde la eficiencia es crítica, se podría recurrir a tests de primalidad o
+    // a algoritmos más avanzados para encontrar divisores, que optimizarían aún más este proceso.
+
+
+    // Un enfoque más eficiente, y generalmente el utilizado en la práctica para buscar divisores, es iterar solo hasta
+    // la raíz cuadrada del número del cual buscamos divisores. Esto se debe a que si un número ( n ) tiene un divisor
+    // mayor que su raíz cuadrada (( \sqrt{n} )), entonces necesariamente debe tener un divisor correspondiente menor
+    // que ( \sqrt{n} ). Es decir, los divisores de un número están en pares cuyo producto es el número original y uno
+    // del par debe ser menor o igual a ( \sqrt{n} ).
+
+    // Por tanto, podemos mejorar la eficiencia de encontrar un par ( (a, b) ) mediante la iteración solo hasta la raíz
+    // cuadrada de ( a - x ), como había expuesto previamente. Aquí hay una función revisada que implementa este enfoque:
+
+
+    function findPairDifferentFromOneAndXTentative(x) {
+      // Empezamos examinando números a partir de a = x + 2 ya que queremos evitar b = 1
+      for (let a = x + 2; ; a++) {
+        let difference = a - x;
+        let sqrtDifference = Math.sqrt(difference);
+
+        // Buscamos divisores de ‘a - x’ que no sean ni ‘1’ ni ‘x’ y tampoco ‘a - x’
+        for (let b = 2; b <= sqrtDifference; b++) {
+          if (difference % b === 0) {
+            // Hemos encontrado un ‘b’ que es divisor de ‘a - x’
+            // y esto implica que ‘b’ no es ni ‘1’, ni ‘x’, ni ‘a - x’.
+            return {a, b};
+          }
+        }
+
+        // Si el cuadrado del contador es mayor que la diferencia, ya pasamos la raíz cuadrada
+        if (sqrtDifference < 2) {
+          break;
+        }
+      }
+
+      // Si hemos salido del bucle sin encontrar una pareja, se retorna null
+      return null;
+    }
+
+    // Este algoritmo es mucho más eficiente que la versión anterior. La iteración solo hasta la raíz cuadrada de a - x
+    // significa que la cantidad de trabajo necesario para encontrar un divisor se reduce significativamente. Aunque este
+    // enfoque mejora las velocidades, todavía no es una solución logarítmica. Para números muy grandes o situaciones donde
+    // la eficiencia es crítica, el uso de algoritmos más avanzados para la factorización o tests de primalidad se vuelve más relevante.
+
+
+    console.log('Todos los pares ', findPairs(x));
+
+    console.log('Solamente el primer par ', findPairDifferentFromOneAndX(x));
+
+    console.log('Solamente el primer par por tentativa ', findPairDifferentFromOneAndXTentative(x));
+  }
+
+  // Factorización por el Pequeño Teorema de Fermat (no sirve)
+  function factorizacionPeqTeoFermat(n = 91n, p = 37n) {
+    /* Calcula la base elevada al exponente módulo el módulo usando BigInt.
+      * @param {BigInt} base - La base para la exponenciación.
+      * @param {BigInt} exponent - El exponente para la exponenciación.
+      * @param {BigInt} modulus - El módulo para la operación.
+      * @returns {BigInt} El resultado de la exponenciación modular.
+      */
+    function modpow(base, exponent, modulus) {
+      if (modulus === 1n) return 0n;
+      let result = 1n;
+      base = base % modulus;
+      while (exponent > 0n) {
+        if (exponent % 2n === 1n) { // impar
+          result = (result * base) % modulus;
+        }
+        exponent = exponent / 2n; // divida por 2
+        base = (base * base) % modulus;
+      }
+      return result;
+    }
+
+    /*
+    * Calcula el máximo común divisor de dos números BigInt.
+    * @param {BigInt} a - Primer número.
+    * @param {BigInt} b - Segundo número.
+    * @returns {BigInt} El MCD de los dos números.
+    */
+    function mcd(a, b) {
+      let temp;
+      while (b !== 0n) {
+        temp = b;
+        b = a % b;
+        a = temp;
+      }
+      return a;
+    }
+
+    /**
+     * Intenta factorizar un número utilizando el Pequeño Teorema de Fermat para un dado primo.
+     * @param {BigInt} n - El número que se intentará factorizar.
+     * @param {BigInt} p - Un número primo utilizado para el teorema.
+     * @returns {BigInt} Un factor de n, si se encuentra uno. De lo contrario, retorna n.
+     */
+    function factorizarUsandoFermat(n, p) {
+      if (p <= 1n || !(p % 2n === 1n)) {
+        throw new Error('p debe ser un número primo impar mayor que 1.');
+      }
+      // Aplicar el Pequeño Teorema de Fermat para comprobar si p es primo
+      for (let a = 2n; a < p; a++) {
+        if (modpow(a, p, p) !== a) {
+          throw new Error('p no es primo o hay un error en modpow.');
+        }
+        // Calcula x como a menos el resto de a dividido p
+        let x = a - (a % p);
+        if (x !== 0n && x !== a) {
+          let divisor = mcd(n, x);
+          if (divisor !== 1n && divisor !== n) {
+            return divisor; // Factor no trivial encontrado.
+          }
+        }
+      }
+
+      return n; // No se encontró un factor no trivial.
+    }
+
+    try {
+      const factor = factorizarUsandoFermat(n, p);
+      console.log(`Un factor de ${n} es ${factor}`);
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
+  function gcdExtended(a, b) {
+    if (a === 0n) return [b, 0n, 1n];
+
+    let [gcd, x1, y1] = gcdExtended(b % a, a);
+
+    let x = y1 - (b / a) * x1;
+    let y = x1;
+
+    return [gcd, x, y];
+  }
+
+  function modInverse(a, m) {
+    let [gcd, x, _] = gcdExtended(a, m);
+    if (gcd !== 1n) {
+      throw 'Inverse doesn’t exist';
+    } else {
+      // m is added to handle negative x
+      return (x % m + m) % m;
+    }
+  }
+
+  function findX(a, b) {
+    if (b === 0n || b === 1n) throw 'Invalid b value';
+    // Since b is prime, and a is not divisible by b, they are coprime
+    // So we can find the inverse of a mod b
+    let aInv = modInverse(a, b);
+    // x = a - (a mod b) can be re-written as x = a - aInv * a since aInv satisfies the property a * aInv ≡ 1 mod b
+    return a - aInv * a % b;
+  }
+
+  function pideeulerporPipo(x) {
+    function esPrimoBigInt(num) {
+      if (num <= 1n) return false;
+      if (num <= 3n) return true;
+      if (num % 2n === 0n || num % 3n === 0n) return false;
+
+      for (let i = 5n; i * i <= num; i += 6n) {
+        if (num % i === 0n || num % (i + 2n) === 0n) return false;
+      }
+
+      return true;
+    }
+
+    function siguientePrimoDerechaBigInt(x) {
+      let siguiente = x + 1n;
+      while (!esPrimoBigInt(siguiente)) {
+        siguiente++;
+      }
+      return siguiente;
+    }
+
+    function anteriorPrimoIzquierdaBigInt(x) {
+      if (x <= 2n) {
+        return null; // No hay números primos a la izquierda de 2.
+      }
+      let anterior = x - 1n;
+      while (!esPrimoBigInt(anterior)) {
+        anterior++;
+      }
+      return anterior;
+    }
+
+    function contarPrimosAproximadamenteBigInt(x) {
+      if (x < 2n) return 0;
+
+      const logX = BigInt(Math.ceil(Math.log(Number(x))));
+
+      // Encontramos los primos más cercanos alrededor de x
+      const siguientePrimo = siguientePrimoDerechaBigInt(x);
+      const anteriorPrimo = anteriorPrimoIzquierdaBigInt(x);
+
+      // Utilizamos la función de especulación en esos puntos y hacemos un ajuste lineal
+      let estimacionAnterior = Number(anteriorPrimo) / (Number(logX) - 1.1);
+      let estimacionSiguiente = Number(siguientePrimo) / (Number(logX) - 1.1);
+
+      // Si x es primo, entonces tomamos x como el punto de ajuste
+      if (esPrimoBigInt(x)) {
+        return Number(x) / (Number(logX) - 1.1);
+      }
+
+      // Hacemos un ajuste proporcional entre los dos primos adyacentes
+      const proporcion = Number(x - anteriorPrimo) / Number(siguientePrimo - anteriorPrimo);
+      return estimacionAnterior + proporcion * (estimacionSiguiente - estimacionAnterior);
+    }
+
+    function contarPrimosAproximadamenteMejoradoBigInt(x) {
+      if (x < 2n) {
+        return 0n; // No hay números primos menores que 2
+      }
+
+      // Encontramos el número primo más cercano a la izquierda
+      const anteriorPrimo = anteriorPrimoIzquierdaBigInt(x);
+
+      // Encontramos el número primo más cercano a la derecha
+      const siguientePrimo = siguientePrimoDerechaBigInt(x);
+
+      // Aplicamos la fórmula logarítmica integral de números primos π(x) ≈ x / ln(x)
+      // Usamos una aproximación de la función logarítmica para BigInt
+      function logBigInt(n) {
+        let log = 0n;
+        let c = n;
+        while (c > 1n) {
+          c /= 10n;
+          log += 1n;
+        }
+        return log;
+      }
+
+      // podríamos mejorar la aproximación del logaritmo de BigInt usando alguna técnica de puntos flotantes de
+      // alta precisión antes de convertir a BigInt. Aquí hay una versión mejorada muy básica que utilice Math.log()
+      // para proporcionar una mejor estimación:
+      function logBigInt2(n) {
+        const asString = n.toString();
+        const length = asString.length;
+        const asNumber = n / 10n ** (BigInt(length - 1)); // Reduce BigInt a número manejable
+        return BigInt(Math.floor(Math.log(Number(asNumber)) + (length - 1) * Math.log(10)));
+      }
+
+      const logAnterior = logBigInt(anteriorPrimo);
+      const logSiguiente = logBigInt(siguientePrimo);
+
+      const piAnterior = anteriorPrimo / logAnterior;
+      const piSiguiente = siguientePrimo / logSiguiente;
+
+      // Hacemos una interpolación lineal entre los resultados de la función de número primo para estimar
+      const proporcion = Number(x - anteriorPrimo) / Number(siguientePrimo - anteriorPrimo);
+      const piX = piAnterior + BigInt(Math.floor(proporcion * Number(piSiguiente - piAnterior)));
+
+      return piX;
+    }
+
+    // Mejora de la función para trabajar con BigInt
+    // En este ejemplo usaré una aproximación simple para la logarítmica integral.
+    function contarPrimosAproximadamenteLogaritmicaIntegralBigInt(x) {
+      if (x < 2n) return 0n;
+      const logXBigInt = BigInt(Math.floor(Math.log(Number(x))));
+      return x / (logXBigInt - 1n);
+    }
+
+// Ejemplo de uso con BigInt
+    console.log(contarPrimosAproximadamenteBigInt(x));
+  }
+
+  function factorizacionPollardRhoTortugaLiebre(n) {
+    function gcd(a, b) {
+      if (b == 0n) {
+        return a;
+      } else {
+        return gcd(b, a % b);
+      }
+    }
+
+    function f(x, n, c) {
+      return (x * x + c) % n;
+    }
+
+    if (n % 2n == 0n) return 2n;
+
+    let x = 2n, y = 2n, d = 1n, c = 1n;
+    while (d == 1n) {
+      x = f(x, n, c); // Tortuga
+      y = f(f(y, n, c), n, c); // Liebre
+      d = gcd(y - x < 0n ? x - y : y - x, n);
+    }
+
+    if (d == n) {
+      c = 2n;
+      x = 2n;
+      y = 2n;
+      d = 1n;
+      while (d == 1n) {
+        x = f(x, n, c);
+        y = f(f(y, n, c), n, c);
+        d = gcd(y - x < 0n ? x - y : y - x, n);
+        if (d != 1n && d != n) return d;
+      }
+    }
+    return d;
+  }
+
+  // A continuación, te proporciono una versión optimizada del algoritmo Pollard’s rho que incluye detección de
+  // estancamiento y reintento con diferentes constantes c, lo cual a veces puede ayudar a encontrar factores de
+  // manera más rápida:
+  function faactorizacionSmartPollardRhoAntiBlackHoles(n) {
+    if (n <= 1n) return n;
+    if (n % 2n == 0n) return 2n;
+
+    function gcd(a, b) {
+      if (b == 0n) return a;
+      return gcd(b, a % b);
+    }
+
+    const f = (x, c, mod) => (x ** 2n + c) % mod;
+
+    for (let c = 1n; c <= 10n; c++) { // Prueba con distintos valores de ‘c’
+      let x = 2n, y = 2n, d = 1n;
+
+      while (d == 1n) {
+        x = f(x, c, n);
+        y = f(f(y, c, n), c, n);
+        d = gcd(x > y ? x - y : y - x, n);
+        if (d == n) break; // Esto significa que no hemos podido encontrar el factor, se intentará con otro ‘c’
+      }
+
+      if (d != n) return d; // Hemos encontrado un factor
+    }
+
+    // Si el algoritmo falla, se podría intentar algo más elaborado como el ECM o el Quadratic Sieve
+    return null; // Retorna null si no se encontró ningún factor no trivial
+  }
+
 
 </script>
-<button onclick="calcular(BigInt(leerAreaDeTexto()));">
-    Factorizar
-</button>
 </body>
 </html>
